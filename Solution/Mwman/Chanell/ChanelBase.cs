@@ -59,6 +59,8 @@ namespace Mwman.Chanell
 
         private string _durationColumnHeader;
 
+        private int _newitemcount;
+
         #endregion
 
         #region Properties
@@ -164,6 +166,16 @@ namespace Mwman.Chanell
         public string HostUrl { get; set; }
 
         public string HostBase { get; set; }
+
+        public int NewItemCount
+        {
+            get { return _newitemcount; }
+            set
+            {
+                _newitemcount = value;
+                OnPropertyChanged();
+            }
+        }
 
         public ObservableCollectionEx<VideoItemBase> ListVideoItems { get; set; }
 
@@ -445,7 +457,7 @@ namespace Mwman.Chanell
             {
                 TimerCommon.Dispose();
                 Model.MySubscribe.Result = string.Format("Total: {0}. {1} sync in {2}",
-                    Model.MySubscribe.Synctime.ToString(@"mm\:ss"), ChanellClearName(ChanelName),
+                    Model.MySubscribe.Synctime.ToString(@"mm\:ss"), ChanelName,
                     Synctime.Duration().ToString(@"mm\:ss"));
             }
             else
@@ -483,7 +495,7 @@ namespace Mwman.Chanell
 
         private void InsertItemToDb(IEnumerable<VideoItemBase> lstItems)
         {
-            var clearname = ChanellClearName(ChanelName);
+            //var clearname = ChanellClearName(ChanelName);
             foreach (VideoItemBase item in lstItems)
             {
                 if (item is VideoItemYou)
@@ -502,7 +514,7 @@ namespace Mwman.Chanell
 
                     #endregion
 
-                    Sqllite.InsertRecord(Subscribe.ChanelDb, item.VideoID, ChanelOwner, clearname, ChanelType,
+                    Sqllite.InsertRecord(Subscribe.ChanelDb, item.VideoID, ChanelOwner, ChanelName, ChanelType,
                         OrderNum, 0, item.VideoLink, item.Title, item.ViewCount, item.ViewCount, item.Duration,
                         item.Published, item.Description);
 
@@ -511,7 +523,7 @@ namespace Mwman.Chanell
                 if (item is VideoItemRt)
                 {
                     var rt = item as VideoItemRt;
-                    Sqllite.InsertRecord(Subscribe.ChanelDb, item.VideoID, ChanelOwner, clearname, ChanelType,
+                    Sqllite.InsertRecord(Subscribe.ChanelDb, item.VideoID, ChanelOwner, ChanelName, ChanelType,
                         OrderNum, 0, item.VideoLink, item.Title, item.ViewCount, rt.TotalDl, item.Duration,
                         item.Published, item.Description);
                 }
@@ -519,7 +531,7 @@ namespace Mwman.Chanell
                 if (item is VideoItemTap)
                 {
                     var tap = item as VideoItemTap;
-                    Sqllite.InsertRecord(Subscribe.ChanelDb, item.VideoID, ChanelOwner, clearname, ChanelType,
+                    Sqllite.InsertRecord(Subscribe.ChanelDb, item.VideoID, ChanelOwner, ChanelName, ChanelType,
                         OrderNum, 0, item.VideoLink, item.Title, item.ViewCount, tap.TotalDl, item.Duration,
                         item.Published, item.Description);
                 }
@@ -527,12 +539,12 @@ namespace Mwman.Chanell
             }
         }
 
-        public static string ChanellClearName(string input)
-        {
-            var rq = new Regex(@"(.+?)(\(\d+\))$");
-            var match = rq.Match(input);
-            return match.Success ? rq.Replace(input, "$1").TrimEnd(' ') : input;
-        }
+        //public static string ChanellClearName(string input)
+        //{
+        //    var rq = new Regex(@"(.+?)(\(\d+\))$");
+        //    var match = rq.Match(input);
+        //    return match.Success ? rq.Replace(input, "$1").TrimEnd(' ') : input;
+        //}
 
         #endregion
         

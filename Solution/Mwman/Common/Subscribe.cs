@@ -394,7 +394,7 @@ namespace Mwman.Common
                 if (isEdit)
                 {
                     addChanelModel.ChanelOwner = CurrentChanel.ChanelOwner;
-                    addChanelModel.ChanelName = ChanelBase.ChanellClearName(CurrentChanel.ChanelName);
+                    addChanelModel.ChanelName = CurrentChanel.ChanelName;
                     addChanelModel.SelectedForumItem = ServerList.First(z => z.ChanelType == CurrentChanel.ChanelType);
                 }
 

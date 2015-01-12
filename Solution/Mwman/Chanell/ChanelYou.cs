@@ -225,11 +225,11 @@ namespace Mwman.Chanell
                                     });
                                 }
                             }
+
                             IsReady = !ListVideoItems.Select(x => x.IsSynced).Contains(false);
                             if (!IsReady)
                             {
-                                var countnew = ListVideoItems.Count(x => x.IsSynced == false);
-                                ChanelName = string.Format("{0} ({1})", ChanelName, countnew);
+                                NewItemCount = ListVideoItems.Count(x => x.IsSynced == false);
                             }
                         }
 

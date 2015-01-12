@@ -45,7 +45,7 @@
         </Menu>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="245"></ColumnDefinition>
+                <ColumnDefinition Width="245" MinWidth="245"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
@@ -59,7 +59,7 @@
                     <controls:DataGridEx ItemsSource="{Binding Model.MySubscribe.ChanelListToBind}"
                                            SelectedItemsList="{Binding Model.MySubscribe.SelectedListChanels, Mode=TwoWay}"
                                            AutoGenerateColumns="False"
-                                           HeadersVisibility="None"
+                                           HeadersVisibility="Column"
                                            RowHeight="25"
                                            IsReadOnly="True"
                                            SelectedItem="{Binding Model.MySubscribe.CurrentChanel}"
@@ -69,7 +69,8 @@
                                            PreviewMouseLeftButtonDown="OnMouseLeftButtonDownChanells"
                                            CellEditEnding="OnEndEditChanells"
                                            BeginningEdit="OnBeginEditChanells"
-                                           GotFocus="DataGridChanels_OnGotFocus">
+                                           GotFocus="DataGridChanels_OnGotFocus"
+                                         Sorting="DataGrid_OnSorting">
                         <DataGrid.CellStyle>
                             <Style TargetType="{x:Type DataGridCell}">
                                 <Setter Property="Foreground" Value="Black" />
@@ -91,7 +92,13 @@
                             </ContextMenu>
                         </DataGrid.Resources>
                         <DataGrid.Columns>
-                            <DataGridTemplateColumn Width="26">
+                            <DataGridTemplateColumn Width="26" Header="T" CanUserResize="False" SortMemberPath="ChanelType">
+                                <DataGridTemplateColumn.HeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                        <Setter Property="FontSize" Value="12"></Setter>
+                                    </Style>
+                                </DataGridTemplateColumn.HeaderStyle>
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Image Margin="3" ClipToBounds="True" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -114,14 +121,20 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Width="26">
+                            <DataGridTemplateColumn Width="26" Header="S" CanUserResize="False" SortMemberPath="IsReady">
+                                <DataGridTemplateColumn.HeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                        <Setter Property="FontSize" Value="12"></Setter>
+                                    </Style>
+                                </DataGridTemplateColumn.HeaderStyle>
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <CheckBox IsChecked="{Binding IsReady, Mode=TwoWay}" HorizontalAlignment="Center" IsEnabled="False" Style="{StaticResource CircleCheckbox}" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn Width="*" Header="Name" SortMemberPath="ChanelName">
                                 <DataGridTemplateColumn.HeaderStyle>
                                     <Style TargetType="DataGridColumnHeader">
                                         <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -134,11 +147,30 @@
                                             <TextBlock.ToolTip>
                                                 <TextBlock Text="{Binding ChanelOwner}"></TextBlock>
                                             </TextBlock.ToolTip>
-                                </TextBlock>
+                                        </TextBlock>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Width="26">
+                            <DataGridTemplateColumn Width="26" Header="C" CanUserResize="False" SortMemberPath="NewItemCount">
+                                <DataGridTemplateColumn.HeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                        <Setter Property="FontSize" Value="12"></Setter>
+                                    </Style>
+                                </DataGridTemplateColumn.HeaderStyle>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding NewItemCount}" VerticalAlignment="Center" FontSize="18" HorizontalAlignment="Center" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Width="26" Header="F" CanUserResize="False" SortMemberPath="IsFavorite">
+                                <DataGridTemplateColumn.HeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                        <Setter Property="FontSize" Value="12"></Setter>
+                                    </Style>
+                                </DataGridTemplateColumn.HeaderStyle>
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Image Margin="4" MouseUp="Favour_OnMouseUp">

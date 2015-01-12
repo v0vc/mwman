@@ -165,8 +165,7 @@ namespace Mwman.Chanell
                             IsReady = !ListVideoItems.Select(x => x.IsSynced).Contains(false);
                             if (!IsReady)
                             {
-                                var countnew = ListVideoItems.Count(x => x.IsSynced == false);
-                                ChanelName = string.Format("{0} ({1})", ChanelName, countnew);
+                                NewItemCount = ListVideoItems.Count(x => x.IsSynced == false);
                             }
                         }
 
@@ -282,7 +281,7 @@ namespace Mwman.Chanell
                 // Read from response and write to file
                 var ddir =
                     new DirectoryInfo(Path.Combine(Subscribe.DownloadPath,
-                        string.Format("{0}-{1}({2})", Prefix, ChanellClearName(item.VideoOwnerName), item.VideoOwner)));
+                        string.Format("{0}-{1}({2})", Prefix, item.VideoOwnerName, item.VideoOwner)));
                 if (!ddir.Exists)
                     ddir.Create();
 
