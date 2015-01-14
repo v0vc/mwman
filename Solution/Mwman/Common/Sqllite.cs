@@ -19,6 +19,68 @@ namespace Mwman.Common
 
         public static string AppDir;
 
+        #region Columns tblVideos
+
+        public static readonly string Id = "v_id";
+
+        public static readonly string Chanelowner = "chanelowner";
+
+        public static readonly string Chanelname = "chanelname";
+
+        public static readonly string Servername = "servername";
+
+        public static readonly string Ordernum = "ordernum";
+
+        public static readonly string Isfavorite = "isfavorite";
+
+        public static readonly string Url = "url";
+
+        public static readonly string Title = "title";
+
+        public static readonly string Viewcount = "viewcount";
+
+        public static readonly string Previewcount = "previewcount";
+
+        public static readonly string Duration = "duration";
+
+        public static readonly string Published = "published";
+
+        public static readonly string Description = "description";
+
+        public static readonly string Cleartitle = "cleartitle"; 
+
+        #endregion
+
+        #region Columns tblSettings
+
+        public static readonly string Rtlogin = "rtlogin";
+
+        public static readonly string Rtpassword = "rtpassword";
+
+        public static readonly string Taplogin = "taplogin";
+
+        public static readonly string Tappassword = "tappassword";
+
+        public static readonly string Savepath = "savepath";
+
+        public static readonly string Pathtompc = "pathtompc";
+
+        public static readonly string Synconstart = "synconstart";
+
+        public static readonly string Asyncdl = "asyncdl";
+
+        public static readonly string Isonlyfavor = "isonlyfavor";
+
+        public static readonly string Ispopular = "ispopular";
+
+        public static readonly string Pathtoyoudl = "pathtoyoudl";
+
+        public static readonly string Pathtoffmpeg = "pathtoffmpeg";
+
+        public static readonly string Culture = "culture";
+
+        #endregion
+
         public static void CreateOrConnectDb(string dbfile, string autor, out int totalrow)
         {
             totalrow = 0;
@@ -31,7 +93,7 @@ namespace Mwman.Common
                     fn.Delete();
                     CreateDb(fn.FullName);
                 }
-                var zap = string.Format("SELECT * FROM {0} WHERE chanelowner='{1}'", TableVideos, autor);
+                var zap = string.Format("SELECT * FROM {0} WHERE {1}='{2}'", TableVideos, Chanelowner, autor);
                 using (var sqlcon = new SQLiteConnection(string.Format("Data Source={0};Version=3;FailIfMissing=True", fn.FullName)))
                 using (var sqlcommand = new SQLiteCommand(zap, sqlcon))
                 {
@@ -57,48 +119,53 @@ namespace Mwman.Common
                 var fnffmpeg = new FileInfo(Path.Combine(AppDir, "ffmpeg", "ffmpeg.exe"));
                 SQLiteConnection.CreateFile(dbfile);
                 var lstcom = new List<string>();
-                var zap = string.Format(@"CREATE TABLE {0} (v_id TEXT PRIMARY KEY,
-                                                        chanelowner TEXT,
-                                                        chanelname TEXT,
-                                                        servername TEXT,
-                                                        ordernum INT,
-                                                        isfavorite INT,
-                                                        url TEXT,
-                                                        title TEXT,
-                                                        viewcount INT,
-                                                        previewcount INT,
-                                                        duration INT,
-                                                        published DATETIME,
-                                                        description TEXT,
-                                                        cleartitle TEXT)", TableVideos);
+                var zap = string.Format(@"CREATE TABLE {0} ({1} TEXT PRIMARY KEY,
+                                                        {2} TEXT,
+                                                        {3} TEXT,
+                                                        {4} TEXT,
+                                                        {5} INT,
+                                                        {6} INT,
+                                                        {7} TEXT,
+                                                        {8} TEXT,
+                                                        {9} INT,
+                                                        {10} INT,
+                                                        {11} INT,
+                                                        {12} DATETIME,
+                                                        {13} TEXT,
+                                                        {14} TEXT)", TableVideos, Id, Chanelowner, Chanelname,
+                    Servername, Ordernum, Isfavorite, Url, Title, Viewcount, Previewcount, Duration, Published,
+                    Description, Cleartitle);
                 lstcom.Add(zap);
-                var zapdir = string.Format(@"CREATE TABLE {0} (savepath TEXT, 
-                                                            pathtompc TEXT, 
-                                                            synconstart INT, 
-                                                            pathtoyoudl TEXT, 
-                                                            pathtoffmpeg TEXT, 
-                                                            isonlyfavor INT, 
-                                                            ispopular INT,
-                                                            asyncdl INT,
-                                                            culture TEXT,
-                                                            rtlogin TEXT,
-                                                            rtpassword TEXT,
-                                                            taplogin TEXT,
-                                                            tappassword TEXT)",
-                        TableSettings);
+                var zapdir = string.Format(@"CREATE TABLE {0} ({1} TEXT, 
+                                                            {2} TEXT, 
+                                                            {3} INT, 
+                                                            {4} TEXT, 
+                                                            {5} TEXT, 
+                                                            {6} INT, 
+                                                            {7} INT,
+                                                            {8} INT,
+                                                            {9} TEXT,
+                                                            {10} TEXT,
+                                                            {11} TEXT,
+                                                            {12} TEXT,
+                                                            {13} TEXT)",
+                    TableSettings, Savepath, Pathtompc, Synconstart, Pathtoyoudl, Pathtoffmpeg, Isonlyfavor, Ispopular,
+                    Asyncdl, Culture, Rtlogin, Rtpassword, Taplogin, Tappassword);
                 lstcom.Add(zapdir);
                 string insdir;
                 if (fnyoudl.Exists & fnffmpeg.Exists)
                 {
-                    insdir = string.Format(@"INSERT INTO '{0}' ('savepath', 'synconstart', 'isonlyfavor', 'ispopular', 'asyncdl', 'pathtoyoudl', 'pathtoffmpeg', 'culture') 
-                                                VALUES ('{1}', '0', '0', '0', '1', '{2}', '{3}', 'RU')",
-                                                TableSettings, Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), fnyoudl.FullName, fnffmpeg.FullName);
+                    insdir = string.Format(@"INSERT INTO '{0}' ('{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}') 
+                                                VALUES ('{9}', '0', '0', '0', '1', '{10}', '{11}', 'RU')",
+                                                TableSettings, Savepath, Synconstart, Isonlyfavor, Ispopular, Asyncdl, Pathtoyoudl, Pathtoffmpeg, Culture,
+                                                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), fnyoudl.FullName, fnffmpeg.FullName);
                 }
                 else
                 {
-                    insdir = string.Format(@"INSERT INTO '{0}' ('savepath', 'synconstart', 'isonlyfavor', 'ispopular', 'asyncdl', 'culture') 
-                                                VALUES ('{1}', '0', '0', '0', '1', 'RU')",
-                                                TableSettings, Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
+                    insdir = string.Format(@"INSERT INTO '{0}' ('{1}', '{2}', '{3}', '{4}', '{5}', '{6}') 
+                                                VALUES ('{7}', '0', '0', '0', '1', 'RU')",
+                                                TableSettings, Savepath, Synconstart, Isonlyfavor, Ispopular, Asyncdl, Culture,
+                                                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
                 }
                 lstcom.Add(insdir);
                 using (var sqlcon = new SQLiteConnection(string.Format("Data Source={0};Version=3;FailIfMissing=True", dbfile)))
@@ -125,9 +192,23 @@ namespace Mwman.Common
                 chanelowner = chanelowner.Replace("'", "''");
                 var zap =
                     string.Format(
-                        @"INSERT INTO '{0}' ('v_id', 'chanelowner', 'chanelname', 'servername', 'ordernum', 'isfavorite', 'url', 'title', 'viewcount', 'previewcount', 'duration', 'published', 'description', 'cleartitle') 
-                                VALUES (@v_id, @chanelowner, @chanelname, @servername, @ordernum, @isfavorite, @url, @title, @viewcount, @previewcount, @duration, @published, @description, @cleartitle)",
-                        TableVideos);
+                        @"INSERT INTO '{0}' ('{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}','{12}','{13}','{14}')
+                                    VALUES (@{1},@{2},@{3},@{4},@{5},@{6},@{7},@{8},@{9},@{10},@{11},@{12},@{13},@{14})",
+                        TableVideos,
+                        Id,
+                        Chanelowner,
+                        Chanelname,
+                        Servername,
+                        Ordernum,
+                        Isfavorite,
+                        Url,
+                        Title,
+                        Viewcount,
+                        Previewcount,
+                        Duration,
+                        Published,
+                        Description,
+                        Cleartitle);
                 using (
                     var sqlcon =
                         new SQLiteConnection(string.Format("Data Source={0};Version=3;FailIfMissing=True", dbfile))
@@ -135,20 +216,20 @@ namespace Mwman.Common
                 using (var sqlcommand = new SQLiteCommand(sqlcon))
                 {
                     sqlcommand.CommandText = zap;
-                    sqlcommand.Parameters.AddWithValue("@v_id", id);
-                    sqlcommand.Parameters.AddWithValue("@chanelowner", chanelowner);
-                    sqlcommand.Parameters.AddWithValue("@chanelname", chanelname);
-                    sqlcommand.Parameters.AddWithValue("@servername", servername);
-                    sqlcommand.Parameters.AddWithValue("@ordernum", ordernum);
-                    sqlcommand.Parameters.AddWithValue("@isfavorite", isfavorite);
-                    sqlcommand.Parameters.AddWithValue("@url", url);
-                    sqlcommand.Parameters.AddWithValue("@title", title);
-                    sqlcommand.Parameters.AddWithValue("@viewcount", viewcount);
-                    sqlcommand.Parameters.AddWithValue("@previewcount", previewcount);
-                    sqlcommand.Parameters.AddWithValue("@duration", duration);
-                    sqlcommand.Parameters.AddWithValue("@published", published);
-                    sqlcommand.Parameters.AddWithValue("@description", description);
-                    sqlcommand.Parameters.AddWithValue("@cleartitle", VideoItemBase.MakeValidFileName(title));
+                    sqlcommand.Parameters.AddWithValue("@" + Id, id);
+                    sqlcommand.Parameters.AddWithValue("@" + Chanelowner, chanelowner);
+                    sqlcommand.Parameters.AddWithValue("@" + Chanelname, chanelname);
+                    sqlcommand.Parameters.AddWithValue("@" + Servername, servername);
+                    sqlcommand.Parameters.AddWithValue("@" + Ordernum, ordernum);
+                    sqlcommand.Parameters.AddWithValue("@" + Isfavorite, isfavorite);
+                    sqlcommand.Parameters.AddWithValue("@" + Url, url);
+                    sqlcommand.Parameters.AddWithValue("@" + Title, title);
+                    sqlcommand.Parameters.AddWithValue("@" + Viewcount, viewcount);
+                    sqlcommand.Parameters.AddWithValue("@" + Previewcount, previewcount);
+                    sqlcommand.Parameters.AddWithValue("@" + Duration, duration);
+                    sqlcommand.Parameters.AddWithValue("@" + Published, published);
+                    sqlcommand.Parameters.AddWithValue("@" + Description, description);
+                    sqlcommand.Parameters.AddWithValue("@" + Cleartitle, VideoItemBase.MakeValidFileName(title));
                     sqlcon.Open();
                     sqlcommand.ExecuteNonQuery();
                     sqlcon.Close();
@@ -162,7 +243,8 @@ namespace Mwman.Common
             var res = false;
             Task t = Task.Run(() =>
             {
-                var zap = string.Format("SELECT * FROM {0} WHERE v_id='{1}' AND chanelowner='{2}'", TableVideos, id, chanelowner);
+                var zap = string.Format("SELECT * FROM {0} WHERE {1}='{2}' AND {3}='{4}'", TableVideos, Id, id,
+                    Chanelowner, chanelowner);
                 using (var sqlcon = new SQLiteConnection(string.Format("Data Source={0};Version=3;FailIfMissing=True", dbfile)))
                 using (var sqlcommand = new SQLiteCommand(zap, sqlcon))
                 {
@@ -183,7 +265,7 @@ namespace Mwman.Common
             var res = new Dictionary<string, string>();
             Task t = Task.Run(() =>
             {
-                var zap = string.Format("SELECT DISTINCT {0}, {1}, servername, ordernum FROM {2} ORDER BY ordernum ASC", chanelowner, chanelname, TableVideos);
+                var zap = string.Format("SELECT DISTINCT {0}, {1}, {2}, {3} FROM {4} ORDER BY {3} ASC", chanelowner, chanelname, Servername, Ordernum, TableVideos);
                 using (
                     var sqlcon =
                         new SQLiteConnection(string.Format("Data Source={0};Version=3;FailIfMissing=True", dbfile)))
@@ -195,7 +277,7 @@ namespace Mwman.Common
                         foreach (DbDataRecord record in sdr)
                         {
                             if (!res.ContainsKey(record[chanelowner].ToString()))
-                                res.Add(record[chanelowner].ToString(), record[chanelname] + ":" + record["servername"] + ":" + record["ordernum"]);
+                                res.Add(record[chanelowner].ToString(), record[chanelname] + ":" + record[Servername] + ":" + record[Ordernum]);
                         }
                     }
                     sqlcon.Close();
@@ -210,7 +292,8 @@ namespace Mwman.Common
             var res = new List<DbDataRecord>();
             Task t = Task.Run(() =>
             {
-                var zap = string.Format("SELECT * FROM {0} WHERE chanelowner='{1}' ORDER BY published", TableVideos, chanelowner);
+                var zap = string.Format("SELECT * FROM {0} WHERE {1}='{2}' ORDER BY {3}", TableVideos, Chanelowner,
+                    chanelowner, Published);
                 using (var sqlcon = new SQLiteConnection(string.Format("Data Source={0};Version=3;FailIfMissing=True", dbfile)))
                 using (var sqlcommand = new SQLiteCommand(zap, sqlcon))
                 {
@@ -348,8 +431,8 @@ namespace Mwman.Common
         {
             Task t = Task.Run(() =>
             {
-                var zap = string.Format("UPDATE {0} SET ordernum='{1}' WHERE chanelowner='{2}'", TableVideos, neworder,
-                    chanelowner);
+                var zap = string.Format("UPDATE {0} SET {1}='{2}' WHERE {3}='{4}'", TableVideos, Ordernum, neworder,
+                    Chanelowner, chanelowner);
                 using (
                     var sqlcon =
                         new SQLiteConnection(string.Format("Data Source={0};Version=3;FailIfMissing=True", dbfile)))
@@ -412,7 +495,7 @@ namespace Mwman.Common
         {
             Task t = Task.Run(() =>
             {
-                var zap = string.Format("DELETE FROM {0} WHERE chanelowner='{1}'", TableVideos, chanelowner);
+                var zap = string.Format("DELETE FROM {0} WHERE {1}='{2}'", TableVideos, Chanelowner, chanelowner);
                 using (var sqlcon = new SQLiteConnection(string.Format("Data Source={0};Version=3;FailIfMissing=True", dbfile)))
                 using (var sqlcommand = new SQLiteCommand(zap, sqlcon))
                 {
@@ -428,7 +511,8 @@ namespace Mwman.Common
         {
             Task t = Task.Run(() =>
             {
-                var zap = string.Format("UPDATE {0} SET chanelname='{1}' WHERE chanelowner='{2}'", TableVideos, newname, chanelowner);
+                var zap = string.Format("UPDATE {0} SET {1}='{2}' WHERE {3}='{4}'", TableVideos, Chanelname, newname,
+                    Chanelowner, chanelowner);
                 using (var sqlcon = new SQLiteConnection(string.Format("Data Source={0};Version=3;FailIfMissing=True", dbfile)))
                 using (var sqlcommand = new SQLiteCommand(zap, sqlcon))
                 {

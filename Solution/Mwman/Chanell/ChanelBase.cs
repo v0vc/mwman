@@ -228,10 +228,9 @@ namespace Mwman.Chanell
 
         #region Construction
 
-        protected ChanelBase(string chaneltype, string login, string pass, string chanelname, string chanelowner, int ordernum, MainWindowModel model)
+        protected ChanelBase(string login, string pass, string chanelname, string chanelowner, int ordernum, MainWindowModel model)
         {
             Model = model;
-            ChanelType = chaneltype;
             Login = login;
             Password = pass;
             ChanelName = chanelname;
@@ -245,7 +244,7 @@ namespace Mwman.Chanell
             var fn = new FileInfo(Subscribe.ChanelDb);
             if (fn.Exists)
             {
-                var res = Sqllite.GetVideoIntValue(Subscribe.ChanelDb, "isfavorite", "chanelowner", ChanelOwner);
+                var res = Sqllite.GetVideoIntValue(Subscribe.ChanelDb, Sqllite.Isfavorite, Sqllite.Chanelowner, ChanelOwner);
                 IsFavorite = res != 0;
             }
             ListVideoItems.CollectionChanged += ListVideoItems_CollectionChanged;
@@ -293,16 +292,17 @@ namespace Mwman.Chanell
             foreach (DbDataRecord record in res)
             {
                 VideoItemBase v = null;
-                var servname = record["servername"].ToString();
-                if (servname == "YouTube")
+                var servname = record[Sqllite.Servername].ToString();
+                if (servname == ChanelYou.Typename)
                     v = new VideoItemYou(record) {Num = ListVideoItems.Count + 1};
-                if (servname == "RuTracker")
+                if (servname == ChanelRt.Typename)
                     v = new VideoItemRt(record) {Num = ListVideoItems.Count + 1};
-                if (servname == "Tapochek")
+                if (servname == ChanelTap.Typename)
                     v = new VideoItemTap(record) {Num = ListVideoItems.Count + 1};
                 if (v != null && !ListVideoItems.Contains(v))
                     ListVideoItems.Add(v);
             }
+
             var lst = new List<VideoItemBase>(ListVideoItems.Count);
             lst.AddRange(ListVideoItems);
             lst = lst.OrderByDescending(x => x.Published).ToList();
@@ -370,7 +370,7 @@ namespace Mwman.Chanell
         {
             IsFavorite = !IsFavorite;
             var res = IsFavorite ? 1 : 0;
-            Sqllite.UpdateValue(Subscribe.ChanelDb, "isfavorite", "chanelowner", ChanelOwner, res);
+            Sqllite.UpdateValue(Subscribe.ChanelDb, Sqllite.Isfavorite, Sqllite.Chanelowner, ChanelOwner, res);
         }
 
         public void DeleteFiles()
@@ -436,14 +436,14 @@ namespace Mwman.Chanell
                     {
                         foreach (VideoItemBase item in ListVideoItems)
                         {
-                            Sqllite.UpdateValue(Subscribe.ChanelDb, "viewcount", "v_id", item.VideoID, item.ViewCount);
+                            Sqllite.UpdateValue(Subscribe.ChanelDb, Sqllite.Viewcount, Sqllite.Id, item.VideoID, item.ViewCount);
                         }
                     }
                     else //обновим только у последних элементов
                     {
                         foreach (VideoItemBase item in ListVideoItems.Take(25))
                         {
-                            Sqllite.UpdateValue(Subscribe.ChanelDb, "viewcount", "v_id", item.VideoID, item.ViewCount);
+                            Sqllite.UpdateValue(Subscribe.ChanelDb, Sqllite.Viewcount, Sqllite.Id, item.VideoID, item.ViewCount);
                         }
                     }
 

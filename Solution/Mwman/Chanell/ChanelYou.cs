@@ -24,6 +24,8 @@ namespace Mwman.Chanell
 {
     public class ChanelYou : ChanelBase
     {
+        public static string Typename = "YouTube";
+
         private int _step;
 
         private readonly List<VideoItemBase> _selectedListVideoItemsList = new List<VideoItemBase>();
@@ -43,9 +45,10 @@ namespace Mwman.Chanell
         public int MinRes { get; set; }
         public int MaxResults { get; set; }
 
-        public ChanelYou(string chaneltype, string login, string pass, string chanelname, string chanelowner, int ordernum, MainWindowModel model)
-            : base(chaneltype, login, pass, chanelname, chanelowner, ordernum, model)
+        public ChanelYou(string login, string pass, string chanelname, string chanelowner, int ordernum, MainWindowModel model)
+            : base(login, pass, chanelname, chanelowner, ordernum, model)
         {
+            ChanelType = Typename;
             _model = model;
             MinRes = 1;
             MaxResults = 25;
@@ -58,6 +61,7 @@ namespace Mwman.Chanell
 
         public ChanelYou(MainWindowModel model)
         {
+            ChanelType = Typename;
             _model = model;
             LastColumnHeader = "Download";
             ViewSeedColumnHeader = "Views";

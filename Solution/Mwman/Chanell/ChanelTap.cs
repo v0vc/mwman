@@ -21,6 +21,12 @@ namespace Mwman.Chanell
 {
     public class ChanelTap : ChanelBase
     {
+        public static string Typename = "Tapochek";
+
+        private const string Hostbase = "tapochek.net";
+
+        private const string Cookiename = "rtapcookie.ck";
+
         private readonly MainWindowModel _model;
 
         private readonly BackgroundWorker _bgv = new BackgroundWorker();
@@ -29,10 +35,11 @@ namespace Mwman.Chanell
 
         private ObservableCollectionEx<VideoItemBase> _listSearchVideoItems;
 
-        public ChanelTap(string chaneltype, string login, string pass, string chanelname, string chanelowner, int ordernum, MainWindowModel model) : base(chaneltype, login, pass, chanelname, chanelowner, ordernum, model)
+        public ChanelTap(string login, string pass, string chanelname, string chanelowner, int ordernum, MainWindowModel model) : base(login, pass, chanelname, chanelowner, ordernum, model)
         {
-            Cname = "tapcookie.ck";
-            HostBase = "tapochek.net";
+            ChanelType = Typename;
+            Cname = Cookiename;
+            HostBase = Hostbase;
             InitialUrls();
             _model = model;
             LastColumnHeader = "Total DL";
@@ -44,8 +51,9 @@ namespace Mwman.Chanell
 
         public ChanelTap(MainWindowModel model)
         {
-            Cname = "tapcookie.ck";
-            HostBase = "tapochek.net";
+            ChanelType = Typename;
+            Cname = Cookiename;
+            HostBase = Hostbase;
             InitialUrls(); 
             _model = model;
             LastColumnHeader = "Total DL";
@@ -138,7 +146,13 @@ namespace Mwman.Chanell
                         {
                             foreach (VideoItemBase item in ListVideoItems)
                             {
-                                item.IsHasFile = item.IsFileExist();
+                                if (Application.Current.Dispatcher.CheckAccess())
+                                    item.IsHasFile = item.IsFileExist();
+                                else
+                                {
+                                    VideoItemBase item1 = item;
+                                    Application.Current.Dispatcher.Invoke(() => item1.IsHasFile = item1.IsFileExist());
+                                }
                             }
                         }
                         else
@@ -244,11 +258,17 @@ namespace Mwman.Chanell
             InitializeTimer();
 
             if (IsFull)
-                ListVideoItems.Clear();
+            {
+                if (Application.Current.Dispatcher.CheckAccess())
+                    ListVideoItems.Clear();
+                else
+                    Application.Current.Dispatcher.Invoke(() => ListVideoItems.Clear());
+            }
             _tapcookie = ReadCookiesFromDiskBinary(Cname);
             if (_tapcookie == null)
                 AutorizeChanel();
             _bgv.RunWorkerAsync("Get");
+            
         }
 
         public override void AutorizeChanel()
@@ -337,7 +357,7 @@ namespace Mwman.Chanell
             }
             foreach (HtmlNode node in results)
             {
-                var v = new VideoItemTap(node)
+                var v = new VideoItemTap(node, Prefix)
                 {
                     Num = listVideoItems.Count + 1
                 };
@@ -380,7 +400,7 @@ namespace Mwman.Chanell
                 results = GetAllLinks(_tapcookie, link, out doc);
                 foreach (HtmlNode nodes in results)
                 {
-                    var v = new VideoItemTap(nodes);
+                    var v = new VideoItemTap(nodes, Prefix);
                     if (!listVideoItems.Contains(v) && !listVideoItems.Select(x => x.Title).Contains(v.Title) && !string.IsNullOrEmpty(v.Title))
                     {
                         v.Num = listVideoItems.Count + 1;
@@ -435,7 +455,7 @@ namespace Mwman.Chanell
                 }
             }
 
-            return hrefTags.Select(link => string.Format("http://tapochek.net/{0}", link)).ToList();
+            return hrefTags.Select(link => string.Format("{0}/{1}", HostUrl, link)).ToList();
         }
 
         private static List<HtmlNode> GetAllLinks(CookieContainer cookie, string zap, out HtmlDocument doc)

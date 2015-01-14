@@ -228,7 +228,7 @@ namespace Mwman.Models
             Countries = countries;
             SelectedCountry = Countries.First(x => x.Value == culture);
             ListForums = new ObservableCollection<ChanelBase>();
-            foreach (ChanelBase forum in forums.Where(forum => forum.ChanelType != "YouTube"))
+            foreach (ChanelBase forum in forums.Where(forum => forum.ChanelType != ChanelYou.Typename))
             {
                 ListForums.Add(forum);
             }
@@ -237,28 +237,28 @@ namespace Mwman.Models
         private void SaveSettings(object obj)
         {
             var ressync = IsSyncOnStart ? 1 : 0;
-            Sqllite.UpdateSetting(Subscribe.ChanelDb, "synconstart", ressync);
+            Sqllite.UpdateSetting(Subscribe.ChanelDb, Sqllite.Synconstart, ressync);
 
             var favor = IsOnlyFavorites ? 1 : 0;
-            Sqllite.UpdateSetting(Subscribe.ChanelDb, "isonlyfavor", favor);
+            Sqllite.UpdateSetting(Subscribe.ChanelDb, Sqllite.Isonlyfavor, favor);
 
             var popular = IsPopular ? 1 : 0;
-            Sqllite.UpdateSetting(Subscribe.ChanelDb, "ispopular", popular);
+            Sqllite.UpdateSetting(Subscribe.ChanelDb, Sqllite.Ispopular, popular);
             Subscribe.IsPopular = IsPopular;
 
             var asyncdl = IsAsync ? 1 : 0;
-            Sqllite.UpdateSetting(Subscribe.ChanelDb, "asyncdl", asyncdl);
+            Sqllite.UpdateSetting(Subscribe.ChanelDb, Sqllite.Asyncdl, asyncdl);
             Subscribe.IsAsyncDl = IsAsync;
 
             if (IsPopular)
             {
-                Sqllite.UpdateSetting(Subscribe.ChanelDb, "culture", SelectedCountry.Value);
+                Sqllite.UpdateSetting(Subscribe.ChanelDb, Sqllite.Culture, SelectedCountry.Value);
             }
 
             var savedir = new DirectoryInfo(DirPath);
             if (savedir.Exists)
             {
-                Sqllite.UpdateSetting(Subscribe.ChanelDb, "savepath", savedir.FullName);
+                Sqllite.UpdateSetting(Subscribe.ChanelDb, Sqllite.Savepath, savedir.FullName);
                 Subscribe.DownloadPath = savedir.FullName;
                 Result = "Saved";
             }
@@ -272,7 +272,7 @@ namespace Mwman.Models
                 var fn = new FileInfo(MpcPath);
                 if (fn.Exists)
                 {
-                    Sqllite.UpdateSetting(Subscribe.ChanelDb, "pathtompc", fn.FullName);
+                    Sqllite.UpdateSetting(Subscribe.ChanelDb, Sqllite.Pathtompc, fn.FullName);
                     Subscribe.MpcPath = fn.FullName;
                     Result = "Saved";
                 }
@@ -287,7 +287,7 @@ namespace Mwman.Models
                 var fn = new FileInfo(YoudlPath);
                 if (fn.Exists)
                 {
-                    Sqllite.UpdateSetting(Subscribe.ChanelDb, "pathtoyoudl", fn.FullName);
+                    Sqllite.UpdateSetting(Subscribe.ChanelDb, Sqllite.Pathtoyoudl, fn.FullName);
                     Subscribe.YoudlPath = fn.FullName;
                     Result = "Saved";
                 }
@@ -324,7 +324,7 @@ namespace Mwman.Models
                     //} 
                     #endregion
 
-                    Sqllite.UpdateSetting(Subscribe.ChanelDb, "pathtoffmpeg", fn.FullName);
+                    Sqllite.UpdateSetting(Subscribe.ChanelDb, Sqllite.Pathtoffmpeg, fn.FullName);
                     Subscribe.FfmpegPath = fn.FullName;
                     Result = "Saved";
                 }
@@ -336,15 +336,15 @@ namespace Mwman.Models
 
             foreach (ChanelBase forum in ListForums.Where(forum => !string.IsNullOrEmpty(forum.Login) & !string.IsNullOrEmpty(forum.Password)))
             {
-                if (forum.ChanelType == "RuTracker")
+                if (forum.ChanelType == ChanelRt.Typename)
                 {
-                    Sqllite.UpdateSetting(Subscribe.ChanelDb, "rtlogin", forum.Login.Trim());
-                    Sqllite.UpdateSetting(Subscribe.ChanelDb, "rtpassword", forum.Password.Trim());
+                    Sqllite.UpdateSetting(Subscribe.ChanelDb, Sqllite.Rtlogin, forum.Login.Trim());
+                    Sqllite.UpdateSetting(Subscribe.ChanelDb, Sqllite.Rtpassword, forum.Password.Trim());
                 }
-                if (forum.ChanelType == "Tapochek")
+                if (forum.ChanelType == ChanelTap.Typename)
                 {
-                    Sqllite.UpdateSetting(Subscribe.ChanelDb, "taplogin", forum.Login.Trim());
-                    Sqllite.UpdateSetting(Subscribe.ChanelDb, "tappassword", forum.Password.Trim());
+                    Sqllite.UpdateSetting(Subscribe.ChanelDb, Sqllite.Taplogin, forum.Login.Trim());
+                    Sqllite.UpdateSetting(Subscribe.ChanelDb, Sqllite.Tappassword, forum.Password.Trim());
                 }
             }
 

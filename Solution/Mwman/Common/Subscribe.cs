@@ -33,7 +33,19 @@ namespace Mwman.Common
 
         #endregion
 
-        #region Static
+        #region Sites
+
+        public static string RtLogin;
+
+        public static string RtPass;
+
+        public static string TapLogin;
+
+        public static string TapPass;
+
+        #endregion
+
+        #region Settings
 
         public static string ChanelDb;
 
@@ -44,14 +56,6 @@ namespace Mwman.Common
         public static string YoudlPath;
 
         public static string FfmpegPath;
-
-        public static string RtLogin;
-
-        public static string RtPass;
-
-        public static string TapLogin;
-
-        public static string TapPass;
 
         public static bool IsAsyncDl;
 
@@ -245,26 +249,24 @@ namespace Mwman.Common
             var fn = new FileInfo(ChanelDb);
             if (fn.Exists)
             {
-                //File.Move(fn.FullName, Path.Combine(dir, CurDbfile));
-                //fn = new FileInfo(Path.Combine(dir, CurDbfile));
                 Result = "Working...";
-                RtLogin = Sqllite.GetSettingsValue(fn.FullName, "rtlogin");
-                RtPass = Sqllite.GetSettingsValue(fn.FullName, "rtpassword");
-                TapLogin = Sqllite.GetSettingsValue(fn.FullName, "taplogin");
-                TapPass = Sqllite.GetSettingsValue(fn.FullName, "tappassword");
-                DownloadPath = Sqllite.GetSettingsValue(ChanelDb, "savepath");
-                MpcPath = Sqllite.GetSettingsValue(ChanelDb, "pathtompc");
-                IsSyncOnStart = Sqllite.GetSettingsIntValue(ChanelDb, "synconstart") != 0;
-                IsAsyncDl = Sqllite.GetSettingsIntValue(ChanelDb, "asyncdl") != 0;
-                IsOnlyFavorites = Sqllite.GetSettingsIntValue(ChanelDb, "isonlyfavor") != 0;
-                IsPopular = Sqllite.GetSettingsIntValue(ChanelDb, "ispopular") != 0;
-                YoudlPath = Sqllite.GetSettingsValue(ChanelDb, "pathtoyoudl");
-                FfmpegPath = Sqllite.GetSettingsValue(ChanelDb, "pathtoffmpeg");
+                RtLogin = Sqllite.GetSettingsValue(fn.FullName, Sqllite.Rtlogin);
+                RtPass = Sqllite.GetSettingsValue(fn.FullName, Sqllite.Rtpassword);
+                TapLogin = Sqllite.GetSettingsValue(fn.FullName, Sqllite.Taplogin);
+                TapPass = Sqllite.GetSettingsValue(fn.FullName, Sqllite.Tappassword);
+                DownloadPath = Sqllite.GetSettingsValue(ChanelDb, Sqllite.Savepath);
+                MpcPath = Sqllite.GetSettingsValue(ChanelDb, Sqllite.Pathtompc);
+                IsSyncOnStart = Sqllite.GetSettingsIntValue(ChanelDb, Sqllite.Synconstart) != 0;
+                IsAsyncDl = Sqllite.GetSettingsIntValue(ChanelDb, Sqllite.Asyncdl) != 0;
+                IsOnlyFavorites = Sqllite.GetSettingsIntValue(ChanelDb, Sqllite.Isonlyfavor) != 0;
+                IsPopular = Sqllite.GetSettingsIntValue(ChanelDb, Sqllite.Ispopular) != 0;
+                YoudlPath = Sqllite.GetSettingsValue(ChanelDb, Sqllite.Pathtoyoudl);
+                FfmpegPath = Sqllite.GetSettingsValue(ChanelDb, Sqllite.Pathtoffmpeg);
                 ServerList = new ObservableCollection<ChanelBase>
                 {
-                    new ChanelYou("YouTube", string.Empty, string.Empty, "YouTube", string.Empty, 0, _model),
-                    new ChanelRt("RuTracker", RtLogin, RtPass, "RuTracker", string.Empty, 0, _model),
-                    new ChanelTap("Tapochek", TapLogin, TapPass, "Tapochek", string.Empty, 0, _model),
+                    new ChanelYou(string.Empty, string.Empty, string.Empty, string.Empty, 0, _model),
+                    new ChanelRt(RtLogin, RtPass, string.Empty, string.Empty, 0, _model),
+                    new ChanelTap(TapLogin, TapPass, string.Empty, string.Empty, 0, _model),
                     new ChanelEmpty()
                 };
             }
@@ -273,9 +275,9 @@ namespace Mwman.Common
                 Result = "Ready";
                 ServerList = new ObservableCollection<ChanelBase>
                 {
-                    new ChanelYou("YouTube", string.Empty, string.Empty, "YouTube", string.Empty, 0, _model),
-                    new ChanelRt("RuTracker", string.Empty, string.Empty, "RuTracker", string.Empty, 0, _model),
-                    new ChanelTap("Tapochek", string.Empty, string.Empty, "Tapochek", string.Empty, 0, _model),
+                    new ChanelYou(string.Empty, string.Empty, string.Empty, string.Empty, 0, _model),
+                    new ChanelRt(string.Empty, string.Empty, string.Empty, string.Empty, 0, _model),
+                    new ChanelTap(string.Empty, string.Empty, string.Empty, string.Empty, 0, _model),
                     new ChanelEmpty()
                 };
                 DownloadPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
@@ -507,13 +509,13 @@ namespace Mwman.Common
             {
                 ChanelBase chanel = null;
                 if (item is VideoItemYou)
-                    chanel = new ChanelYou(item.ServerName, RtLogin, RtPass, item.VideoOwner, item.VideoOwner, ordernum, _model);
+                    chanel = new ChanelYou(RtLogin, RtPass, item.VideoOwner, item.VideoOwner, ordernum, _model);
 
                 if (item is VideoItemRt)
-                    chanel = new ChanelRt(item.ServerName, RtLogin, RtPass, item.VideoOwnerName, item.VideoOwner, ordernum, _model);
+                    chanel = new ChanelRt(RtLogin, RtPass, item.VideoOwnerName, item.VideoOwner, ordernum, _model);
 
                 if (item is VideoItemTap)
-                    chanel = new ChanelTap(item.ServerName, TapLogin, TapPass, item.VideoOwnerName, item.VideoOwner, ordernum, _model);
+                    chanel = new ChanelTap(TapLogin, TapPass, item.VideoOwnerName, item.VideoOwner, ordernum, _model);
 
                 if (chanel != null)
                 {
@@ -527,7 +529,7 @@ namespace Mwman.Common
             }
             else
             {
-                MessageBox.Show("Subscribe has already " + item.VideoOwner, "Information", MessageBoxButton.OK,
+                MessageBox.Show("Subscription has already " + item.VideoOwner, "Information", MessageBoxButton.OK,
                     MessageBoxImage.Information);
             }
         }
@@ -551,7 +553,7 @@ namespace Mwman.Common
                         if (chanel == null) continue;
                         Sqllite.RemoveChanelFromDb(ChanelDb, chanel.ChanelOwner);
                         ChanelList.Remove(chanel);
-                        FilterChannel();
+                        ChanelListToBind.Remove(chanel);
                     }
                     Result = "Deleted";
                 }
@@ -671,17 +673,17 @@ namespace Mwman.Common
 
         private void _bgv_DoWork(object sender, DoWorkEventArgs e)
         {
-            foreach (KeyValuePair<string, string> pair in Sqllite.GetDistinctValues(ChanelDb, "chanelowner", "chanelname"))
+            foreach (KeyValuePair<string, string> pair in Sqllite.GetDistinctValues(ChanelDb, Sqllite.Chanelowner, Sqllite.Chanelname))
             {
                 var sp = pair.Value.Split(':');
 
                 ChanelBase chanel = null;
-                if (sp[1] == "YouTube")
-                    chanel = new ChanelYou(sp[1], "TODO", "TODO", sp[0], pair.Key, Convert.ToInt32(sp[2]), _model);
-                if (sp[1] == "RuTracker")
-                    chanel = new ChanelRt(sp[1], RtLogin, RtPass, sp[0], pair.Key, Convert.ToInt32(sp[2]), _model);
-                if (sp[1] == "Tapochek")
-                    chanel = new ChanelTap(sp[1], TapLogin, TapPass, sp[0], pair.Key, Convert.ToInt32(sp[2]), _model);
+                if (sp[1] == ChanelYou.Typename)
+                    chanel = new ChanelYou(string.Empty, string.Empty, sp[0], pair.Key, Convert.ToInt32(sp[2]), _model);
+                if (sp[1] == ChanelRt.Typename)
+                    chanel = new ChanelRt(RtLogin, RtPass, sp[0], pair.Key, Convert.ToInt32(sp[2]), _model);
+                if (sp[1] == ChanelTap.Typename)
+                    chanel = new ChanelTap(TapLogin, TapPass, sp[0], pair.Key, Convert.ToInt32(sp[2]), _model);
 
                 ChanelList.Add(chanel);
             }
@@ -700,14 +702,14 @@ namespace Mwman.Common
         private void _bgv_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             _timer.Dispose();
-            IsOnlyFavorites = Sqllite.GetSettingsIntValue(ChanelDb, "isonlyfavor") == 1;
+            IsOnlyFavorites = Sqllite.GetSettingsIntValue(ChanelDb, Sqllite.Isonlyfavor) == 1;
 
             if (IsSyncOnStart)
                 SyncChanel(IsOnlyFavorites ? "SyncChanelFavorites" : "SyncChanelAll");
 
             if (IsPopular)
             {
-                var culture = Sqllite.GetSettingsValue(ChanelDb, "culture");
+                var culture = Sqllite.GetSettingsValue(ChanelDb, Sqllite.Culture);
                 _model.SelectedCountry = _model.Countries.First(x => x.Value == culture);
             }
             if (ChanelList.Any())
@@ -834,6 +836,7 @@ namespace Mwman.Common
                         SelectedForumItem.ListPopularVideoItems.Add(item);
                 }
             }
+            _filterlist.Clear();
         }
 
         private void tmr_Tick(object o)

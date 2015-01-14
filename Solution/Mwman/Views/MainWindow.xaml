@@ -24,7 +24,7 @@
             <MenuItem Header="File">
                 <MenuItem Header="Backup" Command="{Binding BackupRestoreCommand}" CommandParameter="backup"></MenuItem>
                 <MenuItem Header="Restore">
-                    <MenuItem Header="Chanells" Command="{Binding BackupRestoreCommand}" CommandParameter="restorechanells"></MenuItem>
+                    <MenuItem Header="Chanels" Command="{Binding BackupRestoreCommand}" CommandParameter="restorechanells"></MenuItem>
                     <MenuItem Header="Settings" Command="{Binding BackupRestoreCommand}" CommandParameter="restoresettings"></MenuItem>
                 </MenuItem>
                 <Separator />
@@ -145,7 +145,7 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Width="26" Header="C" CanUserResize="False" SortMemberPath="NewItemCount">
+                            <DataGridTemplateColumn Width="26" Header="C" CanUserResize="True" SortMemberPath="NewItemCount">
                                 <DataGridTemplateColumn.HeaderStyle>
                                     <Style TargetType="DataGridColumnHeader">
                                         <Setter Property="HorizontalContentAlignment" Value="Center" />

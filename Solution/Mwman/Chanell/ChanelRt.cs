@@ -21,6 +21,12 @@ namespace Mwman.Chanell
 {
     public class ChanelRt :ChanelBase
     {
+        public static string Typename = "RuTracker";
+
+        private const string Hostbase = "rutracker.org";
+
+        private const string Cookiename = "rtcookie.ck";
+
         private readonly MainWindowModel _model;
 
         private CookieContainer _rtcookie;
@@ -29,10 +35,11 @@ namespace Mwman.Chanell
 
         private readonly BackgroundWorker _bgv = new BackgroundWorker();
 
-        public ChanelRt(string chaneltype, string login, string pass, string chanelname, string chanelowner, int ordernum, MainWindowModel model) : base(chaneltype, login, pass, chanelname, chanelowner, ordernum, model)
+        public ChanelRt(string login, string pass, string chanelname, string chanelowner, int ordernum, MainWindowModel model) : base(login, pass, chanelname, chanelowner, ordernum, model)
         {
-            Cname = "rtcookie.ck";
-            HostBase = "rutracker.org";
+            ChanelType = Typename;
+            Cname = Cookiename;
+            HostBase = Hostbase;
             InitialUrls();
             _model = model;
             LastColumnHeader = "Total DL";
@@ -44,8 +51,9 @@ namespace Mwman.Chanell
 
         public ChanelRt(MainWindowModel model)
         {
-            Cname = "rtcookie.ck";
-            HostBase = "rutracker.org";
+            ChanelType = Typename;
+            Cname = Cookiename;
+            HostBase = Hostbase;
             InitialUrls();
             _model = model;
             LastColumnHeader = "Total DL";
@@ -140,7 +148,13 @@ namespace Mwman.Chanell
                         {
                             foreach (VideoItemBase item in ListVideoItems)
                             {
-                                item.IsHasFile = item.IsFileExist();
+                                if (Application.Current.Dispatcher.CheckAccess())
+                                    item.IsHasFile = item.IsFileExist();
+                                else
+                                {
+                                    VideoItemBase item1 = item;
+                                    Application.Current.Dispatcher.Invoke(() => item1.IsHasFile = item1.IsFileExist());
+                                }
                             }
                         }
                         else
@@ -204,11 +218,17 @@ namespace Mwman.Chanell
             InitializeTimer();
 
             if (IsFull)
-                ListVideoItems.Clear();
+            {
+                if (Application.Current.Dispatcher.CheckAccess())
+                    ListVideoItems.Clear();
+                else
+                    Application.Current.Dispatcher.Invoke(() => ListVideoItems.Clear());
+            }
             _rtcookie = ReadCookiesFromDiskBinary(Cname);
             if (_rtcookie == null)
                 AutorizeChanel();
             _bgv.RunWorkerAsync("Get");
+            
         }
 
         public override void SearchItems(string key, ObservableCollectionEx<VideoItemBase> listSearchVideoItems)
@@ -347,7 +367,7 @@ namespace Mwman.Chanell
             }
             foreach (HtmlNode node in results)
             {
-                var v = new VideoItemRt(node)
+                var v = new VideoItemRt(node, Prefix)
                 {
                     Num = listVideoItems.Count + 1
                 };
@@ -378,7 +398,8 @@ namespace Mwman.Chanell
                 for (int i = 0; i < listVideoItems.Count; i++)
                 {
                     var k = i;
-                    listVideoItems[i].Num = k + 1;
+                    int i1 = i;
+                    Application.Current.Dispatcher.Invoke(() => listVideoItems[i1].Num = k + 1);
                 }
                 return;
             }
@@ -390,7 +411,7 @@ namespace Mwman.Chanell
                 results = GetAllLinks(_rtcookie, link, out doc);
                 foreach (HtmlNode nodes in results)
                 {
-                    var v = new VideoItemRt(nodes);
+                    var v = new VideoItemRt(nodes, Prefix);
                     if (!listVideoItems.Contains(v) &&!listVideoItems.Select(x=>x.Title).Contains(v.Title) && !string.IsNullOrEmpty(v.Title))
                     {
                         v.Num = listVideoItems.Count + 1;

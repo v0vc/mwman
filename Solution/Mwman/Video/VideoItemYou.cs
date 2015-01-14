@@ -3,6 +3,7 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
+using Mwman.Chanell;
 using Mwman.Common;
 using Newtonsoft.Json.Linq;
 
@@ -14,7 +15,7 @@ namespace Mwman.Video
         {
             try
             {
-                ServerName = "YouTube";
+                ServerName = ChanelYou.Typename;
                 Title = pair["title"]["$t"].ToString();
                 ClearTitle = MakeValidFileName(Title);
                 ViewCount = (int) pair["yt$statistics"]["viewCount"];
@@ -46,7 +47,7 @@ namespace Mwman.Video
 
         public VideoItemYou(DbDataRecord record) : base(record)
         {
-            ServerName = "YouTube";
+            ServerName = ChanelYou.Typename;
             MinProgress = 0;
             MaxProgress = 100;
         }
@@ -55,7 +56,7 @@ namespace Mwman.Video
         {
             try
             {
-                ServerName = "YouTube";
+                ServerName = ChanelYou.Typename;
                 Title = pair["title"]["$t"].ToString();
                 ClearTitle = MakeValidFileName(Title);
                 ViewCount = (int)pair["yt$statistics"]["viewCount"];

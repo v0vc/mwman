@@ -32,6 +32,7 @@ namespace Mwman.Models
             set
             {
                 _selectedCountry = value;
+                MySubscribe.TitleFilter = string.Empty;
                 MySubscribe.GetPopularVideos(SelectedCountry.Value);
             }
         }
@@ -102,15 +103,15 @@ namespace Mwman.Models
             var fn = new FileInfo(Subscribe.ChanelDb);
             if (fn.Exists)
             {
-                savepath = Sqllite.GetSettingsValue(fn.FullName, "savepath");
-                mpcpath = Sqllite.GetSettingsValue(fn.FullName, "pathtompc");
-                synconstart = Sqllite.GetSettingsIntValue(fn.FullName, "synconstart");
-                isonlyfavor = Sqllite.GetSettingsIntValue(fn.FullName, "isonlyfavor");
-                ispopular = Sqllite.GetSettingsIntValue(fn.FullName, "ispopular");
-                isasync = Sqllite.GetSettingsIntValue(fn.FullName, "asyncdl");
-                youpath = Sqllite.GetSettingsValue(fn.FullName, "pathtoyoudl");
-                ffpath = Sqllite.GetSettingsValue(fn.FullName, "pathtoffmpeg");
-                culture = Sqllite.GetSettingsValue(fn.FullName, "culture");
+                savepath = Sqllite.GetSettingsValue(fn.FullName, Sqllite.Savepath);
+                mpcpath = Sqllite.GetSettingsValue(fn.FullName, Sqllite.Pathtompc);
+                synconstart = Sqllite.GetSettingsIntValue(fn.FullName, Sqllite.Synconstart);
+                isonlyfavor = Sqllite.GetSettingsIntValue(fn.FullName, Sqllite.Isonlyfavor);
+                ispopular = Sqllite.GetSettingsIntValue(fn.FullName, Sqllite.Ispopular);
+                isasync = Sqllite.GetSettingsIntValue(fn.FullName, Sqllite.Asyncdl);
+                youpath = Sqllite.GetSettingsValue(fn.FullName, Sqllite.Pathtoyoudl);
+                ffpath = Sqllite.GetSettingsValue(fn.FullName, Sqllite.Pathtoffmpeg);
+                culture = Sqllite.GetSettingsValue(fn.FullName, Sqllite.Culture);
             }
             else
             {
@@ -196,19 +197,19 @@ namespace Mwman.Models
             if (res == true)
             {
                 var doc = new XDocument(new XElement("tables", new XElement("tblSettings",
-                    new XElement("savepath", Sqllite.GetSettingsValue(Subscribe.ChanelDb, "savepath")),
-                    new XElement("pathtompc", Sqllite.GetSettingsValue(Subscribe.ChanelDb, "pathtompc")),
-                    new XElement("synconstart", Sqllite.GetSettingsIntValue(Subscribe.ChanelDb, "synconstart")),
-                    new XElement("isonlyfavor", Sqllite.GetSettingsIntValue(Subscribe.ChanelDb, "isonlyfavor")),
-                    new XElement("ispopular", Sqllite.GetSettingsIntValue(Subscribe.ChanelDb, "ispopular")),
-                    new XElement("asyncdl", Sqllite.GetSettingsIntValue(Subscribe.ChanelDb, "asyncdl")),
-                    new XElement("culture", Sqllite.GetSettingsValue(Subscribe.ChanelDb, "culture")),
-                    new XElement("pathtoyoudl", Sqllite.GetSettingsValue(Subscribe.ChanelDb, "pathtoyoudl")),
-                    new XElement("pathtoffmpeg", Sqllite.GetSettingsValue(Subscribe.ChanelDb, "pathtoffmpeg")),
-                    new XElement("rtlogin", Sqllite.GetSettingsValue(Subscribe.ChanelDb, "rtlogin")),
-                    new XElement("rtpassword", Sqllite.GetSettingsValue(Subscribe.ChanelDb, "rtpassword")),
-                    new XElement("taplogin", Sqllite.GetSettingsValue(Subscribe.ChanelDb, "taplogin")),
-                    new XElement("tappassword", Sqllite.GetSettingsValue(Subscribe.ChanelDb, "tappassword"))
+                    new XElement(Sqllite.Savepath, Sqllite.GetSettingsValue(Subscribe.ChanelDb, Sqllite.Savepath)),
+                    new XElement(Sqllite.Pathtompc, Sqllite.GetSettingsValue(Subscribe.ChanelDb, Sqllite.Pathtompc)),
+                    new XElement(Sqllite.Synconstart, Sqllite.GetSettingsIntValue(Subscribe.ChanelDb, Sqllite.Synconstart)),
+                    new XElement(Sqllite.Isonlyfavor, Sqllite.GetSettingsIntValue(Subscribe.ChanelDb, Sqllite.Isonlyfavor)),
+                    new XElement(Sqllite.Ispopular, Sqllite.GetSettingsIntValue(Subscribe.ChanelDb, Sqllite.Ispopular)),
+                    new XElement(Sqllite.Asyncdl, Sqllite.GetSettingsIntValue(Subscribe.ChanelDb, Sqllite.Asyncdl)),
+                    new XElement(Sqllite.Culture, Sqllite.GetSettingsValue(Subscribe.ChanelDb, Sqllite.Culture)),
+                    new XElement(Sqllite.Pathtoyoudl, Sqllite.GetSettingsValue(Subscribe.ChanelDb, Sqllite.Pathtoyoudl)),
+                    new XElement(Sqllite.Pathtoffmpeg, Sqllite.GetSettingsValue(Subscribe.ChanelDb, Sqllite.Pathtoffmpeg)),
+                    new XElement(Sqllite.Rtlogin, Sqllite.GetSettingsValue(Subscribe.ChanelDb, Sqllite.Rtlogin)),
+                    new XElement(Sqllite.Rtpassword, Sqllite.GetSettingsValue(Subscribe.ChanelDb, Sqllite.Rtpassword)),
+                    new XElement(Sqllite.Taplogin, Sqllite.GetSettingsValue(Subscribe.ChanelDb, Sqllite.Taplogin)),
+                    new XElement(Sqllite.Tappassword, Sqllite.GetSettingsValue(Subscribe.ChanelDb, Sqllite.Tappassword))
                     ), new XElement("tblVideos")));
 
                 var element = doc.Element("tables");
@@ -217,14 +218,14 @@ namespace Mwman.Models
                     var xElement = element.Element("tblVideos");
                     if (xElement != null)
                     {
-                        foreach (KeyValuePair<string, string> pair in Sqllite.GetDistinctValues(Subscribe.ChanelDb, "chanelowner", "chanelname"))
+                        foreach (KeyValuePair<string, string> pair in Sqllite.GetDistinctValues(Subscribe.ChanelDb, Sqllite.Chanelowner, Sqllite.Chanelname))
                         {
                             var sp = pair.Value.Split(':');
                             xElement.Add(new XElement("Chanell", 
-                                new XElement("chanelowner", pair.Key), 
-                                new XElement("chanelname", sp[0]), 
-                                new XElement("servername", sp[1]),
-                                new XElement("ordernum", sp[2])));
+                                new XElement(Sqllite.Chanelowner, pair.Key), 
+                                new XElement(Sqllite.Chanelname, sp[0]), 
+                                new XElement(Sqllite.Servername, sp[1]),
+                                new XElement(Sqllite.Ordernum, sp[2])));
                         }
                     }
                 }
@@ -248,21 +249,26 @@ namespace Mwman.Models
                     if (xElement == null) return;
                     foreach (XElement element in xElement.Descendants("Chanell"))
                     {
-                        var owner = element.Elements().FirstOrDefault(z => z.Name == "chanelowner");
-                        var name = element.Elements().FirstOrDefault(z => z.Name == "chanelname");
-                        var server = element.Elements().FirstOrDefault(z => z.Name == "servername");
-                        var ordernum = element.Elements().FirstOrDefault(z => z.Name == "ordernum");
+                        var owner = element.Elements().FirstOrDefault(z => z.Name == Sqllite.Chanelowner);
+                        var name = element.Elements().FirstOrDefault(z => z.Name == Sqllite.Chanelname);
+                        var server = element.Elements().FirstOrDefault(z => z.Name == Sqllite.Servername);
+                        var ordernum = element.Elements().FirstOrDefault(z => z.Name == Sqllite.Ordernum);
                         if (owner != null & name != null & server != null & ordernum != null)
                         {
                             ChanelBase chanel = null;
-                            if (server.Value == "YouTube")
-                                chanel = new ChanelYou(server.Value, "TODO", "TODO", name.Value, owner.Value, Convert.ToInt32(ordernum.Value), this);
-                            if (server.Value == "RuTracker")
-                                chanel = new ChanelRt(server.Value, "TODO", "TODO", name.Value, owner.Value, Convert.ToInt32(ordernum.Value), this);
-                            if (server.Value == "Tapochek")
-                                chanel = new ChanelTap(server.Value, "TODO", "TODO", name.Value, owner.Value, Convert.ToInt32(ordernum.Value), this);
-                            ViewModelLocator.MvViewModel.Model.MySubscribe.ChanelList.Add(chanel);
-                            ViewModelLocator.MvViewModel.Model.MySubscribe.IsOnlyFavorites = false;
+                            if (server.Value == ChanelYou.Typename)
+                                chanel = new ChanelYou(string.Empty, string.Empty, name.Value, owner.Value, Convert.ToInt32(ordernum.Value), this);
+                            if (server.Value == ChanelRt.Typename)
+                                chanel = new ChanelRt(Subscribe.RtLogin, Subscribe.RtPass, name.Value, owner.Value, Convert.ToInt32(ordernum.Value), this);
+                            if (server.Value == ChanelTap.Typename)
+                                chanel = new ChanelTap(Subscribe.TapLogin, Subscribe.TapPass, name.Value, owner.Value, Convert.ToInt32(ordernum.Value), this);
+                            if (chanel != null &&
+                                !ViewModelLocator.MvViewModel.Model.MySubscribe.ChanelList.Select(x => x.ChanelOwner)
+                                    .Contains(chanel.ChanelOwner))
+                            {
+                                ViewModelLocator.MvViewModel.Model.MySubscribe.ChanelList.Add(chanel);
+                                ViewModelLocator.MvViewModel.Model.MySubscribe.IsOnlyFavorites = false;
+                            }
                         }
                     }
                 }
@@ -286,10 +292,10 @@ namespace Mwman.Models
                     var dic = new Dictionary<string, string>();
                     foreach (XElement element in doc.Descendants("tblSettings").Elements())
                     {
-                        if (element.Name.LocalName == "synconstart" 
-                            || element.Name.LocalName == "isonlyfavor" 
-                            || element.Name.LocalName == "ispopular"
-                            || element.Name.LocalName == "asyncdl")
+                        if (element.Name.LocalName == Sqllite.Synconstart 
+                            || element.Name.LocalName == Sqllite.Isonlyfavor 
+                            || element.Name.LocalName == Sqllite.Ispopular
+                            || element.Name.LocalName == Sqllite.Asyncdl)
                             dic.Add(element.Name.LocalName, "INT");
                         else
                             dic.Add(element.Name.LocalName, "TEXT");
@@ -297,10 +303,10 @@ namespace Mwman.Models
                     Sqllite.DropTable(Subscribe.ChanelDb, "tblSettings");
                     Sqllite.CreateTable(Subscribe.ChanelDb, "tblSettings", dic);
                     Sqllite.CreateSettings(Subscribe.ChanelDb, "tblSettings", dicv);
-                    Subscribe.DownloadPath = Sqllite.GetSettingsValue(Subscribe.ChanelDb, "savepath");
-                    Subscribe.MpcPath = Sqllite.GetSettingsValue(Subscribe.ChanelDb, "pathtompc");
-                    Subscribe.YoudlPath = Sqllite.GetSettingsValue(Subscribe.ChanelDb, "pathtoyoudl");
-                    Subscribe.FfmpegPath = Sqllite.GetSettingsValue(Subscribe.ChanelDb, "pathtoffmpeg");
+                    Subscribe.DownloadPath = Sqllite.GetSettingsValue(Subscribe.ChanelDb, Sqllite.Savepath);
+                    Subscribe.MpcPath = Sqllite.GetSettingsValue(Subscribe.ChanelDb, Sqllite.Pathtompc);
+                    Subscribe.YoudlPath = Sqllite.GetSettingsValue(Subscribe.ChanelDb, Sqllite.Pathtoyoudl);
+                    Subscribe.FfmpegPath = Sqllite.GetSettingsValue(Subscribe.ChanelDb, Sqllite.Pathtoffmpeg);
                 }
                 catch (Exception ex)
                 {

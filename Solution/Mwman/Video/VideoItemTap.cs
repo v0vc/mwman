@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using HtmlAgilityPack;
+using Mwman.Chanell;
 using Mwman.Common;
 
 namespace Mwman.Video
@@ -15,17 +16,17 @@ namespace Mwman.Video
         public int TotalDl { get; set; }
         public VideoItemTap(DbDataRecord record) : base (record)
         {
-            TotalDl = (int)record["previewcount"];
+            TotalDl = (int)record[Sqllite.Previewcount];
         }
 
-        public VideoItemTap(HtmlNode node)
+        public VideoItemTap(HtmlNode node, string prefix)
         {
+            Prefix = prefix;
             HostBase = "tapochek.net";
-            ServerName = "Tapochek";
+            ServerName = ChanelTap.Typename;
             var counts = node.Descendants("a").Where(d => d.Attributes.Contains("class") && d.Attributes["class"].Value.Equals("genmed"));
             foreach (HtmlNode htmlNode in counts)
             {
-                //Title = ScrubHtml(htmlNode.InnerText).Replace("&quot;", @"""");
                 Title = HttpUtility.HtmlDecode(htmlNode.InnerText);
                 ClearTitle = MakeValidFileName(Title);
                 break;
@@ -90,9 +91,11 @@ namespace Mwman.Video
         {
             var lstnames = new List<string>
             {
-                Path.Combine(Subscribe.DownloadPath, string.Format("tap-{0}({1})", VideoOwnerName, VideoOwner),
+                Path.Combine(Subscribe.DownloadPath,
+                    string.Format("{0}-{1}({2})", Prefix, VideoOwnerName, VideoOwner),
                     MakeTorrentFileName(false)),
-                Path.Combine(Subscribe.DownloadPath, string.Format("tap-{0}({1})", VideoOwnerName, VideoOwner),
+                Path.Combine(Subscribe.DownloadPath,
+                    string.Format("{0}-{1}({2})", Prefix, VideoOwnerName, VideoOwner),
                     MakeTorrentFileName(true))
             };
 

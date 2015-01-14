@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Windows;
+using Mwman.Common;
 
 namespace Mwman.Video
 {
@@ -64,6 +65,8 @@ namespace Mwman.Video
                 Delta = ViewCount - _previewcount;
             }
         }
+
+        public string Prefix { get; set; }
 
         public int Delta
         {
@@ -154,18 +157,18 @@ namespace Mwman.Video
 
         protected VideoItemBase(DbDataRecord record)
         {
-            Title = record["title"].ToString().Replace("''", "'");
+            Title = record[Sqllite.Title].ToString().Replace("''", "'");
             ClearTitle = MakeValidFileName(Title);
-            VideoID = record["v_id"].ToString();
-            VideoOwner = record["chanelowner"].ToString();
-            VideoOwnerName = record["chanelname"].ToString();
-            VideoLink = record["url"].ToString();
-            ServerName = record["servername"].ToString();
-            ViewCount = (int) record["viewcount"];
-            PrevViewCount = (int)record["previewcount"];
-            Duration = (int) record["duration"];
-            Description = record["description"].ToString();
-            Published = (DateTime) record["published"];
+            VideoID = record[Sqllite.Id].ToString();
+            VideoOwner = record[Sqllite.Chanelowner].ToString();
+            VideoOwnerName = record[Sqllite.Chanelname].ToString();
+            VideoLink = record[Sqllite.Url].ToString();
+            ServerName = record[Sqllite.Servername].ToString();
+            ViewCount = (int) record[Sqllite.Viewcount];
+            PrevViewCount = (int)record[Sqllite.Previewcount];
+            Duration = (int) record[Sqllite.Duration];
+            Description = record[Sqllite.Description].ToString();
+            Published = (DateTime) record[Sqllite.Published];
         }
 
         protected VideoItemBase()
