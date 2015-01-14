@@ -21,6 +21,11 @@ Supported sites
 Screenshots
 -----------
 
+[![](https://raw.githubusercontent.com/v0vc/Mwman/master/Screens/main_small.png)](https://raw.githubusercontent.com/v0vc/Mwman/master/Screens/main.png)
+[![](https://raw.githubusercontent.com/v0vc/Mwman/master/Screens/pop_small.png)](https://raw.githubusercontent.com/v0vc/Mwman/master/Screens/pop.png)
+[![](https://raw.githubusercontent.com/v0vc/Mwman/master/Screens/search_small.png)](https://raw.githubusercontent.com/v0vc/Mwman/master/Screens/search.png)
+[![](https://raw.githubusercontent.com/v0vc/Mwman/master/Screens/settings_small.png)](https://raw.githubusercontent.com/v0vc/Mwman/master/Screens/settings.png)
+
 Download
 --------
 
