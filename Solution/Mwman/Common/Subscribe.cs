@@ -290,6 +290,79 @@ namespace Mwman.Common
 
         #region Public Methods
 
+        public void MoveChanel(object obj)
+        {
+            if (obj == null)
+                return;
+
+            if (!ChanelListToBind.Any() || ChanelListToBind.Count == SelectedListChanels.Count)
+                return;
+
+            if (ChanelListToBind.Count != ChanelList.Count) //disable when favorites are on
+                return;
+
+            var dic = ChanelListToBind.ToDictionary(chanel => chanel, chanel => ChanelListToBind.IndexOf(chanel));
+            int prevIndex;
+            int curIndex;
+            switch (obj.ToString())
+            {
+                case "Up":
+                    //Местоположение предыдущего элемента
+                    prevIndex = -1;
+
+                    for (int i = SelectedListChanels.Count; i > 0; i--)
+                    {
+                        curIndex = ChanelListToBind.IndexOf((ChanelBase) SelectedListChanels[i - 1]);
+                        //Проверка: не выйдет ли элемент за пределы массива
+                        if (curIndex > 0)
+                        {
+                            //Проверка: не займет ли элемент при перемещении место предыдущего элемента
+                            if (curIndex - 1 != prevIndex)
+                            {
+                                ChanelListToBind.Move(curIndex, curIndex - 1);
+                            }
+                        }
+                        //Сохранение местоположения элемента
+                        prevIndex = ChanelListToBind.IndexOf((ChanelBase) SelectedListChanels[i - 1]);
+                    }
+
+                    break;
+
+                case "Down":
+                    prevIndex = ChanelList.Count;
+                    for (int i = SelectedListChanels.Count; i > 0; i--)
+                    {
+                        curIndex = ChanelListToBind.IndexOf((ChanelBase) SelectedListChanels[i - 1]);
+                        //Проверка: не выйдет ли элемент за пределы массива
+                        if (curIndex < ChanelListToBind.Count - 1)
+                        {
+                            //Проверка: не займет ли элемент при перемещении место предыдущего элемента
+                            if (curIndex + 1 != prevIndex)
+                            {
+                                ChanelListToBind.Move(curIndex, curIndex + 1);
+                            }
+                        }
+                        //Сохранение местоположения элемента
+                        prevIndex = ChanelListToBind.IndexOf((ChanelBase) SelectedListChanels[i - 1]);
+                    }
+
+                    break;
+            }
+
+            foreach (ChanelBase chanel in ChanelListToBind) //обновляем только изменившиеся индексы
+            {
+                var index = ChanelListToBind.IndexOf(chanel);
+                int prev;
+                if (dic.TryGetValue(chanel, out prev))
+                {
+                    if (prev != index)
+                    {
+                        Sqllite.UpdateChanelOrder(ChanelDb, chanel.ChanelOwner, index);
+                    }
+                }
+            }
+        }
+
         public void PlayDownload(object obj)
         {
             if (obj == null)
@@ -556,6 +629,12 @@ namespace Mwman.Common
             {
                 switch (obj.ToString())
                 {
+                    case "FullSyncChanelAll":
+
+                        ChanelSync(ChanelList, true);
+
+                        break;
+
                     case "SyncChanelAll":
 
                         ChanelSync(ChanelList, false);

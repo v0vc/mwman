@@ -242,6 +242,8 @@
     <Resource Include="Images\Channels\tapochek_16.ico" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Images\moveup_24.png" />
+    <Resource Include="Images\movedown_24.png" />
     <Content Include="Lib\x64\7z.dll" />
     <Content Include="Lib\x86\7z.dll" />
   </ItemGroup>

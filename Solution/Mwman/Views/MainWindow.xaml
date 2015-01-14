@@ -3,13 +3,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:controls="clr-namespace:Mwman.Controls"
-        Title="{Binding Model.Version}" Height="400" Width="1005" MinWidth="500" MinHeight="300"
+        Title="{Binding Model.Version}" Height="400" Width="1200" MinWidth="500" MinHeight="300"
         DataContext="{Binding MvViewModel, Source={StaticResource ViewModelLocator}}"
         Loaded="MainWindow_OnLoaded"
         KeyUp="MainWindow_OnKeyUp"
         Icon="../Images/ok.ico"
-        Name="Window"
-        >
+        Name="Window">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="20"></RowDefinition>
@@ -27,13 +26,13 @@
                 <MenuItem Header="Restore">
                     <MenuItem Header="Chanells" Command="{Binding BackupRestoreCommand}" CommandParameter="restorechanells"></MenuItem>
                     <MenuItem Header="Settings" Command="{Binding BackupRestoreCommand}" CommandParameter="restoresettings"></MenuItem>
-                    <!--<MenuItem Header="All" Command="{Binding BackupRestoreCommand}" CommandParameter="restoreall"></MenuItem>-->
                 </MenuItem>
                 <Separator />
                 <MenuItem Header="Exit" Click="Exit_OnClick"></MenuItem>
             </MenuItem>
             <MenuItem Header="Subscribe">
-                <MenuItem Header="Add Chanel" Command="{Binding OpenAddChanelCommand}"></MenuItem>
+                <MenuItem Header="Add Chanell" Command="{Binding OpenAddChanelCommand}"></MenuItem>
+                <MenuItem Header="Full Sync" Command="{Binding SyncChanelCommand}" CommandParameter="FullSyncChanelAll"></MenuItem>
             </MenuItem>
             <MenuItem Header="Tools">
                 <MenuItem Header="Settings" Command="{Binding OpenSettingsCommand}"></MenuItem>
@@ -45,9 +44,9 @@
         </Menu>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="245" MinWidth="245"></ColumnDefinition>
+                <ColumnDefinition Width="300" MinWidth="300"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition ></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <GroupBox Header="Chanels:">
                 <Grid>
@@ -57,19 +56,14 @@
                         <RowDefinition Height="38"></RowDefinition>
                     </Grid.RowDefinitions>
                     <controls:DataGridEx ItemsSource="{Binding Model.MySubscribe.ChanelListToBind}"
-                                           SelectedItemsList="{Binding Model.MySubscribe.SelectedListChanels, Mode=TwoWay}"
-                                           AutoGenerateColumns="False"
-                                           HeadersVisibility="Column"
-                                           RowHeight="25"
-                                           IsReadOnly="True"
-                                           SelectedItem="{Binding Model.MySubscribe.CurrentChanel}"
-                                           x:Name="DataGridChanels"
-                                           MouseLeftButtonUp="OnMouseLeftButtonUpChanells"
-                                           MouseMove="OnMouseMoveChanells"
-                                           PreviewMouseLeftButtonDown="OnMouseLeftButtonDownChanells"
-                                           CellEditEnding="OnEndEditChanells"
-                                           BeginningEdit="OnBeginEditChanells"
-                                           GotFocus="DataGridChanels_OnGotFocus"
+                                         SelectedItemsList="{Binding Model.MySubscribe.SelectedListChanels, Mode=TwoWay}"
+                                         AutoGenerateColumns="False"
+                                         HeadersVisibility="Column"
+                                         RowHeight="25"
+                                         IsReadOnly="True"
+                                         SelectedItem="{Binding Model.MySubscribe.CurrentChanel}"
+                                         x:Name="DataGridChanels"
+                                         GotFocus="DataGridChanels_OnGotFocus"
                                          Sorting="DataGrid_OnSorting">
                         <DataGrid.CellStyle>
                             <Style TargetType="{x:Type DataGridCell}">
@@ -201,10 +195,10 @@
                     </controls:DataGridEx>
                     <Border BorderBrush="Gainsboro" BorderThickness="1" Grid.Row="1" Margin="0,3,0,0">
                         <StackPanel Orientation="Horizontal">
-                            <TextBox Name="TextBoxChannelFilter" 
-                                     Width="149" 
+                            <TextBox Name="TextBoxChannelFilter"
+                                     Width="203"
                                      VerticalContentAlignment="Center"
-                                     Text="{Binding Path = DataContext.Model.MySubscribe.ChanelFilter, 
+                                     Text="{Binding Path = DataContext.Model.MySubscribe.ChanelFilter,
                                      UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}">
                                 <TextBox.Resources>
                                     <VisualBrush x:Key="HelpBrush" TileMode="None" Opacity="0.4" Stretch="None" AlignmentX="Left" AlignmentY="Center">
@@ -278,6 +272,16 @@
                                         </Style>
                                     </Image.Style>
                                 </Image>
+                            </Button>
+                            <Button Width="25" Height="26" Margin="3,0,0,0" ToolTip="Move Up"
+                                    Background="#CCDAFF"
+                                    Command="{Binding MoveChanelCommand}" CommandParameter="Up">
+                                <Image Source="../Images/moveup_24.png" Margin="0,2,0,0" />
+                            </Button>
+                            <Button Width="25" Height="26" Margin="3,0,0,0" ToolTip="Move Down"
+                                    Background="#CCDAFF"
+                                    Command="{Binding MoveChanelCommand}" CommandParameter="Down">
+                                <Image Source="../Images/movedown_24.png" Margin="0,2,0,0" />
                             </Button>
                         </StackPanel>
                     </Border>
@@ -460,7 +464,7 @@
                                         <TextBlock Text="{Binding DataContext.Model.MySubscribe.CurrentChanel.DurationColumnHeader, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.HeaderTemplate>
-                                    <DataGridTemplateColumn.HeaderStyle>
+                                <DataGridTemplateColumn.HeaderStyle>
                                     <Style TargetType="DataGridColumnHeader">
                                         <Setter Property="HorizontalContentAlignment" Value="Center" />
                                         <Setter Property="FontSize" Value="12"></Setter>
@@ -483,8 +487,7 @@
                                     <DataTemplate>
                                         <Button x:Name="Button" BorderThickness="0" Background="Transparent"
                                                 Command="{Binding Path = DataContext.PlayDownloadCommand,  RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
-                                                CommandParameter="Get"
-                                                >
+                                                CommandParameter="Get">
                                             <Image x:Name="Image"></Image>
                                         </Button>
                                         <DataTemplate.Triggers>
@@ -580,7 +583,7 @@
                         </i:Interaction.Triggers>
                         <DataGrid.Resources>
                             <ContextMenu x:Key="DataRowContextMenu">
-                                <MenuItem Header="Subscribe" Click="AddChanellOnClick" CommandParameter="Popular"/>
+                                <MenuItem Header="Subscribe" Click="AddChanellOnClick" CommandParameter="Popular" />
                                 <MenuItem Header="Copy Link" Click="CopyLinkOnClick" CommandParameter="Popular"></MenuItem>
                                 <MenuItem Header="Copy Author" Click="CopyAuthorOnClick" CommandParameter="Popular"></MenuItem>
                                 <MenuItem Header="Delete" Click="DeleteOnClick" CommandParameter="Popular"></MenuItem>
@@ -768,8 +771,7 @@
                                     <DataTemplate>
                                         <Button x:Name="Button" BorderThickness="0" Background="Transparent"
                                                 Command="{Binding Path = DataContext.PlayDownloadCommand,  RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
-                                                CommandParameter="Popular"
-                                                >
+                                                CommandParameter="Popular">
                                             <Image x:Name="Image"></Image>
                                         </Button>
                                         <DataTemplate.Triggers>
@@ -842,7 +844,7 @@
                         </i:Interaction.Triggers>
                         <DataGrid.Resources>
                             <ContextMenu x:Key="DataRowContextMenu">
-                                <MenuItem Header="Subscribe" Click="AddChanellOnClick" CommandParameter="Search"/>
+                                <MenuItem Header="Subscribe" Click="AddChanellOnClick" CommandParameter="Search" />
                                 <MenuItem Header="Copy Link" Click="CopyLinkOnClick" CommandParameter="Search"></MenuItem>
                                 <MenuItem Header="Copy Author" Click="CopyAuthorOnClick" CommandParameter="Search"></MenuItem>
                                 <MenuItem Header="Delete" Click="DeleteOnClick" CommandParameter="Search"></MenuItem>
@@ -940,8 +942,7 @@
                                                         <ComboBox Width="80" HorizontalAlignment="Left" HorizontalContentAlignment="Stretch" VerticalAlignment="Center" Height="22" Margin="2,0,0,0"
                                                             ItemsSource="{Binding Path = DataContext.Model.MySubscribe.ServerList, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
                                                             SelectedItem="{Binding Path = DataContext.Model.MySubscribe.SelectedForumItem, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
-                                                            DisplayMemberPath="ChanelType" 
-                                                            />
+                                                            DisplayMemberPath="ChanelType" />
                                                         <Button Width="40" Margin="2,0,0,0" Content="OK" Command="{Binding Path=DataContext.SearchCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"></Button>
                                                     </StackPanel>
                                                 </DataTemplate>
@@ -1000,7 +1001,7 @@
                                         <TextBlock Text="{Binding DataContext.Model.MySubscribe.SelectedForumItem.DurationColumnHeader, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.HeaderTemplate>
-                                    <DataGridTemplateColumn.HeaderStyle>
+                                <DataGridTemplateColumn.HeaderStyle>
                                     <Style TargetType="DataGridColumnHeader">
                                         <Setter Property="HorizontalContentAlignment" Value="Center" />
                                         <Setter Property="FontSize" Value="12"></Setter>
@@ -1021,11 +1022,10 @@
                                 </DataGridTemplateColumn.HeaderStyle>
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Button x:Name="Button" BorderThickness="0" 
-                                                Background="Transparent" 
+                                        <Button x:Name="Button" BorderThickness="0"
+                                                Background="Transparent"
                                                 Command="{Binding Path=DataContext.PlayDownloadCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
-                                                CommandParameter="Search"
-                                                >
+                                                CommandParameter="Search">
                                             <Image x:Name="Image"></Image>
                                         </Button>
                                         <DataTemplate.Triggers>

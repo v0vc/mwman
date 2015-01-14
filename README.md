@@ -1,17 +1,30 @@
-﻿My Watching Manager.   
-Add chanel as user name, like www.youtube.com/user/zapatou ==> zapatou.   
-Add RuTracker, you can suscribe to user releases, like http://rutracker.org/forum/tracker.php?pid=2638398 ===> 2638398.   
-Then sync and enjoy.   
-Use Releases to get compiled version.   
+﻿Mwman
+=========
 
-![Main Window](https://raw.githubusercontent.com/v0vc/Ytub/master/Screens/main.png)
+Mwman is a web crawler, which allows you to be aware of news, updates and releases on some sites.
 
-![Popular](https://raw.githubusercontent.com/v0vc/Ytub/master/Screens/popular.png)
+Main features
+-------------
 
-![Search YouTube](https://raw.githubusercontent.com/v0vc/Ytub/master/Screens/search_you.png)
+* Your own subscribtion, without ads, accounts, suggestions and other annoying things.
+* Simple watching for user releases.
+* Extensible - it's simple to add new site.
+* Nice look ;) 
 
-![Search RuTracker](https://raw.githubusercontent.com/v0vc/Ytub/master/Screens/search_rt.png)
+Supported sites
+-------------
 
-![Settings](https://raw.githubusercontent.com/v0vc/Ytub/master/Screens/settings.png)
+* [YouTube](https://www.youtube.com/)
+* [RuTracker](http://rutracker.org/forum/index.php)
+* [Tapochek] (http://tapochek.net/index.php)
 
+Screenshots
+-----------
 
+Download
+--------
+
+* [Stable version](https://github.com/v0vc/Mwman/releases)
+
+[Details](https://github.com/v0vc/Mwman/wiki)
+-----------

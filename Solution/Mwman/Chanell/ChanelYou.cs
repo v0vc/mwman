@@ -220,8 +220,7 @@ namespace Mwman.Chanell
                                     Application.Current.Dispatcher.Invoke(() =>
                                     {
                                         item1.IsHasFile = item1.IsFileExist();
-                                        item1.IsSynced = Sqllite.IsTableHasRecord(Subscribe.ChanelDb, item1.VideoID,
-                                            ChanelOwner);
+                                        item1.IsSynced = Sqllite.IsTableHasRecord(Subscribe.ChanelDb, item1.VideoID, ChanelOwner);
                                     });
                                 }
                             }

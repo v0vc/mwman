@@ -23,6 +23,8 @@ namespace Mwman.ViewModels
 
         public RelayCommand PlayDownloadCommand { get; set; }
 
+        public RelayCommand MoveChanelCommand { get; set; }
+
         public MainWindowViewModel(MainWindowModel model)
         {
             Model = model;
@@ -34,6 +36,7 @@ namespace Mwman.ViewModels
             BackupRestoreCommand = new RelayCommand(Model.BackupRestore);
             SearchCommand = new RelayCommand(Model.MySubscribe.SearchItems);
             PlayDownloadCommand = new RelayCommand(Model.MySubscribe.PlayDownload);
+            MoveChanelCommand = new RelayCommand(Model.MySubscribe.MoveChanel);
         }
     }
 }
