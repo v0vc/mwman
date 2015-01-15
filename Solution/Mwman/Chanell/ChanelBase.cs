@@ -276,6 +276,8 @@ namespace Mwman.Chanell
 
         public abstract void DownloadItem(IList list);
 
+        public abstract void DownloadItem(VideoItemBase item, bool isGetCookie);
+
         public abstract void DownloadVideoInternal(IList list);
 
         public abstract void SearchItems(string key, ObservableCollectionEx<VideoItemBase> listSearchVideoItems);
@@ -294,11 +296,11 @@ namespace Mwman.Chanell
                 VideoItemBase v = null;
                 var servname = record[Sqllite.Servername].ToString();
                 if (servname == ChanelYou.Typename)
-                    v = new VideoItemYou(record) {Num = ListVideoItems.Count + 1};
+                    v = new VideoItemYou(record) { Num = ListVideoItems.Count + 1, ParentChanel = this };
                 if (servname == ChanelRt.Typename)
-                    v = new VideoItemRt(record) {Num = ListVideoItems.Count + 1};
+                    v = new VideoItemRt(record) { Num = ListVideoItems.Count + 1, ParentChanel = this };
                 if (servname == ChanelTap.Typename)
-                    v = new VideoItemTap(record) {Num = ListVideoItems.Count + 1};
+                    v = new VideoItemTap(record) { Num = ListVideoItems.Count + 1, ParentChanel = this };
                 if (v != null && !ListVideoItems.Contains(v))
                     ListVideoItems.Add(v);
             }

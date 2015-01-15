@@ -102,7 +102,8 @@ namespace Mwman.Chanell
                                 var v = new VideoItemYou(pair, false, "RU")
                                 {
                                     Num = ListVideoItems.Count + 1,
-                                    VideoOwner = ChanelOwner
+                                    VideoOwner = ChanelOwner,
+                                    ParentChanel = this
                                 };
 
                                 if (IsFull)
@@ -273,7 +274,11 @@ namespace Mwman.Chanell
 
             foreach (JToken pair in jsvideo["feed"]["entry"])
             {
-                var v = new VideoItemYou(pair, true, _cul + " now") { Num = listVideoItems.Count + 1 };
+                var v = new VideoItemYou(pair, true, _cul + " now")
+                {
+                    Num = listVideoItems.Count + 1,
+                    ParentChanel = this
+                };
 
                 if (Application.Current.Dispatcher.CheckAccess())
                     AddItems(v, listVideoItems);
@@ -315,6 +320,11 @@ namespace Mwman.Chanell
                 GetVideosASync(list);
             else
                 GetVideosSync();
+        }
+
+        public override void DownloadItem(VideoItemBase item, bool isGetCookie)
+        {
+            throw new NotImplementedException();
         }
 
         public override void SearchItems(string key, ObservableCollectionEx<VideoItemBase> listSearchVideoItems)

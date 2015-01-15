@@ -243,6 +243,12 @@ namespace Mwman.Chanell
 
         public override CookieContainer GetSession()
         {
+            if (string.IsNullOrEmpty(Login) || string.IsNullOrEmpty(Password))
+            {
+                _model.MySubscribe.Result = "Ready";
+                throw new Exception("Please, set Login and Password");
+            }
+
             try
             {
                 var cc = new CookieContainer();
@@ -293,56 +299,62 @@ namespace Mwman.Chanell
         public override void DownloadItem(IList list)
         {
             _rtcookie = ReadCookiesFromDiskBinary(Cname) ?? GetSession();
-            // Construct HTTP request to get the file
-            foreach (VideoItemBase item in list)
+            
+            foreach (VideoItemRt item in list)
             {
-                var httpRequest = (HttpWebRequest)WebRequest.Create(item.VideoLink);
-                httpRequest.Method = WebRequestMethods.Http.Post;
-
-                httpRequest.Referer = string.Format("{0}={1}", TopicUrl, item.VideoID);
-                httpRequest.CookieContainer = _rtcookie;
-
-                // Include post data in the HTTP request
-                const string postData = "dummy=";
-                httpRequest.ContentLength = postData.Length;
-                httpRequest.ContentType = "application/x-www-form-urlencoded";
-
-                // Write the post data to the HTTP request
-                var requestWriter = new StreamWriter(httpRequest.GetRequestStream(), Encoding.ASCII);
-                requestWriter.Write(postData);
-                requestWriter.Close();
-
-                var httpResponse = (HttpWebResponse)httpRequest.GetResponse();
-                Stream httpResponseStream = httpResponse.GetResponseStream();
-
-                const int bufferSize = 1024;
-                var buffer = new byte[bufferSize];
-
-                // Read from response and write to file
-                var ddir =
-                    new DirectoryInfo(Path.Combine(Subscribe.DownloadPath,
-                        string.Format("{0}-{1}({2})", Prefix, item.VideoOwnerName, item.VideoOwner)));
-                if (!ddir.Exists)
-                    ddir.Create();
-
-                var rt = item as VideoItemRt;
-                if (rt != null)
-                {
-                    var dpath = VideoItemBase.AviodTooLongFileName(Path.Combine(ddir.FullName, rt.MakeTorrentFileName(false)));
-                    FileStream fileStream = File.Create(dpath);
-                    int bytesRead;
-                    while (httpResponseStream != null && (bytesRead = httpResponseStream.Read(buffer, 0, bufferSize)) != 0)
-                    {
-                        fileStream.Write(buffer, 0, bytesRead);
-                    } // end while
-                    var fn = new FileInfo(dpath);
-                    if (fn.Exists)
-                        rt.FilePath = fn.FullName;
-
-                    rt.IsHasFile = fn.Exists;
-                }
-                _model.MySubscribe.Result = item.Title + " downloaded";
+                DownloadItem(item, false);
             }
+        }
+
+        public override void DownloadItem(VideoItemBase item, bool isGetCookie)
+        {
+            if (isGetCookie)
+                _rtcookie = ReadCookiesFromDiskBinary(Cname) ?? GetSession();
+
+            // Construct HTTP request to get the file
+            var httpRequest = (HttpWebRequest) WebRequest.Create(item.VideoLink);
+            httpRequest.Method = WebRequestMethods.Http.Post;
+
+            httpRequest.Referer = string.Format("{0}={1}", TopicUrl, item.VideoID);
+            httpRequest.CookieContainer = _rtcookie;
+
+            // Include post data in the HTTP request
+            const string postData = "dummy=";
+            httpRequest.ContentLength = postData.Length;
+            httpRequest.ContentType = "application/x-www-form-urlencoded";
+
+            // Write the post data to the HTTP request
+            var requestWriter = new StreamWriter(httpRequest.GetRequestStream(), Encoding.ASCII);
+            requestWriter.Write(postData);
+            requestWriter.Close();
+
+            var httpResponse = (HttpWebResponse) httpRequest.GetResponse();
+            Stream httpResponseStream = httpResponse.GetResponseStream();
+
+            const int bufferSize = 1024;
+            var buffer = new byte[bufferSize];
+
+            // Read from response and write to file
+            var ddir =
+                new DirectoryInfo(Path.Combine(Subscribe.DownloadPath,
+                    string.Format("{0}-{1}({2})", Prefix, item.VideoOwnerName, item.VideoOwner)));
+            if (!ddir.Exists)
+                ddir.Create();
+            var rt = item as VideoItemRt;
+            if (rt == null) return;
+            var dpath = VideoItemBase.AviodTooLongFileName(Path.Combine(ddir.FullName, rt.MakeTorrentFileName(false)));
+            FileStream fileStream = File.Create(dpath);
+            int bytesRead;
+            while (httpResponseStream != null && (bytesRead = httpResponseStream.Read(buffer, 0, bufferSize)) != 0)
+            {
+                fileStream.Write(buffer, 0, bytesRead);
+            } // end while
+            var fn = new FileInfo(dpath);
+            if (fn.Exists)
+                rt.FilePath = fn.FullName;
+
+            rt.IsHasFile = fn.Exists;
+            _model.MySubscribe.Result = rt.Title + " downloaded";
         }
 
         public override void GetPopularItems(string key, ObservableCollectionEx<VideoItemBase> listPopularVideoItems)
@@ -369,7 +381,7 @@ namespace Mwman.Chanell
             {
                 var v = new VideoItemRt(node, Prefix)
                 {
-                    Num = listVideoItems.Count + 1
+                    Num = listVideoItems.Count + 1, ParentChanel = this
                 };
 
                 if (IsFull)
@@ -415,7 +427,11 @@ namespace Mwman.Chanell
                     if (!listVideoItems.Contains(v) &&!listVideoItems.Select(x=>x.Title).Contains(v.Title) && !string.IsNullOrEmpty(v.Title))
                     {
                         v.Num = listVideoItems.Count + 1;
-                        Application.Current.Dispatcher.Invoke(() => listVideoItems.Add(v));
+                        v.ParentChanel = this;
+                        if (Application.Current.Dispatcher.CheckAccess())
+                            listVideoItems.Add(v);
+                        else
+                            Application.Current.Dispatcher.Invoke(() => listVideoItems.Add(v));
                     }
                 }
                 Thread.Sleep(500);

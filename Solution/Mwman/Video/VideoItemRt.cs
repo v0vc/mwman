@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Web;
+using System.Windows;
 using HtmlAgilityPack;
 using Mwman.Chanell;
 using Mwman.Common;
@@ -93,6 +95,24 @@ namespace Mwman.Video
 
         public override void RunFile(object runtype)
         {
+            switch (runtype.ToString())
+            {
+                case "Local":
+                    var fn = new FileInfo(FilePath);
+                    if (fn.Exists)
+                    {
+                        Process.Start(fn.FullName);
+                    }
+                    else
+                    {
+                        MessageBox.Show("File not exist", "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    break;
+
+                case "Online":
+                    ParentChanel.DownloadItem(this, true);
+                    break;
+            }
         }
 
         public override bool IsFileExist()

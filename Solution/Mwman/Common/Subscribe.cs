@@ -420,8 +420,20 @@ namespace Mwman.Common
                     {
                         var item = SelectedForumItem.CurrentVideoItem as VideoItemYou;
                         item.RunFile(item.IsHasFile ? "Local" : "Online");
-
                     }
+
+                    if (SelectedForumItem.CurrentVideoItem is VideoItemRt)
+                    {
+                        var item = SelectedForumItem.CurrentVideoItem as VideoItemRt;
+                        item.RunFile(item.IsHasFile ? "Local" : "Online");
+                    }
+
+                    if (SelectedForumItem.CurrentVideoItem is VideoItemTap)
+                    {
+                        var item = SelectedForumItem.CurrentVideoItem as VideoItemTap;
+                        item.RunFile(item.IsHasFile ? "Local" : "Online");
+                    }
+
                     break;
 
                 case "GetPlay":

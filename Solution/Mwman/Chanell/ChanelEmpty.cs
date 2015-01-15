@@ -35,6 +35,11 @@ namespace Mwman.Chanell
             throw new NotImplementedException();
         }
 
+        public override void DownloadItem(VideoItemBase item, bool isGetCookie)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void SearchItems(string key, ObservableCollectionEx<VideoItemBase> listSearchVideoItems)
         {
             throw new NotImplementedException();

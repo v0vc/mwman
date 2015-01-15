@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Windows;
+using Mwman.Chanell;
 using Mwman.Common;
 
 namespace Mwman.Video
@@ -42,6 +43,7 @@ namespace Mwman.Video
         #endregion
 
         #region Properties
+        public ChanelBase ParentChanel { get; set; }
         public int Num { get; set; }
 
         public string Title { get; set; }
@@ -153,6 +155,7 @@ namespace Mwman.Video
                 OnPropertyChanged();
             }
         }
+
         #endregion
 
         protected VideoItemBase(DbDataRecord record)
