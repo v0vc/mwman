@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data.SQLite;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -12,6 +13,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 using Mwman.Common;
 using Mwman.Controls;
 using Mwman.Models;
@@ -19,6 +21,7 @@ using Mwman.Video;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using YoutubeExtractor;
+using Color = System.Windows.Media.Color;
 
 namespace Mwman.Chanell
 {
@@ -310,6 +313,7 @@ namespace Mwman.Chanell
 
         public override void DownloadItem(IList list)
         {
+            ChanelColor = new SolidColorBrush(Color.FromRgb(152, 251, 152));
             if (string.IsNullOrEmpty(Subscribe.YoudlPath))
             {
                 MessageBox.Show("Please set path to Youtube-dl in the Settings", "Info", MessageBoxButton.OK, MessageBoxImage.Information);

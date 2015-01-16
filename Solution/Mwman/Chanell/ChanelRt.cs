@@ -11,6 +11,7 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Windows;
+using System.Windows.Media;
 using HtmlAgilityPack;
 using Mwman.Common;
 using Mwman.Controls;
@@ -308,6 +309,8 @@ namespace Mwman.Chanell
 
         public override void DownloadItem(VideoItemBase item, bool isGetCookie)
         {
+            ChanelColor = new SolidColorBrush(Color.FromRgb(152, 251, 152));
+
             if (isGetCookie)
                 _rtcookie = ReadCookiesFromDiskBinary(Cname) ?? GetSession();
 

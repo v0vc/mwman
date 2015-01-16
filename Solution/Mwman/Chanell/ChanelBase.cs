@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Common;
+//using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -12,6 +13,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
+using System.Windows.Media;
 using Mwman.Common;
 using Mwman.Controls;
 using Mwman.Models;
@@ -32,6 +34,8 @@ namespace Mwman.Chanell
         #endregion
 
         #region Fields
+
+        private Brush _chanelColor;
 
         private string _password;
 
@@ -68,6 +72,16 @@ namespace Mwman.Chanell
         public TimeSpan Synctime { get; set; }
 
         public Timer TimerCommon;
+
+        public Brush ChanelColor
+        {
+            get { return _chanelColor; }
+            set
+            {
+                _chanelColor = value;
+                OnPropertyChanged();
+            }
+        }
 
         public string Login
         {
@@ -233,6 +247,7 @@ namespace Mwman.Chanell
             Model = model;
             Login = login;
             Password = pass;
+            Application.Current.Dispatcher.Invoke(() => ChanelColor = new SolidColorBrush(Color.FromRgb(255, 255, 255)));
             ChanelName = chanelname;
             ChanelOwner = chanelowner;
             OrderNum = ordernum;

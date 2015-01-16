@@ -65,7 +65,7 @@
                                          SelectedItem="{Binding Model.MySubscribe.CurrentChanel}"
                                          x:Name="DataGridChanels"
                                          GotFocus="DataGridChanels_OnGotFocus"
-                                         Sorting="DataGrid_OnSorting">
+                                         Sorting="DataGrid_OnSorting" Margin="0,2,0,25" Grid.RowSpan="2">
                         <DataGrid.CellStyle>
                             <Style TargetType="{x:Type DataGridCell}">
                                 <Setter Property="Foreground" Value="Black" />
@@ -191,6 +191,7 @@
                                 <Setter Property="ContextMenu" Value="{StaticResource DataRowContextMenu}" />
                                 <Setter Property="BorderThickness" Value="0" />
                                 <EventSetter Event="MouseDoubleClick" Handler="Row_doubleClick" />
+                                <Setter Property="Background" Value="{Binding ChanelColor}"></Setter>
                             </Style>
                         </DataGrid.RowStyle>
                     </controls:DataGridEx>
