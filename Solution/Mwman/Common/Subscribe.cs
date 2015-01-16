@@ -349,17 +349,30 @@ namespace Mwman.Common
                     }
 
                     break;
+
             }
 
-            foreach (ChanelBase chanel in ChanelListToBind) //обновляем только изменившиеся индексы
+            if (obj.ToString() == "SaveOrder") //обновляем все индексы
             {
-                var index = ChanelListToBind.IndexOf(chanel);
-                int prev;
-                if (dic.TryGetValue(chanel, out prev))
+                foreach (ChanelBase chanel in ChanelListToBind) 
                 {
-                    if (prev != index)
+                    var index = ChanelListToBind.IndexOf(chanel);
+                    Sqllite.UpdateChanelOrder(ChanelDb, chanel.ChanelOwner, index);
+                }
+                Result = "Order saved";
+            }
+            else
+            {
+                foreach (ChanelBase chanel in ChanelListToBind) //обновляем только изменившиеся индексы
+                {
+                    var index = ChanelListToBind.IndexOf(chanel);
+                    int prev;
+                    if (dic.TryGetValue(chanel, out prev))
                     {
-                        Sqllite.UpdateChanelOrder(ChanelDb, chanel.ChanelOwner, index);
+                        if (prev != index)
+                        {
+                            Sqllite.UpdateChanelOrder(ChanelDb, chanel.ChanelOwner, index);
+                        }
                     }
                 }
             }
@@ -441,6 +454,18 @@ namespace Mwman.Common
                     if (CurrentChanel.CurrentVideoItem is VideoItemYou)
                     {
                         var item = CurrentChanel.CurrentVideoItem as VideoItemYou;
+                        item.RunFile(item.IsHasFile ? "Local" : "Online");
+                    }
+
+                    if (CurrentChanel.CurrentVideoItem is VideoItemRt)
+                    {
+                        var item = CurrentChanel.CurrentVideoItem as VideoItemRt;
+                        item.RunFile(item.IsHasFile ? "Local" : "Online");
+                    }
+
+                    if (CurrentChanel.CurrentVideoItem is VideoItemTap)
+                    {
+                        var item = CurrentChanel.CurrentVideoItem as VideoItemTap;
                         item.RunFile(item.IsHasFile ? "Local" : "Online");
                     }
 
@@ -651,7 +676,7 @@ namespace Mwman.Common
 
                     case "SyncChanelAll":
 
-                        ChanelSync(ChanelList, false);
+                        ChanelSync(ChanelListToBind, false);
 
                         break;
 
