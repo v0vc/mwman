@@ -26,7 +26,7 @@ namespace Mwman.Chanell
 
         private const string Hostbase = "tapochek.net";
 
-        private const string Cookiename = "rtapcookie.ck";
+        private const string Cookiename = "tapcookie.ck";
 
         private readonly MainWindowModel _model;
 
