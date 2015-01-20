@@ -13,16 +13,18 @@ namespace Mwman.Video
 {
     public class VideoItemTap :VideoItemBase
     {
+        private const string Host = "tapochek.net";
         public int TotalDl { get; set; }
         public VideoItemTap(DbDataRecord record) : base (record)
         {
+            HostBase = Host;
             TotalDl = (int)record[Sqllite.Previewcount];
         }
 
         public VideoItemTap(HtmlNode node, string prefix)
         {
             Prefix = prefix;
-            HostBase = "tapochek.net";
+            HostBase = Host;
             ServerName = ChanelTap.Typename;
             var counts = node.Descendants("a").Where(d => d.Attributes.Contains("class") && d.Attributes["class"].Value.Equals("genmed"));
             foreach (HtmlNode htmlNode in counts)
@@ -84,7 +86,6 @@ namespace Mwman.Video
         public override void RunFile(object runtype)
         {
             return;
-            throw new NotImplementedException();
         }
 
         public override bool IsFileExist()
@@ -142,6 +143,11 @@ namespace Mwman.Video
             }
 
             return res;
+        }
+
+        public override void DownloadItem(bool isAudio)
+        {
+            throw new NotImplementedException();
         }
 
         public string MakeTorrentFileName(bool isFullName)

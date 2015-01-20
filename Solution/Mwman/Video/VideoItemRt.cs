@@ -15,18 +15,19 @@ namespace Mwman.Video
 {
     public class VideoItemRt : VideoItemBase
     {
+        private const string Host = "rutracker.org";
         public int TotalDl { get; set; }
 
         public VideoItemRt(DbDataRecord record) : base(record)
         {
-            HostBase = "rutracker.org";
+            HostBase = Host;
             TotalDl = (int) record[Sqllite.Previewcount];
         }
 
         public VideoItemRt(HtmlNode node, string prefix)
         {
             Prefix = prefix;
-            HostBase = "rutracker.org";
+            HostBase = Host;
             ServerName = ChanelRt.Typename;
             var counts = node.Descendants("a").Where(d =>d.Attributes.Contains("class") && d.Attributes["class"].Value.Equals("med tLink hl-tags bold"));
             foreach (HtmlNode htmlNode in counts)
@@ -169,6 +170,11 @@ namespace Mwman.Video
                 }
             }
             return res;
+        }
+
+        public override void DownloadItem(bool isAudio)
+        {
+            throw new NotImplementedException();
         }
 
         public string MakeTorrentFileName(bool isFullName)

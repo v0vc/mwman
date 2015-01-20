@@ -30,7 +30,7 @@ namespace Mwman.Chanell
             throw new NotImplementedException();
         }
 
-        public override void DownloadItem(IList list)
+        public override void DownloadItem(IList list, bool isAudio)
         {
             throw new NotImplementedException();
         }
@@ -46,6 +46,11 @@ namespace Mwman.Chanell
         }
 
         public override void GetPopularItems(string key, ObservableCollectionEx<VideoItemBase> listPopularVideoItems)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void CancelDownloading()
         {
             throw new NotImplementedException();
         }

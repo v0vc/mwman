@@ -284,7 +284,7 @@ namespace Mwman.Chanell
                 WriteCookiesToDiskBinary(_tapcookie, Cname);
         }
 
-        public override void DownloadItem(IList list)
+        public override void DownloadItem(IList list, bool isAudio)
         {
             _tapcookie = ReadCookiesFromDiskBinary(Cname) ?? GetSession();
             
@@ -353,6 +353,11 @@ namespace Mwman.Chanell
         }
 
         public override void GetPopularItems(string key, ObservableCollectionEx<VideoItemBase> listPopularVideoItems)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void CancelDownloading()
         {
             throw new NotImplementedException();
         }

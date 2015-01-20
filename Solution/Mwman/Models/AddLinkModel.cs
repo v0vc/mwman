@@ -1,8 +1,10 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using Mwman.Common;
+using Mwman.Video;
 using Mwman.Views;
 
 namespace Mwman.Models
@@ -64,10 +66,21 @@ namespace Mwman.Models
             {
                 View.Close();
 
-                var youdl = new YouWrapper(Subscribe.YoudlPath, Subscribe.FfmpegPath, Subscribe.DownloadPath, Link, null);
-
-                //var sync = new ManualResetEvent(false); 
-                youdl.DownloadFile(IsAudio);
+                if (Link.ToLower().Contains("youtu"))
+                {
+                    var youitem = new VideoItemYou();
+                    youitem.DownloadItem(IsAudio);
+                }
+                else
+                {
+                    var param = String.Format("-o {0}\\%(title)s.%(ext)s {1} --no-check-certificate -i", Subscribe.DownloadPath, Link);
+                    var proc = Process.Start(Subscribe.YoudlPath, param);
+                    if (proc != null)
+                    {
+                        proc.WaitForExit();
+                        proc.Close();
+                    }
+                }
             }
             else
             {

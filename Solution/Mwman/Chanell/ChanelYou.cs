@@ -69,6 +69,7 @@ namespace Mwman.Chanell
             LastColumnHeader = "Download";
             ViewSeedColumnHeader = "Views";
             DurationColumnHeader = "Duration";
+            _bgv.WorkerSupportsCancellation = true;
             _bgv.DoWork += _bgv_DoWork;
             _bgv.RunWorkerCompleted += _bgv_RunWorkerCompleted;
         }
@@ -311,17 +312,18 @@ namespace Mwman.Chanell
             _bgv.RunWorkerAsync("Get");
         }
 
-        public override void DownloadItem(IList list)
+        public override void DownloadItem(IList list, bool isAudio)
         {
-            ChanelColor = new SolidColorBrush(Color.FromRgb(152, 251, 152));
             if (string.IsNullOrEmpty(Subscribe.YoudlPath))
             {
                 MessageBox.Show("Please set path to Youtube-dl in the Settings", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
+            ChanelColor = new SolidColorBrush(Color.FromRgb(152, 251, 152));
+
             if (Subscribe.IsAsyncDl)
-                GetVideosASync(list);
+                GetVideosASync(list, isAudio);
             else
                 GetVideosSync();
         }
@@ -372,6 +374,14 @@ namespace Mwman.Chanell
             #endregion
         }
 
+        public override void CancelDownloading()
+        {
+            foreach (VideoItemYou item in SelectedListVideoItems.Cast<VideoItemYou>().Where(item => item.IsDownLoading))
+            {
+                item.CancelDownloading();
+            }
+        }
+
         public override CookieContainer GetSession()
         {
             return null;
@@ -388,7 +398,7 @@ namespace Mwman.Chanell
             foreach (VideoItemBase item in list)
             {
                 CurrentVideoItem = item;
-                var dir = new DirectoryInfo(Path.Combine(Subscribe.DownloadPath, CurrentVideoItem.VideoOwner));
+                var dir = new DirectoryInfo(CurrentVideoItem.SavePath);
                 if (!dir.Exists)
                     dir.Create();
                 CurrentVideoItem.IsDownLoading = true;
@@ -399,7 +409,7 @@ namespace Mwman.Chanell
             CurrentVideoItem.IsHasFile = CurrentVideoItem.IsFileExist();
         }
 
-        private static Task DownloadVideoAsync(VideoItemBase item)
+        private Task DownloadVideoAsync(VideoItemBase item)
         {
             return Task.Run(() =>
             {
@@ -412,7 +422,7 @@ namespace Mwman.Chanell
                         DownloadUrlResolver.DecryptDownloadUrl(videoInfo);
                     }
 
-                    var downloader = new VideoDownloader(videoInfo, Path.Combine(Subscribe.DownloadPath, item.VideoOwner, VideoItemBase.MakeValidFileName(videoInfo.Title) + videoInfo.VideoExtension));
+                    var downloader = new VideoDownloader(videoInfo, Path.Combine(CurrentVideoItem.SavePath, VideoItemBase.MakeValidFileName(videoInfo.Title) + videoInfo.VideoExtension));
 
                     downloader.DownloadProgressChanged += (sender, args) => downloader_DownloadProgressChanged(args, item);
                     downloader.DownloadFinished += delegate { downloader_DownloadFinished(downloader, item); };
@@ -450,21 +460,24 @@ namespace Mwman.Chanell
             v.IsSynced = true;
         }
 
-        private static void GetVideosASync(IList list)
+        private static void GetVideosASync(IEnumerable list, bool isAudio)
         {
             foreach (VideoItemBase item in list)
             {
-                YouWrapper youwr;
-                if (!string.IsNullOrEmpty(item.VideoOwner))
-                {
+                item.IsDownLoading = true;
+                item.DownloadItem(isAudio);
 
-                    youwr = new YouWrapper(Subscribe.YoudlPath, Subscribe.FfmpegPath,
-                        Path.Combine(Subscribe.DownloadPath, item.VideoOwner), item);
-                }
-                else
-                    youwr = new YouWrapper(Subscribe.YoudlPath, Subscribe.FfmpegPath, Subscribe.DownloadPath, item);
+                //YouWrapper youwr;
+                //if (!string.IsNullOrEmpty(item.VideoOwner))
+                //{
 
-                youwr.DownloadFile(false);
+                //    youwr = new YouWrapper(Subscribe.YoudlPath, Subscribe.FfmpegPath,
+                //        Path.Combine(Subscribe.DownloadPath, item.VideoOwner), item);
+                //}
+                //else
+                //    youwr = new YouWrapper(Subscribe.YoudlPath, Subscribe.FfmpegPath, Subscribe.DownloadPath, item);
+
+                //youwr.DownloadFile(false);
             }
         }
 
@@ -483,12 +496,14 @@ namespace Mwman.Chanell
         {
             if (SelectedListVideoItems.Count == 1)
                 _step = 0;
-            YouWrapper youwr = !string.IsNullOrEmpty(_selectedListVideoItemsList[_step].VideoOwner)
-                ? new YouWrapper(Subscribe.YoudlPath, Subscribe.FfmpegPath, Path.Combine(Subscribe.DownloadPath, _selectedListVideoItemsList[_step].VideoOwner), _selectedListVideoItemsList[_step])
-                : new YouWrapper(Subscribe.YoudlPath, Subscribe.FfmpegPath, Subscribe.DownloadPath, _selectedListVideoItemsList[_step]);
-            youwr.Activate += youwr_nextstep;
-            youwr.DownloadFile(false);
-            _step++;
+
+            var item = _selectedListVideoItemsList[_step] as VideoItemYou;
+            if (item != null)
+            {
+                item.Activate += youwr_nextstep;
+                item.DownloadItem(false);
+                _step++;
+            }
         }
 
         private void youwr_nextstep()

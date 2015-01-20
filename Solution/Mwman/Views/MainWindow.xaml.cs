@@ -4,7 +4,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Mwman.Chanell;
-using Mwman.Common;
 
 namespace Mwman.Views
 {
@@ -13,18 +12,6 @@ namespace Mwman.Views
     /// </summary>
     public partial class MainWindow : Window
     {
-        public static readonly DependencyProperty DraggedItemProperty = DependencyProperty.Register("DraggedItem", typeof(ChanelBase), typeof(Window));
-
-        public bool IsDragging { get; set; }
-
-        public bool IsEditing { get; set; }
-
-        public ChanelBase DraggedItem
-        {
-            get { return (ChanelBase)GetValue(DraggedItemProperty); }
-            set { SetValue(DraggedItemProperty, value); }
-        }
-
         public MainWindow()
         {
             InitializeComponent();
@@ -41,7 +28,6 @@ namespace Mwman.Views
             {
                 MessageBox.Show(ex.GetBaseException().Message);
             }
-            //DataGridChanels.UnselectAll();
         }
 
         private void Exit_OnClick(object sender, RoutedEventArgs e)
@@ -49,136 +35,11 @@ namespace Mwman.Views
             Close();
         }
 
-        private void SyncChanelOnClick(object sender, RoutedEventArgs e)
-        {
-            ViewModelLocator.MvViewModel.Model.MySubscribe.SyncChanel("SyncChanelSelected");
-        }
-
-        private void SyncAllChanelOnClick(object sender, RoutedEventArgs e)
-        {
-            ViewModelLocator.MvViewModel.Model.MySubscribe.SyncChanel("SyncAllChanelSelected");
-        }
-
-        private void AutorizeChanelOnClick(object sender, RoutedEventArgs e)
-        {
-            ViewModelLocator.MvViewModel.Model.MySubscribe.CurrentChanel.AutorizeChanel();
-        }
-
-        private void RemoveChanelOnClick(object sender, RoutedEventArgs e)
-        {
-            ViewModelLocator.MvViewModel.Model.MySubscribe.RemoveChanel(null);
-        }
-
-        private void EditChanelOnClick(object sender, RoutedEventArgs e)
-        {
-            ViewModelLocator.MvViewModel.Model.MySubscribe.AddChanel("edit");
-        }
-
         private void MainWindow_OnKeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Insert)
             {
                 ViewModelLocator.MvViewModel.Model.AddLink(null);
-            }
-        }
-
-        private void CopyLinkOnClick(object sender, RoutedEventArgs e)
-        {
-            var mitem = sender as MenuItem;
-            if (mitem == null) return;
-            switch (mitem.CommandParameter.ToString())
-            {
-                case "Popular":
-                case "Search":
-                    var chanel = ViewModelLocator.MvViewModel.Model.MySubscribe.SelectedForumItem;
-                    if (chanel != null && chanel.CurrentVideoItem != null)
-                    {
-                        try
-                        {
-                            Clipboard.SetText(chanel.CurrentVideoItem.VideoLink);
-                        }
-                        catch
-                        {
-                        }
-                    }
-                    break;
-
-                case "Get":
-                    var cchanel = ViewModelLocator.MvViewModel.Model.MySubscribe.CurrentChanel;
-                    if (cchanel != null && cchanel.CurrentVideoItem != null)
-                    {
-                        try
-                        {
-                            Clipboard.SetText(cchanel.CurrentVideoItem.VideoLink);
-                        }
-                        catch
-                        {
-                        }
-                    }
-                    break;
-            }
-        }
-
-        private void CopyAuthorOnClick(object sender, RoutedEventArgs e)
-        {
-            var mitem = sender as MenuItem;
-            if (mitem == null) return;
-            switch (mitem.CommandParameter.ToString())
-            {
-                case "Popular":
-                case "Search":
-                    var chanel = ViewModelLocator.MvViewModel.Model.MySubscribe.SelectedForumItem;
-                    if (chanel != null && chanel.CurrentVideoItem != null)
-                    {
-                        try
-                        {
-                            Clipboard.SetText(chanel.CurrentVideoItem.VideoOwner);
-                        }
-                        catch
-                        {
-                        }
-                    }
-                    break;
-
-                case "Get":
-                    var cchanel = ViewModelLocator.MvViewModel.Model.MySubscribe.CurrentChanel;
-                    if (cchanel != null && cchanel.CurrentVideoItem != null)
-                    {
-                        try
-                        {
-                            Clipboard.SetText(cchanel.CurrentVideoItem.VideoOwner);
-                        }
-                        catch
-                        {
-                        }
-                    }
-                    break;
-            }
-
-        }
-
-        private void DeleteOnClick(object sender, RoutedEventArgs e)
-        {
-            var mitem = sender as MenuItem;
-            if (mitem == null) return;
-            switch (mitem.CommandParameter.ToString())
-            {
-                case "Popular":
-                case "Search":
-                    var chanel = ViewModelLocator.MvViewModel.Model.MySubscribe.SelectedForumItem;
-                    if (chanel != null && chanel.CurrentVideoItem != null)
-                    {
-                        chanel.DeleteFiles();
-                    }
-                    break;
-
-                case "Get":
-                    var cchanel = ViewModelLocator.MvViewModel.Model.MySubscribe.CurrentChanel;
-                    if (cchanel != null && cchanel.CurrentVideoItem != null)
-                    {
-                        cchanel.DeleteFiles();
-                    }
-                    break;
             }
         }
 
@@ -212,14 +73,204 @@ namespace Mwman.Views
             ViewModelLocator.MvViewModel.Model.MySubscribe.SelectedTabIndex = 0;
         }
 
-        private void AddChanellOnClick(object sender, RoutedEventArgs e)
-        {
-            ViewModelLocator.MvViewModel.Model.MySubscribe.AddChanell();
-        }
-
         private void DataGrid_OnSorting(object sender, DataGridSortingEventArgs e)
         {
             e.Column.SortDirection = e.Column.SortDirection ?? ListSortDirection.Ascending;
+        }
+
+        private void ChanelOnClick(object sender, RoutedEventArgs e)
+        {
+            var mitem = sender as MenuItem;
+            if (mitem == null) return;
+
+            switch (mitem.CommandParameter.ToString())
+            {
+                case "SyncChanelSelected":
+                    ViewModelLocator.MvViewModel.Model.MySubscribe.SyncChanel(mitem.CommandParameter.ToString());
+                    break;
+
+                case "SyncAllChanelSelected":
+                    ViewModelLocator.MvViewModel.Model.MySubscribe.SyncChanel(mitem.CommandParameter.ToString());
+                    break;
+
+                case "Autorize":
+                    ViewModelLocator.MvViewModel.Model.MySubscribe.CurrentChanel.AutorizeChanel();
+                    break;
+
+                case "Remove":
+                    ViewModelLocator.MvViewModel.Model.MySubscribe.RemoveChanel(null);
+                    break;
+
+                case "Edit":
+                    ViewModelLocator.MvViewModel.Model.MySubscribe.AddChanel(mitem.CommandParameter.ToString());
+                    break;
+            }
+        }
+
+        private void MainOnClick(object sender, RoutedEventArgs e)
+        {
+            var mitem = sender as MenuItem;
+            if (mitem == null) return;
+
+            ChanelBase chanel;
+
+            switch (mitem.CommandParameter.ToString())
+            {
+                #region Download Auidio
+
+                case "PopularAudio":
+                case "SearchAudio":
+
+                    chanel = ViewModelLocator.MvViewModel.Model.MySubscribe.SelectedForumItem;
+                    if (chanel != null && chanel.CurrentVideoItem != null)
+                    {
+                        chanel.DownloadItem(chanel.SelectedListVideoItems, true);
+                    }
+
+                    break;
+
+                case "MainAudio":
+
+                    chanel = ViewModelLocator.MvViewModel.Model.MySubscribe.CurrentChanel;
+                    if (chanel != null && chanel.CurrentVideoItem != null)
+                    {
+                        chanel.DownloadItem(chanel.SelectedListVideoItems, true);
+                    }
+
+                    break; 
+
+                #endregion
+
+                #region Cancel Downloading
+
+                case "PopularCancel":
+                case "SearchCancel":
+
+                    chanel = ViewModelLocator.MvViewModel.Model.MySubscribe.SelectedForumItem;
+                    if (chanel != null && chanel.CurrentVideoItem != null)
+                    {
+                        chanel.CancelDownloading();
+                    }
+
+                    break;
+
+                case "MainCancel":
+
+                    chanel = ViewModelLocator.MvViewModel.Model.MySubscribe.CurrentChanel;
+                    if (chanel != null && chanel.CurrentVideoItem != null)
+                    {
+                        chanel.CancelDownloading();
+                    }
+
+                    break; 
+
+                #endregion
+
+                #region Subscribe
+
+                case "Subscribe":
+
+                    ViewModelLocator.MvViewModel.Model.MySubscribe.AddChanell();
+
+                    break;
+
+                #endregion
+
+                #region Copy Link
+
+                case "PopularCopyLink":
+                case "SearchCopyLink":
+
+                    chanel = ViewModelLocator.MvViewModel.Model.MySubscribe.SelectedForumItem;
+                    if (chanel != null && chanel.CurrentVideoItem != null)
+                    {
+                        try
+                        {
+                            Clipboard.SetText(chanel.CurrentVideoItem.VideoLink);
+                        }
+                        catch
+                        {
+                        }
+                    }
+
+                    break;
+
+                case "MainCopyLink":
+
+                    chanel = ViewModelLocator.MvViewModel.Model.MySubscribe.CurrentChanel;
+                    if (chanel != null && chanel.CurrentVideoItem != null)
+                    {
+                        try
+                        {
+                            Clipboard.SetText(chanel.CurrentVideoItem.VideoLink);
+                        }
+                        catch
+                        {
+                        }
+                    }
+
+                    break; 
+
+                #endregion
+
+                #region Copy Autor
+
+                case "PopularCopyAutor":
+                case "SearchCopyAutor":
+
+                    chanel = ViewModelLocator.MvViewModel.Model.MySubscribe.SelectedForumItem;
+                    if (chanel != null && chanel.CurrentVideoItem != null)
+                    {
+                        try
+                        {
+                            Clipboard.SetText(chanel.CurrentVideoItem.VideoOwner);
+                        }
+                        catch
+                        {
+                        }
+                    }
+
+                    break;
+
+                case "MainCopyAutor":
+
+                    chanel = ViewModelLocator.MvViewModel.Model.MySubscribe.CurrentChanel;
+                    if (chanel != null && chanel.CurrentVideoItem != null)
+                    {
+                        try
+                        {
+                            Clipboard.SetText(chanel.CurrentVideoItem.VideoOwner);
+                        }
+                        catch
+                        {
+                        }
+                    }
+
+                    break; 
+
+                #endregion
+
+                #region Delete
+
+                case "PopularDelete":
+                case "SearchDelete":
+                    chanel = ViewModelLocator.MvViewModel.Model.MySubscribe.SelectedForumItem;
+                    if (chanel != null && chanel.CurrentVideoItem != null)
+                    {
+                        chanel.DeleteFiles();
+                    }
+                    break;
+
+                case "MainDelete":
+                    chanel = ViewModelLocator.MvViewModel.Model.MySubscribe.CurrentChanel;
+                    if (chanel != null && chanel.CurrentVideoItem != null)
+                    {
+                        chanel.DeleteFiles();
+                    }
+                    break; 
+
+                #endregion
+            }
         }
     }
 }

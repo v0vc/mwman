@@ -24,7 +24,7 @@ namespace Mwman.Chanell
     {
         public static string Typename = "RuTracker";
 
-        private const string Hostbase = "rutracker.org";
+        private const string Host = "rutracker.org";
 
         private const string Cookiename = "rtcookie.ck";
 
@@ -40,7 +40,7 @@ namespace Mwman.Chanell
         {
             ChanelType = Typename;
             Cname = Cookiename;
-            HostBase = Hostbase;
+            HostBase = Host;
             InitialUrls();
             _model = model;
             LastColumnHeader = "Total DL";
@@ -54,7 +54,7 @@ namespace Mwman.Chanell
         {
             ChanelType = Typename;
             Cname = Cookiename;
-            HostBase = Hostbase;
+            HostBase = Host;
             InitialUrls();
             _model = model;
             LastColumnHeader = "Total DL";
@@ -297,7 +297,7 @@ namespace Mwman.Chanell
                 WriteCookiesToDiskBinary(_rtcookie, Cname);
         }
 
-        public override void DownloadItem(IList list)
+        public override void DownloadItem(IList list, bool isAudio)
         {
             _rtcookie = ReadCookiesFromDiskBinary(Cname) ?? GetSession();
             
@@ -361,6 +361,11 @@ namespace Mwman.Chanell
         }
 
         public override void GetPopularItems(string key, ObservableCollectionEx<VideoItemBase> listPopularVideoItems)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void CancelDownloading()
         {
             throw new NotImplementedException();
         }

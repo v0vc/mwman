@@ -289,7 +289,7 @@ namespace Mwman.Chanell
 
         public abstract void AutorizeChanel();
 
-        public abstract void DownloadItem(IList list);
+        public abstract void DownloadItem(IList list, bool isAudio);
 
         public abstract void DownloadItem(VideoItemBase item, bool isGetCookie);
 
@@ -298,6 +298,8 @@ namespace Mwman.Chanell
         public abstract void SearchItems(string key, ObservableCollectionEx<VideoItemBase> listSearchVideoItems);
 
         public abstract void GetPopularItems(string key, ObservableCollectionEx<VideoItemBase> listPopularVideoItems);
+
+        public abstract void CancelDownloading();
 
         #endregion
 

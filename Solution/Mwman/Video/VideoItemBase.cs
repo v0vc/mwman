@@ -86,6 +86,8 @@ namespace Mwman.Video
 
         public string FilePath { get; set; }
 
+        public string SavePath { get; set; }
+
         public string Description { get; set; }
 
         public string Region { get; set; }
@@ -185,6 +187,8 @@ namespace Mwman.Video
         public abstract bool IsFileExist();
 
         public abstract double GetTorrentSize(string input);
+
+        public abstract void DownloadItem(bool isAudio);
 
         public static string MakeValidFileName(string name)
         {

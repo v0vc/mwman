@@ -143,7 +143,6 @@
     <Compile Include="Common\WebClientEx.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Common\YouWrapper.cs" />
     <Compile Include="Models\AddLinkModel.cs" />
     <Compile Include="Models\SettingsModel.cs" />
     <Compile Include="ViewModelLocator.cs">

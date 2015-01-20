@@ -393,21 +393,21 @@ namespace Mwman.Common
                     if (lsyou.Count > 0)
                     {
                         cnanel = new ChanelYou(_model);
-                        cnanel.DownloadItem(lsyou);
+                        cnanel.DownloadItem(lsyou, false);
                     }
 
                     IList lsrt = SelectedForumItem.SelectedListVideoItems.OfType<VideoItemRt>().Select(item => item).ToList();
                     if (lsrt.Count > 0)
                     {
                         cnanel = new ChanelRt(_model);
-                        cnanel.DownloadItem(lsrt);
+                        cnanel.DownloadItem(lsrt, false);
                     }
 
                     IList lstap = SelectedForumItem.SelectedListVideoItems.OfType<VideoItemTap>().Select(item => item).ToList();
                     if (lstap.Count > 0)
                     {
                         cnanel = new ChanelTap(_model);
-                        cnanel.DownloadItem(lstap);
+                        cnanel.DownloadItem(lstap, false);
                     }
 
                     break;
@@ -416,13 +416,13 @@ namespace Mwman.Common
 
                     var chanelpop = new ChanelYou(_model);
 
-                    chanelpop.DownloadItem(SelectedForumItem.SelectedListVideoItems);
+                    chanelpop.DownloadItem(SelectedForumItem.SelectedListVideoItems, false);
 
                     break;
 
                 case "Get":
 
-                    CurrentChanel.DownloadItem(CurrentChanel.SelectedListVideoItems);
+                    CurrentChanel.DownloadItem(CurrentChanel.SelectedListVideoItems, false);
 
                     break;
 
@@ -498,7 +498,7 @@ namespace Mwman.Common
 
         public void AddChanel(object o)
         {
-            var isEdit = o != null && o.ToString() == "edit";
+            var isEdit = o != null && o.ToString() == "Edit";
             try
             {
                 var servlist = new ObservableCollection<ChanelBase>(ServerList.Where(x => x.ChanelType != "All"));
