@@ -310,7 +310,7 @@
                             Sorting="DataGrid_OnSorting">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="MouseDoubleClick">
-                                <i:InvokeCommandAction Command="{Binding PlayDownloadCommand}" CommandParameter="GetPlay" />
+                                <i:InvokeCommandAction Command="{Binding PlayCommand}" CommandParameter="MainPlay" />
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
                         <DataGrid.Resources>
@@ -543,8 +543,8 @@
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Button x:Name="Button"
-                                                Command="{Binding Path = DataContext.PlayDownloadCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
-                                                CommandParameter="GetInternal"
+                                                Command="{Binding Path = DataContext.DownloadCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
+                                                CommandParameter="MainInternal"
                                                 BorderThickness="0.3"
                                                 ToolTip="Download"
                                                 Background="Transparent">
@@ -793,22 +793,32 @@
                                 </DataGridTemplateColumn.HeaderStyle>
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Button x:Name="Button" BorderThickness="0" Background="Transparent"
-                                                Command="{Binding Path = DataContext.PlayDownloadCommand,  RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
-                                                CommandParameter="Popular">
+                                        <Button x:Name="Button" BorderThickness="0" Background="Transparent">
                                             <Image x:Name="Image"></Image>
                                         </Button>
                                         <DataTemplate.Triggers>
-                                            <DataTrigger Binding="{Binding IsHasFile, Mode=TwoWay}" Value="true">
-                                                <Setter TargetName="Image" Property="Image.Source" Value="../Images/tick_20.png"></Setter>
-                                                <Setter TargetName="Button" Property="IsEnabled" Value="True"></Setter>
-                                                <Setter TargetName="Button" Property="Visibility" Value="Visible"></Setter>
-                                                <Setter TargetName="Button" Property="ToolTip" Value="Play"></Setter>
+                                            <DataTrigger Binding="{Binding FileType, Mode=TwoWay}" Value="notset">
+                                                <Setter TargetName="Image" Property="Image.Source" Value="../Images/save_16.png" />
+                                                <Setter TargetName="Image" Property="Image.Margin" Value="2" />
+                                                <Setter TargetName="Button" Property="ToolTip" Value="Download" />
+                                                <Setter TargetName="Button" Property="Command" Value="{Binding DataContext.DownloadCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
+                                                <Setter TargetName="Button" Property="CommandParameter" Value="PopularDownload" />
                                             </DataTrigger>
-                                            <DataTrigger Binding="{Binding IsHasFile, Mode=TwoWay}" Value="false">
-                                                <Setter TargetName="Image" Property="Image.Source" Value="../Images/save_16.png"></Setter>
-                                                <Setter TargetName="Image" Property="Image.Margin" Value="2"></Setter>
-                                                <Setter TargetName="Button" Property="ToolTip" Value="Download HD"></Setter>
+                                            <DataTrigger Binding="{Binding FileType, Mode=TwoWay}" Value="video">
+                                                <Setter TargetName="Image" Property="Image.Source" Value="../Images/tick_20.png" />
+                                                <Setter TargetName="Button" Property="IsEnabled" Value="True" />
+                                                <Setter TargetName="Button" Property="Visibility" Value="Visible" />
+                                                <Setter TargetName="Button" Property="ToolTip" Value="Play" />
+                                                <Setter TargetName="Button" Property="Command" Value="{Binding DataContext.PlayCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
+                                                <Setter TargetName="Button" Property="CommandParameter" Value="PopularVideo" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding FileType, Mode=TwoWay}" Value="audio">
+                                                <Setter TargetName="Image" Property="Image.Source" Value="../Images/note_16.png" />
+                                                <Setter TargetName="Button" Property="IsEnabled" Value="True" />
+                                                <Setter TargetName="Button" Property="Visibility" Value="Visible" />
+                                                <Setter TargetName="Button" Property="ToolTip" Value="Listen" />
+                                                <Setter TargetName="Button" Property="Command" Value="{Binding DataContext.PlayCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
+                                                <Setter TargetName="Button" Property="CommandParameter" Value="PopularAudio" />
                                             </DataTrigger>
                                         </DataTemplate.Triggers>
                                     </DataTemplate>
@@ -823,7 +833,7 @@
                                 </DataGridTemplateColumn.HeaderStyle>
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Button x:Name="Button" Command="{Binding Path=DataContext.PlayDownloadCommand,  RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
+                                        <Button x:Name="Button" Command="{Binding Path=DataContext.DownloadCommand,  RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
                                                 CommandParameter="PopularInternal"
                                                 BorderThickness="0.3" ToolTip="Download" Background="Transparent">
                                             <ProgressBar x:Name="ProgressBar" HorizontalAlignment="Stretch" Height="19" HorizontalContentAlignment="Stretch" Width="58"
@@ -1048,23 +1058,40 @@
                                 </DataGridTemplateColumn.HeaderStyle>
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Button x:Name="Button" BorderThickness="0"
-                                                Background="Transparent"
-                                                Command="{Binding Path=DataContext.PlayDownloadCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
-                                                CommandParameter="Search">
+                                        <Button x:Name="Button" BorderThickness="0" Background="Transparent">
                                             <Image x:Name="Image"></Image>
                                         </Button>
                                         <DataTemplate.Triggers>
-                                            <DataTrigger Binding="{Binding IsHasFile, Mode=TwoWay}" Value="true">
-                                                <Setter TargetName="Image" Property="Image.Source" Value="../Images/tick_20.png"></Setter>
-                                                <Setter TargetName="Button" Property="IsEnabled" Value="True"></Setter>
-                                                <Setter TargetName="Button" Property="Visibility" Value="Visible"></Setter>
-                                                <Setter TargetName="Button" Property="ToolTip" Value="Play"></Setter>
+                                            <DataTrigger Binding="{Binding FileType, Mode=TwoWay}" Value="notset">
+                                                <Setter TargetName="Image" Property="Image.Source" Value="../Images/save_16.png" />
+                                                <Setter TargetName="Image" Property="Image.Margin" Value="2" />
+                                                <Setter TargetName="Button" Property="ToolTip" Value="Download" />
+                                                <Setter TargetName="Button" Property="Command" Value="{Binding DataContext.DownloadCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
+                                                <Setter TargetName="Button" Property="CommandParameter" Value="SearchDownload" />
                                             </DataTrigger>
-                                            <DataTrigger Binding="{Binding IsHasFile, Mode=TwoWay}" Value="false">
-                                                <Setter TargetName="Image" Property="Image.Source" Value="../Images/save_16.png"></Setter>
-                                                <Setter TargetName="Image" Property="Image.Margin" Value="2"></Setter>
-                                                <Setter TargetName="Button" Property="ToolTip" Value="Download HD"></Setter>
+                                            <DataTrigger Binding="{Binding FileType, Mode=TwoWay}" Value="video">
+                                                <Setter TargetName="Image" Property="Image.Source" Value="../Images/tick_20.png" />
+                                                <Setter TargetName="Button" Property="IsEnabled" Value="True" />
+                                                <Setter TargetName="Button" Property="Visibility" Value="Visible" />
+                                                <Setter TargetName="Button" Property="ToolTip" Value="Play" />
+                                                <Setter TargetName="Button" Property="Command" Value="{Binding DataContext.PlayCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
+                                                <Setter TargetName="Button" Property="CommandParameter" Value="SearchVideo" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding FileType, Mode=TwoWay}" Value="audio">
+                                                <Setter TargetName="Image" Property="Image.Source" Value="../Images/note_16.png" />
+                                                <Setter TargetName="Button" Property="IsEnabled" Value="True" />
+                                                <Setter TargetName="Button" Property="Visibility" Value="Visible" />
+                                                <Setter TargetName="Button" Property="ToolTip" Value="Listen" />
+                                                <Setter TargetName="Button" Property="Command" Value="{Binding DataContext.PlayCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
+                                                <Setter TargetName="Button" Property="CommandParameter" Value="SearchAudio" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding FileType, Mode=TwoWay}" Value="torrent">
+                                                <Setter TargetName="Image" Property="Image.Source" Value="../Images/torrent_20.png" />
+                                                <Setter TargetName="Button" Property="IsEnabled" Value="True" />
+                                                <Setter TargetName="Button" Property="Visibility" Value="Visible" />
+                                                <Setter TargetName="Button" Property="ToolTip" Value="Launch" />
+                                                <Setter TargetName="Button" Property="Command" Value="{Binding DataContext.PlayCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
+                                                <Setter TargetName="Button" Property="CommandParameter" Value="SearchTorrent" />
                                             </DataTrigger>
                                         </DataTemplate.Triggers>
                                     </DataTemplate>
@@ -1085,8 +1112,8 @@
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Button x:Name="Button"
-                                                Command="{Binding Path = DataContext.PlayDownloadCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
-                                                CommandParameter="GetInternal"
+                                                Command="{Binding Path = DataContext.DownloadCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
+                                                CommandParameter="SearchInternal"
                                                 BorderThickness="0.3"
                                                 ToolTip="Download"
                                                 Background="Transparent">
