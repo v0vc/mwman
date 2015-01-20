@@ -315,9 +315,9 @@ namespace Mwman.Chanell
                 if (servname == ChanelYou.Typename)
                     v = new VideoItemYou(record) { Num = ListVideoItems.Count + 1, ParentChanel = this };
                 if (servname == ChanelRt.Typename)
-                    v = new VideoItemRt(record) { Num = ListVideoItems.Count + 1, ParentChanel = this };
+                    v = new VideoItemRt(record) { Num = ListVideoItems.Count + 1, ParentChanel = this , Prefix = Prefix};
                 if (servname == ChanelTap.Typename)
-                    v = new VideoItemTap(record) { Num = ListVideoItems.Count + 1, ParentChanel = this };
+                    v = new VideoItemTap(record) { Num = ListVideoItems.Count + 1, ParentChanel = this, Prefix = Prefix };
                 if (v != null && !ListVideoItems.Contains(v))
                     ListVideoItems.Add(v);
             }
@@ -423,6 +423,7 @@ namespace Mwman.Chanell
                             }
                             video.IsHasFile = false;
                             video.IsDownLoading = false;
+                            video.FileType = "notset";
                         }
                     }
                 }

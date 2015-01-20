@@ -40,6 +40,8 @@ namespace Mwman.Video
 
         private bool _isDownloading;
 
+        private string _fileType = "notset";
+
         #endregion
 
         #region Properties
@@ -158,6 +160,16 @@ namespace Mwman.Video
             }
         }
 
+        public string FileType
+        {
+            get { return _fileType; }
+            set
+            {
+                _fileType = value; 
+                OnPropertyChanged();
+            }
+        }
+
         #endregion
 
         protected VideoItemBase(DbDataRecord record)
@@ -196,7 +208,7 @@ namespace Mwman.Video
             var r = new Regex(string.Format("[{0}]", Regex.Escape(regexSearch)));
             var s = r.Replace(name, String.Empty);
             s = Regex.Replace(s, @"\s{2,}", " ");
-            return s;
+            return s.Trim();
         }
 
         public static string AviodTooLongFileName(string path)

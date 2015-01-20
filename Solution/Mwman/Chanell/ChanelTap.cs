@@ -78,9 +78,7 @@ namespace Mwman.Chanell
             var type = e.Argument.ToString();
             e.Result = type;
 
-            _tapcookie = ReadCookiesFromDiskBinary(Cname);
-            if (_tapcookie == null)
-                AutorizeChanel();
+            _tapcookie = ReadCookiesFromDiskBinary(Cname) ?? GetSession();
 
             string zap;
 
@@ -242,6 +240,7 @@ namespace Mwman.Chanell
                 {
                     cc.Add(resp.Cookies);
                 }
+                WriteCookiesToDiskBinary(cc, Cname);
                 return cc;
             }
             catch (Exception ex)
@@ -270,9 +269,7 @@ namespace Mwman.Chanell
                 else
                     Application.Current.Dispatcher.Invoke(() => ListVideoItems.Clear());
             }
-            _tapcookie = ReadCookiesFromDiskBinary(Cname);
-            if (_tapcookie == null)
-                AutorizeChanel();
+            _tapcookie = ReadCookiesFromDiskBinary(Cname) ?? GetSession();
             _bgv.RunWorkerAsync("Get");
             
         }
@@ -280,8 +277,6 @@ namespace Mwman.Chanell
         public override void AutorizeChanel()
         {
             _tapcookie = GetSession();
-            if (_tapcookie.Count > 0)
-                WriteCookiesToDiskBinary(_tapcookie, Cname);
         }
 
         public override void DownloadItem(IList list, bool isAudio)
@@ -302,44 +297,54 @@ namespace Mwman.Chanell
                 _tapcookie = ReadCookiesFromDiskBinary(Cname) ?? GetSession();
 
             // Construct HTTP request to get the file
-            var httpRequest = (HttpWebRequest)WebRequest.Create(item.VideoLink);
+            var httpRequest = (HttpWebRequest) WebRequest.Create(item.VideoLink);
             httpRequest.Method = WebRequestMethods.Http.Get;
 
             httpRequest.Referer = string.Format("{0}={1}", TopicUrl, item.VideoID);
             httpRequest.CookieContainer = _tapcookie;
 
-            var httpResponse = (HttpWebResponse)httpRequest.GetResponse();
-            Stream httpResponseStream = httpResponse.GetResponseStream();
-
-            //string fileName = Path.GetFileName(httpResponse.Headers["filename"]);
-
-            const int bufferSize = 1024;
-            var buffer = new byte[bufferSize];
-
-            // Read from response and write to file
-            var ddir =
-                new DirectoryInfo(Path.Combine(Subscribe.DownloadPath,
-                    string.Format("{0}-{1}({2})", Prefix, item.VideoOwnerName, item.VideoOwner)));
-            if (!ddir.Exists)
-                ddir.Create();
-
-            var rt = item as VideoItemTap;
-            if (rt != null)
+            var httpResponse = (HttpWebResponse) httpRequest.GetResponse();
+            if (httpResponse.ContentType.Contains("torrent"))
             {
-                var dpath = VideoItemBase.AviodTooLongFileName(Path.Combine(ddir.FullName, rt.MakeTorrentFileName(false)));
-                FileStream fileStream = File.Create(dpath);
-                int bytesRead;
-                while (httpResponseStream != null && (bytesRead = httpResponseStream.Read(buffer, 0, bufferSize)) != 0)
-                {
-                    fileStream.Write(buffer, 0, bytesRead);
-                } // end while
-                var fn = new FileInfo(dpath);
-                if (fn.Exists)
-                    rt.FilePath = fn.FullName;
+                Stream httpResponseStream = httpResponse.GetResponseStream();
 
-                rt.IsHasFile = fn.Exists;
+                //string fileName = Path.GetFileName(httpResponse.Headers["filename"]);
+
+                const int bufferSize = 1024;
+                var buffer = new byte[bufferSize];
+
+                // Read from response and write to file
+                var ddir =
+                    new DirectoryInfo(Path.Combine(Subscribe.DownloadPath,
+                        string.Format("{0}-{1}({2})", Prefix, item.VideoOwnerName, item.VideoOwner)));
+                if (!ddir.Exists)
+                    ddir.Create();
+
+                var tap = item as VideoItemTap;
+                if (tap != null)
+                {
+                    var dpath =
+                        VideoItemBase.AviodTooLongFileName(Path.Combine(ddir.FullName, tap.MakeTorrentFileName(false)));
+                    FileStream fileStream = File.Create(dpath);
+                    int bytesRead;
+                    while (httpResponseStream != null &&
+                           (bytesRead = httpResponseStream.Read(buffer, 0, bufferSize)) != 0)
+                    {
+                        fileStream.Write(buffer, 0, bytesRead);
+                    } // end while
+                    var fn = new FileInfo(dpath);
+                    if (fn.Exists)
+                        tap.FilePath = fn.FullName;
+
+                    tap.IsHasFile = fn.Exists;
+                    tap.FileType = "torrent";
+                }
+                _model.MySubscribe.Result = "Download OK: " + item.Title.Trim();
             }
-            _model.MySubscribe.Result = item.Title + " downloaded";
+            else
+            {
+                DownloadItem(item, true);
+            }
         }
 
         public override void SearchItems(string key, ObservableCollectionEx<VideoItemBase> listSearchVideoItems)
@@ -374,7 +379,7 @@ namespace Mwman.Chanell
             var results = GetAllLinks(_tapcookie, zap, out doc);
             if (!results.Any())
             {
-                AutorizeChanel();
+                _tapcookie = GetSession();
                 results = GetAllLinks(_tapcookie, zap, out doc);
             }
             foreach (HtmlNode node in results)

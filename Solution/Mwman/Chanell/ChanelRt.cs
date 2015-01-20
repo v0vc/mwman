@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading;
 using System.Windows;
@@ -80,9 +81,7 @@ namespace Mwman.Chanell
             var type = e.Argument.ToString();
             e.Result = type;
 
-            _rtcookie = ReadCookiesFromDiskBinary(Cname);
-            if (_rtcookie == null)
-                AutorizeChanel();
+            _rtcookie = ReadCookiesFromDiskBinary(Cname) ?? GetSession();
 
             string zap;
 
@@ -225,9 +224,7 @@ namespace Mwman.Chanell
                 else
                     Application.Current.Dispatcher.Invoke(() => ListVideoItems.Clear());
             }
-            _rtcookie = ReadCookiesFromDiskBinary(Cname);
-            if (_rtcookie == null)
-                AutorizeChanel();
+            _rtcookie = ReadCookiesFromDiskBinary(Cname) ?? GetSession();
             _bgv.RunWorkerAsync("Get");
             
         }
@@ -281,6 +278,7 @@ namespace Mwman.Chanell
                 {
                     cc.Add(resp.Cookies);
                 }
+                WriteCookiesToDiskBinary(cc, Cname);
                 return cc;
             }
             catch (Exception ex)
@@ -293,8 +291,6 @@ namespace Mwman.Chanell
         public override void AutorizeChanel()
         {
             _rtcookie = GetSession();
-            if (_rtcookie.Count > 0)
-                WriteCookiesToDiskBinary(_rtcookie, Cname);
         }
 
         public override void DownloadItem(IList list, bool isAudio)
@@ -332,32 +328,41 @@ namespace Mwman.Chanell
             requestWriter.Close();
 
             var httpResponse = (HttpWebResponse) httpRequest.GetResponse();
-            Stream httpResponseStream = httpResponse.GetResponseStream();
-
-            const int bufferSize = 1024;
-            var buffer = new byte[bufferSize];
-
-            // Read from response and write to file
-            var ddir =
-                new DirectoryInfo(Path.Combine(Subscribe.DownloadPath,
-                    string.Format("{0}-{1}({2})", Prefix, item.VideoOwnerName, item.VideoOwner)));
-            if (!ddir.Exists)
-                ddir.Create();
-            var rt = item as VideoItemRt;
-            if (rt == null) return;
-            var dpath = VideoItemBase.AviodTooLongFileName(Path.Combine(ddir.FullName, rt.MakeTorrentFileName(false)));
-            FileStream fileStream = File.Create(dpath);
-            int bytesRead;
-            while (httpResponseStream != null && (bytesRead = httpResponseStream.Read(buffer, 0, bufferSize)) != 0)
+            if (httpResponse.ContentType.Contains("torrent"))
             {
-                fileStream.Write(buffer, 0, bytesRead);
-            } // end while
-            var fn = new FileInfo(dpath);
-            if (fn.Exists)
-                rt.FilePath = fn.FullName;
+                Stream httpResponseStream = httpResponse.GetResponseStream();
 
-            rt.IsHasFile = fn.Exists;
-            _model.MySubscribe.Result = rt.Title + " downloaded";
+                const int bufferSize = 1024;
+                var buffer = new byte[bufferSize];
+
+                // Read from response and write to file
+                var ddir =
+                    new DirectoryInfo(Path.Combine(Subscribe.DownloadPath,
+                        string.Format("{0}-{1}({2})", Prefix, item.VideoOwnerName, item.VideoOwner)));
+                if (!ddir.Exists)
+                    ddir.Create();
+                var rt = item as VideoItemRt;
+                if (rt == null) return;
+                var dpath =
+                    VideoItemBase.AviodTooLongFileName(Path.Combine(ddir.FullName, rt.MakeTorrentFileName(false)));
+                FileStream fileStream = File.Create(dpath);
+                int bytesRead;
+                while (httpResponseStream != null && (bytesRead = httpResponseStream.Read(buffer, 0, bufferSize)) != 0)
+                {
+                    fileStream.Write(buffer, 0, bytesRead);
+                } // end while
+                var fn = new FileInfo(dpath);
+                if (fn.Exists)
+                    rt.FilePath = fn.FullName;
+
+                rt.IsHasFile = fn.Exists;
+                rt.FileType = "torrent";
+                _model.MySubscribe.Result = "Download OK: " + item.Title.Trim();
+            }
+            else
+            {
+                DownloadItem(item, true);
+            }
         }
 
         public override void GetPopularItems(string key, ObservableCollectionEx<VideoItemBase> listPopularVideoItems)
@@ -382,7 +387,7 @@ namespace Mwman.Chanell
             var results = GetAllLinks(_rtcookie, zap, out doc);
             if (!results.Any())
             {
-                AutorizeChanel();
+                _rtcookie = GetSession();
                 results = GetAllLinks(_rtcookie, zap, out doc);
             }
             foreach (HtmlNode node in results)

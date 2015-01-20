@@ -30,6 +30,8 @@ namespace Mwman.Video
 
         private bool _isAudio;
 
+        private readonly List<string> _audExtensions = new List<string> {".m4a", ".aac", ".mp3", ".webm"};
+
         #endregion
 
         public VideoItemYou(JToken pair, bool isPopular, string region)
@@ -150,25 +152,70 @@ namespace Mwman.Video
 
         public override bool IsFileExist()
         {
-            string path;
-            if (!string.IsNullOrEmpty(VideoOwner))
-                path = Path.Combine(Subscribe.DownloadPath, VideoOwner, string.Format("{0}.mp4", ClearTitle));
-            else
+            string pathvid;
+            string pathaud;
+
+            if (string.IsNullOrEmpty(VideoOwner))
             {
                 if (!string.IsNullOrEmpty(ClearTitle))
-                    path = Path.Combine(Subscribe.DownloadPath, string.Format("{0}.mp4", ClearTitle));
+                {
+                    pathvid = Path.Combine(Subscribe.DownloadPath, string.Format("{0}.mp4", ClearTitle));
+                    var fnvid = new FileInfo(pathvid);
+                    if (fnvid.Exists)
+                    {
+                        FileType = "video";
+                        FilePath = fnvid.FullName;
+                        return fnvid.Exists;
+                    }
+                    foreach (string extension in _audExtensions)
+                    {
+                        pathaud = Path.Combine(Subscribe.DownloadPath, string.Format("{0}{1}", ClearTitle, extension));
+                        var fnaud = new FileInfo(pathaud);
+                        if (fnaud.Exists)
+                        {
+                            FileType = "audio";
+                            FilePath = fnaud.FullName;
+                            return fnaud.Exists;
+                        }
+                    }
+                }
                 else
                 {
+                    FilePath = string.Empty;
                     return false;
                 }
             }
-
-            var fn = new FileInfo(path);
-            if (fn.Exists)
+            else
             {
-                FilePath = path;
+                pathvid = Path.Combine(Subscribe.DownloadPath, VideoOwner, string.Format("{0}.mp4", ClearTitle));
+                var fnvid = new FileInfo(pathvid);
+                if (fnvid.Exists)
+                {
+                    FileType = "video";
+                    FilePath = fnvid.FullName;
+                    return fnvid.Exists;
+                }
+                foreach (string extension in _audExtensions)
+                {
+                    pathaud = Path.Combine(Subscribe.DownloadPath, VideoOwner, string.Format("{0}{1}", ClearTitle, extension));
+                    var fnaud = new FileInfo(pathaud);
+                    if (fnaud.Exists)
+                    {
+                        FileType = "audio";
+                        FilePath = fnaud.FullName;
+                        return fnaud.Exists;
+                    }
+                }
             }
-            return fn.Exists;
+
+            //var fn = new FileInfo(pathvid);
+            //if (fn.Exists)
+            //{
+            //    FilePath = pathvid;
+            //}
+            //return fn.Exists;
+
+            return false;
         }
 
         public override double GetTorrentSize(string input)
@@ -178,6 +225,7 @@ namespace Mwman.Video
 
         public override void DownloadItem(bool isAudio)
         {
+            _destList.Clear();
             if (!_bgv.IsBusy)
                 _bgv.RunWorkerAsync(isAudio);
         }
@@ -237,12 +285,12 @@ namespace Mwman.Video
                 var dest = GetDestination(data);
                 if (!string.IsNullOrEmpty(dest))
                     _destList.Add(dest);
-                VideoItemBase.Log(data);
+                Log(data);
                 Subscribe.SetResult("Working...");
                 var percent = GetPercentFromYoudlOutput(data);
                 if (Math.Abs(percent) > 0)
                 {
-                    Application.Current.Dispatcher.BeginInvoke((Action)(() => { PercentDownloaded = percent; }));
+                    Application.Current.Dispatcher.Invoke(() => PercentDownloaded = percent);
                 }
             });
             t.Wait();
@@ -303,8 +351,15 @@ namespace Mwman.Video
         {
             if (_isAudio)
             {
-                Subscribe.SetResult("Audio OK: " + VideoLink);
-                return;
+                if (_destList.Any())
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        IsHasFile = true;
+                        FileType = "audio";
+                    });
+                    return;
+                }
             }
 
             var fndl = _destList.Select(s => new FileInfo(s)).Where(fn => fn.Exists).ToList();
@@ -327,13 +382,23 @@ namespace Mwman.Video
 
             //var fnvid = fndl.First(x => x.Length == fndl.Max(z => z.Length));
             //var fnaud = fndl.First(x => x.Length == fndl.Min(z => z.Length));
-            var fnvid = fndl.First(x => Path.GetExtension(x.Name) == ".mp4" || Path.GetExtension(x.Name) == ".webm");
-            var fnaud = fndl.First(x => Path.GetExtension(x.Name) == ".m4a"
-                                        || Path.GetExtension(x.Name) == ".webm"
-                                        || Path.GetExtension(x.Name) == ".aac"
-                                        || Path.GetExtension(x.Name) == ".mp3");
 
-            MergeVideos(fnvid, fnaud);
+            var fnvid = fndl.FirstOrDefault(x => Path.GetExtension(x.Name) == ".mp4" || Path.GetExtension(x.Name) == ".webm");
+            var fnaud = new FileInfo(_destList.First());
+
+            foreach (string extension in _audExtensions)
+            {
+                fnaud = fndl.FirstOrDefault(x => Path.GetExtension(x.Name) == extension);
+                if (fnaud != null && fnaud.Exists)
+                    break;
+            }
+            //var fnaud = fndl.First(x => Path.GetExtension(x.Name) == ".m4a"
+            //                            || Path.GetExtension(x.Name) == ".webm"
+            //                            || Path.GetExtension(x.Name) == ".aac"
+            //                            || Path.GetExtension(x.Name) == ".mp3");
+
+            if (fnvid != null && fnaud != null && fnaud.Exists && fnvid.Exists)
+                MergeVideos(fnvid, fnaud);
         }
 
         private void MergeVideos(FileInfo fnvid, FileInfo fnaud)
@@ -397,11 +462,16 @@ namespace Mwman.Video
                     fnvid.Delete();
                     fnaud.Delete();
                     FilePath = fnn.FullName;
-                    Application.Current.Dispatcher.BeginInvoke((Action) (() => IsHasFile = true));
+                    
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        IsHasFile = true;
+                        FileType = "video";    
+                    });
                 }
                 catch (Exception ex)
                 {
-                    Subscribe.SetResult(ex.Message);
+                    throw new Exception(ex.Message);
                 }
             }
         }

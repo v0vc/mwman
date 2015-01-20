@@ -292,89 +292,77 @@ namespace Mwman.Common
 
         #region Public Methods
 
-        public void MoveChanel(object obj)
+        
+
+        public void PlayItem(object obj)
         {
             if (obj == null)
                 return;
 
-            if (!ChanelListToBind.Any() || ChanelListToBind.Count == SelectedListChanels.Count)
-                return;
-
-            if (ChanelListToBind.Count != ChanelList.Count) //disable when favorites are on
-                return;
-
-            var dic = ChanelListToBind.ToDictionary(chanel => chanel, chanel => ChanelListToBind.IndexOf(chanel));
-            int prevIndex;
-            int curIndex;
             switch (obj.ToString())
             {
-                case "Up":
-                    //Местоположение предыдущего элемента
-                    prevIndex = -1;
-
-                    for (int i = SelectedListChanels.Count; i > 0; i--)
+                case "MainVideo":
+                case "MainAudio":
+                case "MainTorrent":
+                
+                    if (CurrentChanel.CurrentVideoItem is VideoItemYou)
                     {
-                        curIndex = ChanelListToBind.IndexOf((ChanelBase) SelectedListChanels[i - 1]);
-                        //Проверка: не выйдет ли элемент за пределы массива
-                        if (curIndex > 0)
-                        {
-                            //Проверка: не займет ли элемент при перемещении место предыдущего элемента
-                            if (curIndex - 1 != prevIndex)
-                            {
-                                ChanelListToBind.Move(curIndex, curIndex - 1);
-                            }
-                        }
-                        //Сохранение местоположения элемента
-                        prevIndex = ChanelListToBind.IndexOf((ChanelBase) SelectedListChanels[i - 1]);
+                        var item = CurrentChanel.CurrentVideoItem as VideoItemYou;
+                        item.RunFile(item.IsHasFile ? "Local" : "Online");
+                    }
+
+                    if (CurrentChanel.CurrentVideoItem is VideoItemRt)
+                    {
+                        var item = CurrentChanel.CurrentVideoItem as VideoItemRt;
+                        item.RunFile(item.IsHasFile ? "Local" : "Online");
+                    }
+
+                    if (CurrentChanel.CurrentVideoItem is VideoItemTap)
+                    {
+                        var item = CurrentChanel.CurrentVideoItem as VideoItemTap;
+                        item.RunFile(item.IsHasFile ? "Local" : "Online");
                     }
 
                     break;
 
-                case "Down":
-                    prevIndex = ChanelList.Count;
-                    for (int i = SelectedListChanels.Count; i > 0; i--)
+                case "SearchPlay":
+                case "PopularPlay":
+
+                    if (SelectedForumItem.CurrentVideoItem is VideoItemYou)
                     {
-                        curIndex = ChanelListToBind.IndexOf((ChanelBase) SelectedListChanels[i - 1]);
-                        //Проверка: не выйдет ли элемент за пределы массива
-                        if (curIndex < ChanelListToBind.Count - 1)
-                        {
-                            //Проверка: не займет ли элемент при перемещении место предыдущего элемента
-                            if (curIndex + 1 != prevIndex)
-                            {
-                                ChanelListToBind.Move(curIndex, curIndex + 1);
-                            }
-                        }
-                        //Сохранение местоположения элемента
-                        prevIndex = ChanelListToBind.IndexOf((ChanelBase) SelectedListChanels[i - 1]);
+                        var item = SelectedForumItem.CurrentVideoItem as VideoItemYou;
+                        item.RunFile(item.IsHasFile ? "Local" : "Online");
+                    }
+
+                    if (SelectedForumItem.CurrentVideoItem is VideoItemRt)
+                    {
+                        var item = SelectedForumItem.CurrentVideoItem as VideoItemRt;
+                        item.RunFile(item.IsHasFile ? "Local" : "Online");
+                    }
+
+                    if (SelectedForumItem.CurrentVideoItem is VideoItemTap)
+                    {
+                        var item = SelectedForumItem.CurrentVideoItem as VideoItemTap;
+                        item.RunFile(item.IsHasFile ? "Local" : "Online");
                     }
 
                     break;
-
             }
+        }
 
-            if (obj.ToString() == "SaveOrder") //обновляем все индексы
+        public void Download(object obj)
+        {
+            if (obj == null)
+                return;
+
+            switch (obj.ToString())
             {
-                foreach (ChanelBase chanel in ChanelListToBind) 
-                {
-                    var index = ChanelListToBind.IndexOf(chanel);
-                    Sqllite.UpdateChanelOrder(ChanelDb, chanel.ChanelOwner, index);
-                }
-                Result = "Order saved";
-            }
-            else
-            {
-                foreach (ChanelBase chanel in ChanelListToBind) //обновляем только изменившиеся индексы
-                {
-                    var index = ChanelListToBind.IndexOf(chanel);
-                    int prev;
-                    if (dic.TryGetValue(chanel, out prev))
-                    {
-                        if (prev != index)
-                        {
-                            Sqllite.UpdateChanelOrder(ChanelDb, chanel.ChanelOwner, index);
-                        }
-                    }
-                }
+                case "MainDownload":
+
+                    CurrentChanel.DownloadItem(CurrentChanel.SelectedListVideoItems, false);
+
+                    break;
+
             }
         }
 
@@ -493,6 +481,92 @@ namespace Mwman.Common
                     }
 
                     break;
+            }
+        }
+
+        public void MoveChanel(object obj)
+        {
+            if (obj == null)
+                return;
+
+            if (!ChanelListToBind.Any() || ChanelListToBind.Count == SelectedListChanels.Count)
+                return;
+
+            if (ChanelListToBind.Count != ChanelList.Count) //disable when favorites are on
+                return;
+
+            var dic = ChanelListToBind.ToDictionary(chanel => chanel, chanel => ChanelListToBind.IndexOf(chanel));
+            int prevIndex;
+            int curIndex;
+            switch (obj.ToString())
+            {
+                case "Up":
+                    //Местоположение предыдущего элемента
+                    prevIndex = -1;
+
+                    for (int i = SelectedListChanels.Count; i > 0; i--)
+                    {
+                        curIndex = ChanelListToBind.IndexOf((ChanelBase)SelectedListChanels[i - 1]);
+                        //Проверка: не выйдет ли элемент за пределы массива
+                        if (curIndex > 0)
+                        {
+                            //Проверка: не займет ли элемент при перемещении место предыдущего элемента
+                            if (curIndex - 1 != prevIndex)
+                            {
+                                ChanelListToBind.Move(curIndex, curIndex - 1);
+                            }
+                        }
+                        //Сохранение местоположения элемента
+                        prevIndex = ChanelListToBind.IndexOf((ChanelBase)SelectedListChanels[i - 1]);
+                    }
+
+                    break;
+
+                case "Down":
+                    prevIndex = ChanelList.Count;
+                    for (int i = SelectedListChanels.Count; i > 0; i--)
+                    {
+                        curIndex = ChanelListToBind.IndexOf((ChanelBase)SelectedListChanels[i - 1]);
+                        //Проверка: не выйдет ли элемент за пределы массива
+                        if (curIndex < ChanelListToBind.Count - 1)
+                        {
+                            //Проверка: не займет ли элемент при перемещении место предыдущего элемента
+                            if (curIndex + 1 != prevIndex)
+                            {
+                                ChanelListToBind.Move(curIndex, curIndex + 1);
+                            }
+                        }
+                        //Сохранение местоположения элемента
+                        prevIndex = ChanelListToBind.IndexOf((ChanelBase)SelectedListChanels[i - 1]);
+                    }
+
+                    break;
+
+            }
+
+            if (obj.ToString() == "SaveOrder") //обновляем все индексы
+            {
+                foreach (ChanelBase chanel in ChanelListToBind)
+                {
+                    var index = ChanelListToBind.IndexOf(chanel);
+                    Sqllite.UpdateChanelOrder(ChanelDb, chanel.ChanelOwner, index);
+                }
+                Result = "Order saved";
+            }
+            else
+            {
+                foreach (ChanelBase chanel in ChanelListToBind) //обновляем только изменившиеся индексы
+                {
+                    var index = ChanelListToBind.IndexOf(chanel);
+                    int prev;
+                    if (dic.TryGetValue(chanel, out prev))
+                    {
+                        if (prev != index)
+                        {
+                            Sqllite.UpdateChanelOrder(ChanelDb, chanel.ChanelOwner, index);
+                        }
+                    }
+                }
             }
         }
 
@@ -916,5 +990,6 @@ namespace Mwman.Common
         //    //this.Send(910); //hide shutter
         //    this.Send(isShow ? 911 : 910);
         //}
+
     }
 }

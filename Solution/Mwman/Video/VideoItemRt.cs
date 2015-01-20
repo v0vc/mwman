@@ -134,6 +134,7 @@ namespace Mwman.Video
                 if (fn.Exists)
                 {
                     FilePath = fn.FullName;
+                    FileType = "torrent";
                     return fn.Exists;
                 }
             }
