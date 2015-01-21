@@ -421,6 +421,7 @@ namespace Mwman.Chanell
                             {
                                 MessageBox.Show(ex.Message);
                             }
+                            video.FilePath = string.Empty;
                             video.IsHasFile = false;
                             video.IsDownLoading = false;
                             video.FileType = "notset";
@@ -459,7 +460,7 @@ namespace Mwman.Chanell
                             Sqllite.UpdateValue(Subscribe.ChanelDb, Sqllite.Viewcount, Sqllite.Id, item.VideoID, item.ViewCount);
                         }
                     }
-                    else //обновим только у последних элементов
+                    else //обновим только у последних 25 элементов
                     {
                         foreach (VideoItemBase item in ListVideoItems.Take(25))
                         {

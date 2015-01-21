@@ -292,8 +292,6 @@ namespace Mwman.Common
 
         #region Public Methods
 
-        
-
         public void PlayItem(object obj)
         {
             if (obj == null)
@@ -304,69 +302,21 @@ namespace Mwman.Common
                 case "MainVideo":
                 case "MainAudio":
                 case "MainTorrent":
-                
-                    if (CurrentChanel.CurrentVideoItem is VideoItemYou)
-                    {
-                        var item = CurrentChanel.CurrentVideoItem as VideoItemYou;
-                        item.RunFile(item.IsHasFile ? "Local" : "Online");
-                    }
 
-                    if (CurrentChanel.CurrentVideoItem is VideoItemRt)
-                    {
-                        var item = CurrentChanel.CurrentVideoItem as VideoItemRt;
-                        item.RunFile(item.IsHasFile ? "Local" : "Online");
-                    }
-
-                    if (CurrentChanel.CurrentVideoItem is VideoItemTap)
-                    {
-                        var item = CurrentChanel.CurrentVideoItem as VideoItemTap;
-                        item.RunFile(item.IsHasFile ? "Local" : "Online");
-                    }
+                    RunItem(CurrentChanel);
 
                     break;
 
                 case "SearchPlay":
                 case "PopularPlay":
 
-                    if (SelectedForumItem.CurrentVideoItem is VideoItemYou)
-                    {
-                        var item = SelectedForumItem.CurrentVideoItem as VideoItemYou;
-                        item.RunFile(item.IsHasFile ? "Local" : "Online");
-                    }
-
-                    if (SelectedForumItem.CurrentVideoItem is VideoItemRt)
-                    {
-                        var item = SelectedForumItem.CurrentVideoItem as VideoItemRt;
-                        item.RunFile(item.IsHasFile ? "Local" : "Online");
-                    }
-
-                    if (SelectedForumItem.CurrentVideoItem is VideoItemTap)
-                    {
-                        var item = SelectedForumItem.CurrentVideoItem as VideoItemTap;
-                        item.RunFile(item.IsHasFile ? "Local" : "Online");
-                    }
+                    RunItem(SelectedForumItem);
 
                     break;
 
                 case "MainPlay":
 
-                    if (CurrentChanel.CurrentVideoItem is VideoItemYou)
-                    {
-                        var item = CurrentChanel.CurrentVideoItem as VideoItemYou;
-                        item.RunFile(item.IsHasFile ? "Local" : "Online");
-                    }
-
-                    if (CurrentChanel.CurrentVideoItem is VideoItemRt)
-                    {
-                        var item = CurrentChanel.CurrentVideoItem as VideoItemRt;
-                        item.RunFile(item.IsHasFile ? "Local" : "Online");
-                    }
-
-                    if (CurrentChanel.CurrentVideoItem is VideoItemTap)
-                    {
-                        var item = CurrentChanel.CurrentVideoItem as VideoItemTap;
-                        item.RunFile(item.IsHasFile ? "Local" : "Online");
-                    }
+                    RunItem(CurrentChanel);
 
                     break;
 
@@ -376,30 +326,13 @@ namespace Mwman.Common
                 case "SearchAudio":
                 case "SearchTorrent":
 
-                    if (SelectedForumItem.CurrentVideoItem is VideoItemYou)
-                    {
-                        var item = SelectedForumItem.CurrentVideoItem as VideoItemYou;
-                        item.RunFile(item.IsHasFile ? "Local" : "Online");
-                    }
-
-                    if (SelectedForumItem.CurrentVideoItem is VideoItemRt)
-                    {
-                        var item = SelectedForumItem.CurrentVideoItem as VideoItemRt;
-                        item.RunFile(item.IsHasFile ? "Local" : "Online");
-                    }
-
-                    if (SelectedForumItem.CurrentVideoItem is VideoItemTap)
-                    {
-                        var item = SelectedForumItem.CurrentVideoItem as VideoItemTap;
-                        item.RunFile(item.IsHasFile ? "Local" : "Online");
-                    }
+                    RunItem(SelectedForumItem);
 
                     break;
-                    
             }
         }
 
-        public void Download(object obj)
+        public void DownloadItem(object obj)
         {
             if (obj == null)
                 return;
@@ -447,124 +380,6 @@ namespace Mwman.Common
                     break;
 
                 case "MainInternal":
-
-                    lsyou = CurrentChanel.SelectedListVideoItems.OfType<VideoItemYou>().Select(item => item).ToList();
-                    if (lsyou.Count > 0)
-                    {
-                        cnanel = new ChanelYou(_model);
-                        cnanel.DownloadVideoInternal(lsyou);
-                    }
-
-                    break;
-
-                case "PopularInternal":
-                case "SearchInternal":
-
-                    lsyou = SelectedForumItem.SelectedListVideoItems.OfType<VideoItemYou>().Select(item => item).ToList();
-                    if (lsyou.Count > 0)
-                    {
-                        cnanel = new ChanelYou(_model);
-                        cnanel.DownloadVideoInternal(lsyou);
-                    }
-
-                    break;
-            }
-        }
-
-        public void PlayDownload(object obj)
-        {
-            if (obj == null)
-                return;
-
-            IList lsyou;
-            switch (obj.ToString())
-            {
-                case "Search":
-
-                    ChanelBase cnanel;
-                    lsyou = SelectedForumItem.SelectedListVideoItems.OfType<VideoItemYou>().Select(item => item).ToList();
-                    if (lsyou.Count > 0)
-                    {
-                        cnanel = new ChanelYou(_model);
-                        cnanel.DownloadItem(lsyou, false);
-                    }
-
-                    IList lsrt = SelectedForumItem.SelectedListVideoItems.OfType<VideoItemRt>().Select(item => item).ToList();
-                    if (lsrt.Count > 0)
-                    {
-                        cnanel = new ChanelRt(_model);
-                        cnanel.DownloadItem(lsrt, false);
-                    }
-
-                    IList lstap = SelectedForumItem.SelectedListVideoItems.OfType<VideoItemTap>().Select(item => item).ToList();
-                    if (lstap.Count > 0)
-                    {
-                        cnanel = new ChanelTap(_model);
-                        cnanel.DownloadItem(lstap, false);
-                    }
-
-                    break;
-
-                case "Popular":
-
-                    var chanelpop = new ChanelYou(_model);
-
-                    chanelpop.DownloadItem(SelectedForumItem.SelectedListVideoItems, false);
-
-                    break;
-
-                case "Get":
-
-                    CurrentChanel.DownloadItem(CurrentChanel.SelectedListVideoItems, false);
-
-                    break;
-
-                case "SearchPlay":
-                case "PopularPlay":
-
-                    if (SelectedForumItem.CurrentVideoItem is VideoItemYou)
-                    {
-                        var item = SelectedForumItem.CurrentVideoItem as VideoItemYou;
-                        item.RunFile(item.IsHasFile ? "Local" : "Online");
-                    }
-
-                    if (SelectedForumItem.CurrentVideoItem is VideoItemRt)
-                    {
-                        var item = SelectedForumItem.CurrentVideoItem as VideoItemRt;
-                        item.RunFile(item.IsHasFile ? "Local" : "Online");
-                    }
-
-                    if (SelectedForumItem.CurrentVideoItem is VideoItemTap)
-                    {
-                        var item = SelectedForumItem.CurrentVideoItem as VideoItemTap;
-                        item.RunFile(item.IsHasFile ? "Local" : "Online");
-                    }
-
-                    break;
-
-                case "GetPlay":
-
-                    if (CurrentChanel.CurrentVideoItem is VideoItemYou)
-                    {
-                        var item = CurrentChanel.CurrentVideoItem as VideoItemYou;
-                        item.RunFile(item.IsHasFile ? "Local" : "Online");
-                    }
-
-                    if (CurrentChanel.CurrentVideoItem is VideoItemRt)
-                    {
-                        var item = CurrentChanel.CurrentVideoItem as VideoItemRt;
-                        item.RunFile(item.IsHasFile ? "Local" : "Online");
-                    }
-
-                    if (CurrentChanel.CurrentVideoItem is VideoItemTap)
-                    {
-                        var item = CurrentChanel.CurrentVideoItem as VideoItemTap;
-                        item.RunFile(item.IsHasFile ? "Local" : "Online");
-                    }
-
-                    break;
-
-                case "GetInternal":
 
                     lsyou = CurrentChanel.SelectedListVideoItems.OfType<VideoItemYou>().Select(item => item).ToList();
                     if (lsyou.Count > 0)
@@ -876,6 +691,27 @@ namespace Mwman.Common
                         break;
                 }
             });
+        }
+
+        private static void RunItem(ChanelBase chanel)
+        {
+            if (chanel.CurrentVideoItem is VideoItemYou)
+            {
+                var item = chanel.CurrentVideoItem as VideoItemYou;
+                item.RunFile(item.IsHasFile ? "Local" : "Online");
+            }
+
+            if (chanel.CurrentVideoItem is VideoItemRt)
+            {
+                var item = chanel.CurrentVideoItem as VideoItemRt;
+                item.RunFile(item.IsHasFile ? "Local" : "Online");
+            }
+
+            if (chanel.CurrentVideoItem is VideoItemTap)
+            {
+                var item = chanel.CurrentVideoItem as VideoItemTap;
+                item.RunFile(item.IsHasFile ? "Local" : "Online");
+            }
         }
 
         public static void SetResult(string result)

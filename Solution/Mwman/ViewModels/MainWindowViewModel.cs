@@ -37,7 +37,7 @@ namespace Mwman.ViewModels
             OpenSettingsCommand = new RelayCommand(Model.OpenSettings);
             BackupRestoreCommand = new RelayCommand(Model.BackupRestore);
             SearchCommand = new RelayCommand(Model.MySubscribe.SearchItems);
-            DownloadCommand = new RelayCommand(Model.MySubscribe.Download);
+            DownloadCommand = new RelayCommand(Model.MySubscribe.DownloadItem);
             PlayCommand = new RelayCommand(Model.MySubscribe.PlayItem);
             MoveChanelCommand = new RelayCommand(Model.MySubscribe.MoveChanel);
         }

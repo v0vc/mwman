@@ -353,6 +353,7 @@ namespace Mwman.Video
             {
                 if (_destList.Any())
                 {
+                    FilePath = _destList.First();
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         IsHasFile = true;

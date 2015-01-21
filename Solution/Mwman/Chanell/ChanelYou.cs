@@ -453,7 +453,7 @@ namespace Mwman.Chanell
         } 
         #endregion
 
-        private static void AddItems(VideoItemYou v, ICollection<VideoItemBase> listPopularVideoItems)
+        private static void AddItems(VideoItemBase v, ICollection<VideoItemBase> listPopularVideoItems)
         {
             listPopularVideoItems.Add(v);
             v.IsHasFile = v.IsFileExist();
