@@ -293,7 +293,7 @@ namespace Mwman.Chanell
 
         public abstract void DownloadItem(VideoItemBase item, bool isGetCookie);
 
-        public abstract void DownloadVideoInternal(IList list);
+        //public abstract void DownloadVideoInternal(IList list);
 
         public abstract void SearchItems(string key, ObservableCollectionEx<VideoItemBase> listSearchVideoItems);
 

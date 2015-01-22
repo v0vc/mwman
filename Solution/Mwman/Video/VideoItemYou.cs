@@ -13,6 +13,7 @@ using Mwman.Chanell;
 using Mwman.Common;
 using Mwman.Models;
 using Newtonsoft.Json.Linq;
+using YoutubeExtractor;
 
 namespace Mwman.Video
 {
@@ -25,6 +26,8 @@ namespace Mwman.Video
         #region Fields
 
         private readonly BackgroundWorker _bgv;
+
+        private BackgroundWorker _worker;
 
         private readonly List<string> _destList = new List<string>();
 
@@ -163,7 +166,10 @@ namespace Mwman.Video
                     var fnvid = new FileInfo(pathvid);
                     if (fnvid.Exists)
                     {
-                        FileType = "video";
+                        if (Application.Current.Dispatcher.CheckAccess())
+                            FileType = "video";
+                        else
+                            Application.Current.Dispatcher.Invoke(() => FileType = "video");
                         FilePath = fnvid.FullName;
                         return fnvid.Exists;
                     }
@@ -173,7 +179,10 @@ namespace Mwman.Video
                         var fnaud = new FileInfo(pathaud);
                         if (fnaud.Exists)
                         {
-                            FileType = "audio";
+                            if (Application.Current.Dispatcher.CheckAccess())
+                                FileType = "audio";
+                            else
+                                Application.Current.Dispatcher.Invoke(() => FileType = "audio");
                             FilePath = fnaud.FullName;
                             return fnaud.Exists;
                         }
@@ -191,7 +200,10 @@ namespace Mwman.Video
                 var fnvid = new FileInfo(pathvid);
                 if (fnvid.Exists)
                 {
-                    FileType = "video";
+                    if (Application.Current.Dispatcher.CheckAccess())
+                        FileType = "video";
+                    else
+                        Application.Current.Dispatcher.Invoke(() => FileType = "video");
                     FilePath = fnvid.FullName;
                     return fnvid.Exists;
                 }
@@ -201,19 +213,15 @@ namespace Mwman.Video
                     var fnaud = new FileInfo(pathaud);
                     if (fnaud.Exists)
                     {
-                        FileType = "audio";
+                        if (Application.Current.Dispatcher.CheckAccess())
+                            FileType = "audio";
+                        else
+                            Application.Current.Dispatcher.Invoke(() => FileType = "audio");
                         FilePath = fnaud.FullName;
                         return fnaud.Exists;
                     }
                 }
             }
-
-            //var fn = new FileInfo(pathvid);
-            //if (fn.Exists)
-            //{
-            //    FilePath = pathvid;
-            //}
-            //return fn.Exists;
 
             return false;
         }
@@ -226,6 +234,7 @@ namespace Mwman.Video
         public override void DownloadItem(bool isAudio)
         {
             _destList.Clear();
+            IsDownLoading = true;
             if (!_bgv.IsBusy)
                 _bgv.RunWorkerAsync(isAudio);
         }
@@ -234,6 +243,119 @@ namespace Mwman.Video
         {
             throw new NotImplementedException();
         }
+
+        public async void DownloadInternal()
+        {
+            var dir = new DirectoryInfo(SavePath);
+            if (!dir.Exists)
+                dir.Create();
+            IsDownLoading = true;
+            IsHasFile = false;
+            var videoInfos = DownloadUrlResolver.GetDownloadUrls(VideoLink).OrderByDescending(z => z.Resolution);
+            var videoInfo = videoInfos.First(info => info.VideoType == VideoType.Mp4 && info.AudioBitrate != 0);
+            if (videoInfo != null)
+            {
+                if (videoInfo.RequiresDecryption)
+                {
+                    DownloadUrlResolver.DecryptDownloadUrl(videoInfo);
+                }
+
+                var downloader = new VideoDownloader(videoInfo, Path.Combine(SavePath, MakeValidFileName(videoInfo.Title) + videoInfo.VideoExtension));
+                downloader.DownloadProgressChanged += (sender, args) => downloader_DownloadProgressChanged(args);
+                downloader.DownloadFinished += delegate { downloader_DownloadFinished(downloader); };
+
+                //downloader.DownloadProgressChanged += downloader_DownloadProgressChanged;
+                //downloader.DownloadFinished += downloader_DownloadFinished;
+
+                //_worker = new BackgroundWorker { WorkerReportsProgress = true };
+                //_worker.ProgressChanged += bgv_ProgressChanged;
+                //_worker.DoWork += bgv_DoWork;
+                //_worker.RunWorkerCompleted += _worker_RunWorkerCompleted;
+                //_worker.RunWorkerAsync(downloader);
+                
+                
+                //var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
+                //var token = new CancellationToken();
+
+                //Task.Factory.StartNew(DoWork, downloader, token)
+                //    .ContinueWith(x => downloader_DownloadFinished(downloader), token, TaskContinuationOptions.None,
+                //        scheduler);
+
+                //Task.Factory.StartNew(downloader.Execute, token)
+                //    .ContinueWith(x => downloader_DownloadFinished(downloader), token, TaskContinuationOptions.None,
+                //        scheduler);
+                await Task.Factory.StartNew(downloader.Execute);
+            }
+        }
+
+        //void _worker_RunWorkerCompleted(object sender, EventArgs e)
+        //{
+        //    MessageBox.Show("Filished!");
+        //    //FilePath = vd.SavePath;
+        //    //Subscribe.SetResult(string.Format("\"{0}\" completed!", vd.Video.Title));
+        //    //IsHasFile = IsFileExist();
+        //    //throw new NotImplementedException();
+        //}
+
+        //void downloader_DownloadFinished(object sender, EventArgs e)
+        //{
+        //    _worker_RunWorkerCompleted(_worker, e);
+        //}
+
+        //void downloader_DownloadProgressChanged(object sender, ProgressEventArgs e)
+        //{
+        //    _worker.ReportProgress((int) e.ProgressPercentage);
+        //}
+
+        //void bgv_DoWork(object sender, DoWorkEventArgs e)
+        //{
+        //    if (e.Argument == null)
+        //        return;
+        //    var vd = e.Argument as VideoDownloader;
+        //    if (vd != null) 
+        //        vd.Execute();
+        //}
+
+        //void bgv_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        //{
+        //    Application.Current.Dispatcher.BeginInvoke((Action)(() =>
+        //    {
+        //        PercentDownloaded = e.ProgressPercentage;
+        //    }));
+        //}
+
+        //private void DoWork(object o)
+        //{
+        //    var downloader = o as VideoDownloader;
+        //    if (downloader != null) 
+        //        downloader.Execute();
+
+        //    //Pauses current thread. but since this thead isn't our main UI thread
+        //    //it will not affect our UI experience.
+        //    //Thread.Sleep(3000);
+        //}
+
+        private void downloader_DownloadFinished(object sender)
+        {
+            var vd = sender as VideoDownloader;
+            if (vd != null)
+            {
+                Application.Current.Dispatcher.BeginInvoke((Action)(() =>
+                {
+                    FilePath = vd.SavePath;
+                    Subscribe.SetResult(string.Format("\"{0}\" completed!", vd.Video.Title));
+                    IsHasFile = IsFileExist();
+                }));
+            }
+        }
+
+        private void downloader_DownloadProgressChanged(ProgressEventArgs e)
+        {
+            Application.Current.Dispatcher.BeginInvoke((Action)(() =>
+            {
+                PercentDownloaded = e.ProgressPercentage;
+            }));
+        } 
 
         private void DownloadFileBgv()
         {

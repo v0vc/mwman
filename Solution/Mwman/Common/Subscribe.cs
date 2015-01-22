@@ -385,7 +385,7 @@ namespace Mwman.Common
                     if (lsyou.Count > 0)
                     {
                         cnanel = new ChanelYou(_model);
-                        cnanel.DownloadVideoInternal(lsyou);
+                        (cnanel as ChanelYou).DownloadVideoInternal(lsyou);
                     }
 
                     break;
@@ -397,7 +397,7 @@ namespace Mwman.Common
                     if (lsyou.Count > 0)
                     {
                         cnanel = new ChanelYou(_model);
-                        cnanel.DownloadVideoInternal(lsyou);
+                        (cnanel as ChanelYou).DownloadVideoInternal(lsyou);
                     }
 
                     break;

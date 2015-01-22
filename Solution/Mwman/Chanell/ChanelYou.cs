@@ -252,14 +252,16 @@ namespace Mwman.Chanell
                     case "Popular":
 
                         TimerCommon.Dispose();
-                        _model.MySubscribe.Result = string.Format("{0} synced in {1}", _model.SelectedCountry.Key, Synctime.Duration().ToString(@"mm\:ss"));
+                        Subscribe.SetResult(string.Format("{0} synced in {1}", _model.SelectedCountry.Key,
+                            Synctime.Duration().ToString(@"mm\:ss")));
 
                         break;
 
                     case "Search":
 
                         TimerCommon.Dispose();
-                        _model.MySubscribe.Result = string.Format("{0} searched in {1}", _searchkey, Synctime.Duration().ToString(@"mm\:ss"));
+                        Subscribe.SetResult(string.Format("{0}: \"{1}\" searched in {2}", Typename, _searchkey,
+                            Synctime.Duration().ToString(@"mm\:ss")));
 
                         break;
                 }
@@ -389,69 +391,8 @@ namespace Mwman.Chanell
 
         public override void AutorizeChanel()
         {
+
         }
-
-        #region YouTubeExtractor
-
-        public override async void DownloadVideoInternal(IList list)
-        {
-            foreach (VideoItemBase item in list)
-            {
-                CurrentVideoItem = item;
-                var dir = new DirectoryInfo(CurrentVideoItem.SavePath);
-                if (!dir.Exists)
-                    dir.Create();
-                CurrentVideoItem.IsDownLoading = true;
-                CurrentVideoItem.IsHasFile = false;
-                await DownloadVideoAsync(CurrentVideoItem);
-            }
-            _model.MySubscribe.Result = "Download Completed";
-            CurrentVideoItem.IsHasFile = CurrentVideoItem.IsFileExist();
-        }
-
-        private Task DownloadVideoAsync(VideoItemBase item)
-        {
-            return Task.Run(() =>
-            {
-                IEnumerable<VideoInfo> videoInfos = DownloadUrlResolver.GetDownloadUrls(item.VideoLink).OrderByDescending(z => z.Resolution);
-                VideoInfo videoInfo = videoInfos.First(info => info.VideoType == VideoType.Mp4 && info.AudioBitrate != 0);
-                if (videoInfo != null)
-                {
-                    if (videoInfo.RequiresDecryption)
-                    {
-                        DownloadUrlResolver.DecryptDownloadUrl(videoInfo);
-                    }
-
-                    var downloader = new VideoDownloader(videoInfo, Path.Combine(CurrentVideoItem.SavePath, VideoItemBase.MakeValidFileName(videoInfo.Title) + videoInfo.VideoExtension));
-
-                    downloader.DownloadProgressChanged += (sender, args) => downloader_DownloadProgressChanged(args, item);
-                    downloader.DownloadFinished += delegate { downloader_DownloadFinished(downloader, item); };
-                    downloader.Execute();
-                }
-            });
-        }
-
-        private static void downloader_DownloadFinished(object sender, VideoItemBase o)
-        {
-            var vd = sender as VideoDownloader;
-            if (vd != null)
-            {
-                Application.Current.Dispatcher.BeginInvoke((Action)(() =>
-                {
-                    //o.IsHasFile = true;
-                    o.FilePath = vd.SavePath;
-                }));
-            }
-        }
-
-        private static void downloader_DownloadProgressChanged(ProgressEventArgs e, VideoItemBase o)
-        {
-            Application.Current.Dispatcher.BeginInvoke((Action)(() =>
-            {
-                o.PercentDownloaded = e.ProgressPercentage;
-            }));
-        } 
-        #endregion
 
         private static void AddItems(VideoItemBase v, ICollection<VideoItemBase> listPopularVideoItems)
         {
@@ -460,24 +401,19 @@ namespace Mwman.Chanell
             v.IsSynced = true;
         }
 
+        public void DownloadVideoInternal(IList list)
+        {
+            foreach (VideoItemYou item in list)
+            {
+                item.DownloadInternal();
+            }
+        }
+
         private static void GetVideosASync(IEnumerable list, bool isAudio)
         {
             foreach (VideoItemBase item in list)
             {
-                item.IsDownLoading = true;
                 item.DownloadItem(isAudio);
-
-                //YouWrapper youwr;
-                //if (!string.IsNullOrEmpty(item.VideoOwner))
-                //{
-
-                //    youwr = new YouWrapper(Subscribe.YoudlPath, Subscribe.FfmpegPath,
-                //        Path.Combine(Subscribe.DownloadPath, item.VideoOwner), item);
-                //}
-                //else
-                //    youwr = new YouWrapper(Subscribe.YoudlPath, Subscribe.FfmpegPath, Subscribe.DownloadPath, item);
-
-                //youwr.DownloadFile(false);
             }
         }
 

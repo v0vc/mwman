@@ -208,7 +208,7 @@ namespace Mwman.Video
             var r = new Regex(string.Format("[{0}]", Regex.Escape(regexSearch)));
             var s = r.Replace(name, String.Empty);
             s = Regex.Replace(s, @"\s{2,}", " ");
-            return s.Trim();
+            return s;
         }
 
         public static string AviodTooLongFileName(string path)
@@ -230,5 +230,6 @@ namespace Mwman.Video
             var step2 = Regex.Replace(step1, @"\s{2,}", " ");
             return step2.Trim();
         }
+
     }
 }

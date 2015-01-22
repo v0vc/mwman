@@ -55,9 +55,9 @@ namespace Mwman.Chanell
             throw new NotImplementedException();
         }
 
-        public override void DownloadVideoInternal(IList list)
-        {
-            throw new NotImplementedException();
-        }
+        //public override void DownloadVideoInternal(IList list)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }

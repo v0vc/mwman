@@ -198,7 +198,8 @@ namespace Mwman.Chanell
                     case "Search":
 
                         TimerCommon.Dispose();
-                        _model.MySubscribe.Result = string.Format("{0} searched in {1}", Searchkey, Synctime.Duration().ToString(@"mm\:ss"));
+                        Subscribe.SetResult(string.Format("{0}: \"{1}\" searched in {2}", Typename, Searchkey,
+                            Synctime.Duration().ToString(@"mm\:ss")));
 
                         break;
                 }
@@ -375,10 +376,10 @@ namespace Mwman.Chanell
             throw new NotImplementedException();
         }
 
-        public override void DownloadVideoInternal(IList list)
-        {
-            throw new NotImplementedException();
-        }
+        //public override void DownloadVideoInternal(IList list)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         private void MakeRtResponse(string zap, ObservableCollection<VideoItemBase> listVideoItems, bool isSearch)
         {
