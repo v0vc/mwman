@@ -68,7 +68,7 @@ namespace Mwman.Models
 
                 if (Link.ToLower().Contains("youtu"))
                 {
-                    var youitem = new VideoItemYou();
+                    var youitem = new VideoItemYou {VideoLink = Link};
                     youitem.DownloadItem(IsAudio);
                 }
                 else
