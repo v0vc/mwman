@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using Mwman.Chanell;
+using Mwman.Channel;
 using Mwman.Common;
 using Mwman.Models;
 using Newtonsoft.Json.Linq;
@@ -27,7 +27,7 @@ namespace Mwman.Video
 
         private readonly BackgroundWorker _bgv;
 
-        private BackgroundWorker _worker;
+        //private BackgroundWorker _worker;
 
         private readonly List<string> _destList = new List<string>();
 
@@ -37,14 +37,30 @@ namespace Mwman.Video
 
         #endregion
 
+        public VideoItemYou(JToken pair, string plid, string pltitle)
+        {
+            Title = pair["title"]["$t"].ToString();
+            VideoID = pair["media$group"]["yt$videoid"]["$t"].ToString();
+            PlaylistID = plid;
+            PlaylistTitle = pltitle;
+        }
+
         public VideoItemYou(JToken pair, bool isPopular, string region)
         {
             try
             {
-                ServerName = ChanelYou.Typename;
+                ServerName = ChannelYou.Typename;
                 Title = pair["title"]["$t"].ToString();
                 ClearTitle = MakeValidFileName(Title);
-                ViewCount = (int) pair["yt$statistics"]["viewCount"];
+                try
+                {
+                    ViewCount = (int)pair["yt$statistics"]["viewCount"]; //sometimes is missed
+                }
+                catch
+                {
+                    ViewCount = 0;
+                }
+                
                 Duration = (int) pair["media$group"]["yt$duration"]["seconds"];
                 VideoLink = pair["link"][0]["href"].ToString().Split('&')[0];
                 Published = (DateTime) pair["published"]["$t"];
@@ -77,7 +93,7 @@ namespace Mwman.Video
 
         public VideoItemYou(DbDataRecord record) : base(record)
         {
-            ServerName = ChanelYou.Typename;
+            ServerName = ChannelYou.Typename;
             SavePath = !string.IsNullOrEmpty(VideoOwner) ? Path.Combine(Subscribe.DownloadPath, VideoOwner) : Subscribe.DownloadPath;
             MinProgress = 0;
             MaxProgress = 100;
@@ -88,7 +104,7 @@ namespace Mwman.Video
 
         public VideoItemYou()
         {
-            ServerName = ChanelYou.Typename;
+            ServerName = ChannelYou.Typename;
             SavePath = !string.IsNullOrEmpty(VideoOwner) ? Path.Combine(Subscribe.DownloadPath, VideoOwner) : Subscribe.DownloadPath;
             MinProgress = 0;
             MaxProgress = 100;

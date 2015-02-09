@@ -8,7 +8,7 @@ using System.Linq;
 using System.Web;
 using System.Windows;
 using HtmlAgilityPack;
-using Mwman.Chanell;
+using Mwman.Channel;
 using Mwman.Common;
 
 namespace Mwman.Video
@@ -28,7 +28,7 @@ namespace Mwman.Video
         {
             Prefix = prefix;
             HostBase = Host;
-            ServerName = ChanelRt.Typename;
+            ServerName = ChannelRt.Typename;
             var counts = node.Descendants("a").Where(d =>d.Attributes.Contains("class") && d.Attributes["class"].Value.Equals("med tLink hl-tags bold"));
             foreach (HtmlNode htmlNode in counts)
             {

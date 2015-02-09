@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using Mwman.Chanell;
+using Mwman.Channel;
 using Mwman.Models;
 using Mwman.Video;
 using Mwman.Views;
@@ -77,7 +77,7 @@ namespace Mwman.Common
 
         private const string Dbfile = "mwman.db";
 
-        private ChanelBase _currentChanel;
+        private ChannelBase _currentChanel;
 
         private IList _selectedListChanels = new ArrayList();
 
@@ -95,11 +95,11 @@ namespace Mwman.Common
 
         private int _selectedTabIndex;
 
-        private ChanelBase _filterForumItem;
+        private ChannelBase _filterForumItem;
 
         private int _resCount;
 
-        private ChanelBase _selectedForumItem;
+        private ChannelBase _selectedForumItem;
 
         #endregion
 
@@ -125,7 +125,7 @@ namespace Mwman.Common
             }
         }
 
-        public ChanelBase CurrentChanel
+        public ChannelBase CurrentChanel
         {
             get { return _currentChanel; }
             set
@@ -139,7 +139,7 @@ namespace Mwman.Common
             }
         }
 
-        public ChanelBase SelectedForumItem
+        public ChannelBase SelectedForumItem
         {
             get { return _selectedForumItem; }
             set
@@ -149,7 +149,7 @@ namespace Mwman.Common
             }
         }
 
-        public ChanelBase FilterForumItem
+        public ChannelBase FilterForumItem
         {
             get { return _filterForumItem; }
             set
@@ -160,11 +160,11 @@ namespace Mwman.Common
             }
         }
 
-        public ObservableCollection<ChanelBase> ChanelList { get; set; }
+        public ObservableCollection<ChannelBase> ChanelList { get; set; }
 
-        public ObservableCollection<ChanelBase> ChanelListToBind { get; set; }
+        public ObservableCollection<ChannelBase> ChanelListToBind { get; set; }
 
-        public ObservableCollection<ChanelBase> ServerList { get; set; }
+        public ObservableCollection<ChannelBase> ServerList { get; set; }
 
         public TimeSpan Synctime { get; set; }
 
@@ -242,8 +242,8 @@ namespace Mwman.Common
             var dir = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
             if (dir == null) return;
             Sqllite.AppDir = dir;
-            ChanelList = new ObservableCollection<ChanelBase>();
-            ChanelListToBind = new ObservableCollection<ChanelBase>();
+            ChanelList = new ObservableCollection<ChannelBase>();
+            ChanelListToBind = new ObservableCollection<ChannelBase>();
             SevenZipBase.SetLibraryPath(Path.Combine(dir, "7z.dll"));
             ChanelDb = Path.Combine(dir, Dbfile);
             var fn = new FileInfo(ChanelDb);
@@ -262,28 +262,28 @@ namespace Mwman.Common
                 IsPopular = Sqllite.GetSettingsIntValue(ChanelDb, Sqllite.Ispopular) != 0;
                 YoudlPath = Sqllite.GetSettingsValue(ChanelDb, Sqllite.Pathtoyoudl);
                 FfmpegPath = Sqllite.GetSettingsValue(ChanelDb, Sqllite.Pathtoffmpeg);
-                ServerList = new ObservableCollection<ChanelBase>
+                ServerList = new ObservableCollection<ChannelBase>
                 {
-                    new ChanelYou(string.Empty, string.Empty, string.Empty, string.Empty, 0, _model),
-                    new ChanelRt(RtLogin, RtPass, string.Empty, string.Empty, 0, _model),
-                    new ChanelTap(TapLogin, TapPass, string.Empty, string.Empty, 0, _model),
-                    new ChanelEmpty()
+                    new ChannelYou(string.Empty, string.Empty, string.Empty, string.Empty, 0, _model),
+                    new ChannelRt(RtLogin, RtPass, string.Empty, string.Empty, 0, _model),
+                    new ChannelTap(TapLogin, TapPass, string.Empty, string.Empty, 0, _model),
+                    new ChannelEmpty()
                 };
             }
             else
             {
                 Result = "Ready";
-                ServerList = new ObservableCollection<ChanelBase>
+                ServerList = new ObservableCollection<ChannelBase>
                 {
-                    new ChanelYou(string.Empty, string.Empty, string.Empty, string.Empty, 0, _model),
-                    new ChanelRt(string.Empty, string.Empty, string.Empty, string.Empty, 0, _model),
-                    new ChanelTap(string.Empty, string.Empty, string.Empty, string.Empty, 0, _model),
-                    new ChanelEmpty()
+                    new ChannelYou(string.Empty, string.Empty, string.Empty, string.Empty, 0, _model),
+                    new ChannelRt(string.Empty, string.Empty, string.Empty, string.Empty, 0, _model),
+                    new ChannelTap(string.Empty, string.Empty, string.Empty, string.Empty, 0, _model),
+                    new ChannelEmpty()
                 };
                 DownloadPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             }
-            SelectedForumItem = ServerList.First(x=>x is ChanelYou);
-            FilterForumItem = ServerList.First(x => x is ChanelEmpty);
+            SelectedForumItem = ServerList.First(x=>x is ChannelYou);
+            FilterForumItem = ServerList.First(x => x is ChannelEmpty);
             _bgv.DoWork += _bgv_DoWork;
             _bgv.RunWorkerCompleted += _bgv_RunWorkerCompleted;
         }
@@ -347,7 +347,7 @@ namespace Mwman.Common
 
                 case "PopularDownload":
 
-                    var chanelpop = new ChanelYou(_model);
+                    var chanelpop = new ChannelYou(_model);
 
                     chanelpop.DownloadItem(SelectedForumItem.SelectedListVideoItems, false);
 
@@ -355,25 +355,25 @@ namespace Mwman.Common
 
                 case "SearchDownload":
                     
-                    ChanelBase cnanel;
+                    ChannelBase cnanel;
                     lsyou = SelectedForumItem.SelectedListVideoItems.OfType<VideoItemYou>().Select(item => item).ToList();
                     if (lsyou.Count > 0)
                     {
-                        cnanel = new ChanelYou(_model);
+                        cnanel = new ChannelYou(_model);
                         cnanel.DownloadItem(lsyou, false);
                     }
 
                     IList lsrt = SelectedForumItem.SelectedListVideoItems.OfType<VideoItemRt>().Select(item => item).ToList();
                     if (lsrt.Count > 0)
                     {
-                        cnanel = new ChanelRt(_model);
+                        cnanel = new ChannelRt(_model);
                         cnanel.DownloadItem(lsrt, false);
                     }
 
                     IList lstap = SelectedForumItem.SelectedListVideoItems.OfType<VideoItemTap>().Select(item => item).ToList();
                     if (lstap.Count > 0)
                     {
-                        cnanel = new ChanelTap(_model);
+                        cnanel = new ChannelTap(_model);
                         cnanel.DownloadItem(lstap, false);
                     }
 
@@ -384,8 +384,8 @@ namespace Mwman.Common
                     lsyou = CurrentChanel.SelectedListVideoItems.OfType<VideoItemYou>().Select(item => item).ToList();
                     if (lsyou.Count > 0)
                     {
-                        cnanel = new ChanelYou(_model);
-                        (cnanel as ChanelYou).DownloadVideoInternal(lsyou);
+                        cnanel = new ChannelYou(_model);
+                        (cnanel as ChannelYou).DownloadVideoInternal(lsyou);
                     }
 
                     break;
@@ -396,8 +396,8 @@ namespace Mwman.Common
                     lsyou = SelectedForumItem.SelectedListVideoItems.OfType<VideoItemYou>().Select(item => item).ToList();
                     if (lsyou.Count > 0)
                     {
-                        cnanel = new ChanelYou(_model);
-                        (cnanel as ChanelYou).DownloadVideoInternal(lsyou);
+                        cnanel = new ChannelYou(_model);
+                        (cnanel as ChannelYou).DownloadVideoInternal(lsyou);
                     }
 
                     break;
@@ -426,7 +426,7 @@ namespace Mwman.Common
 
                     for (int i = SelectedListChanels.Count; i > 0; i--)
                     {
-                        curIndex = ChanelListToBind.IndexOf((ChanelBase)SelectedListChanels[i - 1]);
+                        curIndex = ChanelListToBind.IndexOf((ChannelBase)SelectedListChanels[i - 1]);
                         //Проверка: не выйдет ли элемент за пределы массива
                         if (curIndex > 0)
                         {
@@ -437,7 +437,7 @@ namespace Mwman.Common
                             }
                         }
                         //Сохранение местоположения элемента
-                        prevIndex = ChanelListToBind.IndexOf((ChanelBase)SelectedListChanels[i - 1]);
+                        prevIndex = ChanelListToBind.IndexOf((ChannelBase)SelectedListChanels[i - 1]);
                     }
 
                     break;
@@ -446,7 +446,7 @@ namespace Mwman.Common
                     prevIndex = ChanelList.Count;
                     for (int i = SelectedListChanels.Count; i > 0; i--)
                     {
-                        curIndex = ChanelListToBind.IndexOf((ChanelBase)SelectedListChanels[i - 1]);
+                        curIndex = ChanelListToBind.IndexOf((ChannelBase)SelectedListChanels[i - 1]);
                         //Проверка: не выйдет ли элемент за пределы массива
                         if (curIndex < ChanelListToBind.Count - 1)
                         {
@@ -457,7 +457,7 @@ namespace Mwman.Common
                             }
                         }
                         //Сохранение местоположения элемента
-                        prevIndex = ChanelListToBind.IndexOf((ChanelBase)SelectedListChanels[i - 1]);
+                        prevIndex = ChanelListToBind.IndexOf((ChannelBase)SelectedListChanels[i - 1]);
                     }
 
                     break;
@@ -466,7 +466,7 @@ namespace Mwman.Common
 
             if (obj.ToString() == "SaveOrder") //обновляем все индексы
             {
-                foreach (ChanelBase chanel in ChanelListToBind)
+                foreach (ChannelBase chanel in ChanelListToBind)
                 {
                     var index = ChanelListToBind.IndexOf(chanel);
                     Sqllite.UpdateChanelOrder(ChanelDb, chanel.ChanelOwner, index);
@@ -475,7 +475,7 @@ namespace Mwman.Common
             }
             else
             {
-                foreach (ChanelBase chanel in ChanelListToBind) //обновляем только изменившиеся индексы
+                foreach (ChannelBase chanel in ChanelListToBind) //обновляем только изменившиеся индексы
                 {
                     var index = ChanelListToBind.IndexOf(chanel);
                     int prev;
@@ -495,7 +495,7 @@ namespace Mwman.Common
             var isEdit = o != null && o.ToString() == "Edit";
             try
             {
-                var servlist = new ObservableCollection<ChanelBase>(ServerList.Where(x => x.ChanelType != "All"));
+                var servlist = new ObservableCollection<ChannelBase>(ServerList.Where(x => x.ChanelType != "All"));
                 var addChanelModel = new AddChanelModel(_model, null, isEdit, servlist);
                 if (isEdit)
                 {
@@ -538,15 +538,15 @@ namespace Mwman.Common
             var item = _model.MySubscribe.SelectedForumItem.CurrentVideoItem;
             if (!_model.MySubscribe.ChanelList.Select(z => z.ChanelOwner).Contains(item.VideoOwner))
             {
-                ChanelBase chanel = null;
+                ChannelBase chanel = null;
                 if (item is VideoItemYou)
-                    chanel = new ChanelYou(RtLogin, RtPass, item.VideoOwner, item.VideoOwner, ordernum, _model);
+                    chanel = new ChannelYou(RtLogin, RtPass, item.VideoOwner, item.VideoOwner, ordernum, _model);
 
                 if (item is VideoItemRt)
-                    chanel = new ChanelRt(RtLogin, RtPass, item.VideoOwnerName, item.VideoOwner, ordernum, _model);
+                    chanel = new ChannelRt(RtLogin, RtPass, item.VideoOwnerName, item.VideoOwner, ordernum, _model);
 
                 if (item is VideoItemTap)
-                    chanel = new ChanelTap(TapLogin, TapPass, item.VideoOwnerName, item.VideoOwner, ordernum, _model);
+                    chanel = new ChannelTap(TapLogin, TapPass, item.VideoOwnerName, item.VideoOwner, ordernum, _model);
 
                 if (chanel != null)
                 {
@@ -570,7 +570,7 @@ namespace Mwman.Common
             if (SelectedListChanels.Count > 0)
             {
                 var sb = new StringBuilder();
-                foreach (ChanelBase chanel in SelectedListChanels)
+                foreach (ChannelBase chanel in SelectedListChanels)
                 {
                     sb.Append(chanel.ChanelName).Append(Environment.NewLine);
                 }
@@ -580,7 +580,7 @@ namespace Mwman.Common
                 {
                     for (var i = SelectedListChanels.Count; i > 0; i--)
                     {
-                        var chanel = SelectedListChanels[i - 1] as ChanelBase;
+                        var chanel = SelectedListChanels[i - 1] as ChannelBase;
                         if (chanel == null) continue;
                         Sqllite.RemoveChanelFromDb(ChanelDb, chanel.ChanelOwner);
                         ChanelList.Remove(chanel);
@@ -616,14 +616,14 @@ namespace Mwman.Common
         public void GetPopularVideos(string culture)
         {
             SelectedForumItem.ListPopularVideoItems.Clear();
-            if (SelectedForumItem is ChanelYou)
+            if (SelectedForumItem is ChannelYou)
             {
-                (SelectedForumItem as ChanelYou).GetPopularItems(culture, SelectedForumItem.ListPopularVideoItems);
+                (SelectedForumItem as ChannelYou).GetPopularItems(culture, SelectedForumItem.ListPopularVideoItems, "Popular");
             }
             else
             {
-                var chanell = new ChanelYou(_model);
-                chanell.GetPopularItems(culture, SelectedForumItem.ListPopularVideoItems);    
+                var chanell = new ChannelYou(_model);
+                chanell.GetPopularItems(culture, SelectedForumItem.ListPopularVideoItems, "Popular");    
             }
         }
 
@@ -633,21 +633,21 @@ namespace Mwman.Common
                 return;
 
             SelectedForumItem.ListSearchVideoItems.Clear();
-            if (SelectedForumItem is ChanelYou)
+            if (SelectedForumItem is ChannelYou)
             {
-                (SelectedForumItem as ChanelYou).SearchItems(SearchKey, SelectedForumItem.ListSearchVideoItems);
+                (SelectedForumItem as ChannelYou).SearchItems(SearchKey, SelectedForumItem.ListSearchVideoItems);
             }
 
-            if (SelectedForumItem is ChanelRt)
+            if (SelectedForumItem is ChannelRt)
             {
-                var chanel = SelectedForumItem as ChanelRt;
+                var chanel = SelectedForumItem as ChannelRt;
                 chanel.IsFull = true;
                 chanel.SearchItems(SearchKey, chanel.ListSearchVideoItems);
             }
 
-            if (SelectedForumItem is ChanelTap)
+            if (SelectedForumItem is ChannelTap)
             {
-                var chanel = SelectedForumItem as ChanelTap;
+                var chanel = SelectedForumItem as ChannelTap;
                 chanel.IsFull = true;
                 chanel.SearchItems(SearchKey, chanel.ListSearchVideoItems);
             }
@@ -693,7 +693,7 @@ namespace Mwman.Common
             });
         }
 
-        private static void RunItem(ChanelBase chanel)
+        private static void RunItem(ChannelBase chanel)
         {
             if (chanel.CurrentVideoItem is VideoItemYou)
             {
@@ -725,22 +725,34 @@ namespace Mwman.Common
 
         private void _bgv_DoWork(object sender, DoWorkEventArgs e)
         {
-            foreach (KeyValuePair<string, string> pair in Sqllite.GetDistinctValues(ChanelDb, Sqllite.Chanelowner, Sqllite.Chanelname))
+            foreach (KeyValuePair<string, string> pair in Sqllite.GetDistinctValues(ChanelDb, Sqllite.Chanelowner, Sqllite.Chanelname, Sqllite.Servername, Sqllite.Ordernum))
             {
                 var sp = pair.Value.Split(':');
 
-                ChanelBase chanel = null;
-                if (sp[1] == ChanelYou.Typename)
-                    chanel = new ChanelYou(string.Empty, string.Empty, sp[0], pair.Key, Convert.ToInt32(sp[2]), _model);
-                if (sp[1] == ChanelRt.Typename)
-                    chanel = new ChanelRt(RtLogin, RtPass, sp[0], pair.Key, Convert.ToInt32(sp[2]), _model);
-                if (sp[1] == ChanelTap.Typename)
-                    chanel = new ChanelTap(TapLogin, TapPass, sp[0], pair.Key, Convert.ToInt32(sp[2]), _model);
+                ChannelBase chanel = null;
+                if (sp[1] == ChannelYou.Typename)
+                {
+                    chanel = new ChannelYou(string.Empty, string.Empty, sp[0], pair.Key, Convert.ToInt32(sp[2]), _model);
+                    var pls = Sqllite.GetDistinctValues(ChanelDb, Sqllite.PId, Sqllite.PTitle, pair.Key);
+                    foreach (KeyValuePair<string, string> plraw in pls)
+                    {
+                        var pl = new Playlist(plraw.Value, plraw.Key, string.Empty);
+                        chanel.ListPlaylists.Add(pl);
+                    }
+                    chanel.ListPlaylists.Add(new Playlist("ALL", "ALL", string.Empty));
+                }
+                if (sp[1] == ChannelRt.Typename)
+                    chanel = new ChannelRt(RtLogin, RtPass, sp[0], pair.Key, Convert.ToInt32(sp[2]), _model);
+                if (sp[1] == ChannelTap.Typename)
+                    chanel = new ChannelTap(TapLogin, TapPass, sp[0], pair.Key, Convert.ToInt32(sp[2]), _model);
 
                 ChanelList.Add(chanel);
             }
 
-            foreach (ChanelBase chanel in ChanelList)
+            
+            
+
+            foreach (ChannelBase chanel in ChanelList)
             {
                 chanel.GetItemsFromDb();
             }
@@ -774,7 +786,7 @@ namespace Mwman.Common
         {
             if (list == null || list.Count <= 0) return;
 
-            foreach (ChanelBase chanel in list)
+            foreach (ChannelBase chanel in list)
             {
                 chanel.IsFull = isFull;
                 chanel.GetItemsFromNet();
@@ -802,9 +814,9 @@ namespace Mwman.Common
             ChanelListToBind.Clear();
             if (IsOnlyFavorites)
             {
-                if (FilterForumItem is ChanelEmpty)
+                if (FilterForumItem is ChannelEmpty)
                 {
-                    foreach (ChanelBase chanel in ChanelList.Where(x => x.IsFavorite))
+                    foreach (ChannelBase chanel in ChanelList.Where(x => x.IsFavorite))
                     {
                         if (string.IsNullOrEmpty(ChanelFilter))
                             ChanelListToBind.Add(chanel);
@@ -817,7 +829,7 @@ namespace Mwman.Common
                 }
                 else
                 {
-                    foreach (ChanelBase chanel in ChanelList.Where(x => x.IsFavorite & x.ChanelType == FilterForumItem.ChanelType))
+                    foreach (ChannelBase chanel in ChanelList.Where(x => x.IsFavorite & x.ChanelType == FilterForumItem.ChanelType))
                     {
                         if (string.IsNullOrEmpty(ChanelFilter))
                             ChanelListToBind.Add(chanel);
@@ -831,9 +843,9 @@ namespace Mwman.Common
             }
             else
             {
-                if (FilterForumItem is ChanelEmpty)
+                if (FilterForumItem is ChannelEmpty)
                 {
-                    foreach (ChanelBase chanel in ChanelList)
+                    foreach (ChannelBase chanel in ChanelList)
                     {
                         if (string.IsNullOrEmpty(ChanelFilter))
                             ChanelListToBind.Add(chanel);
@@ -846,7 +858,7 @@ namespace Mwman.Common
                 }
                 else
                 {
-                    foreach (ChanelBase chanel in ChanelList.Where(x=>x.ChanelType == FilterForumItem.ChanelType))
+                    foreach (ChannelBase chanel in ChanelList.Where(x=>x.ChanelType == FilterForumItem.ChanelType))
                     {
                         if (string.IsNullOrEmpty(ChanelFilter))
                             ChanelListToBind.Add(chanel);

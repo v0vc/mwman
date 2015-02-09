@@ -12,7 +12,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
-using Mwman.Chanell;
+using Mwman.Channel;
 using Mwman.Common;
 using Mwman.Video;
 using Mwman.Views;
@@ -70,7 +70,7 @@ namespace Mwman.Models
 
         public KeyValuePair<string, string> SelectedCountry { get; set; }
 
-        public ObservableCollection<ChanelBase> ListForums { get; set; }
+        public ObservableCollection<ChannelBase> ListForums { get; set; }
 
         public string DirPath
         {
@@ -204,7 +204,7 @@ namespace Mwman.Models
 
         #endregion
 
-        public SettingsModel(string savepath, string mpcpath, int synconstart, string youpath, string ffmegpath, int isonlyfavor, int ispopular, int isasync, string culture, List<KeyValuePair<string, string>> countries, IEnumerable<ChanelBase> forums)
+        public SettingsModel(string savepath, string mpcpath, int synconstart, string youpath, string ffmegpath, int isonlyfavor, int ispopular, int isasync, string culture, List<KeyValuePair<string, string>> countries, IEnumerable<ChannelBase> forums)
         {
             MpcPath = string.Empty;
             YoudlPath = string.Empty;
@@ -227,8 +227,8 @@ namespace Mwman.Models
             FfHeader = string.IsNullOrEmpty(FfmpegPath) ? "FFmpeg:" : string.Format("FFmpeg ({0})", Makeffversion(GetVersion(FfmpegPath, "-version")));
             Countries = countries;
             SelectedCountry = Countries.First(x => x.Value == culture);
-            ListForums = new ObservableCollection<ChanelBase>();
-            foreach (ChanelBase forum in forums.Where(forum => forum.ChanelType != ChanelYou.Typename))
+            ListForums = new ObservableCollection<ChannelBase>();
+            foreach (ChannelBase forum in forums.Where(forum => forum.ChanelType != ChannelYou.Typename))
             {
                 ListForums.Add(forum);
             }
@@ -334,14 +334,14 @@ namespace Mwman.Models
                 }
             }
 
-            foreach (ChanelBase forum in ListForums.Where(forum => !string.IsNullOrEmpty(forum.Login) & !string.IsNullOrEmpty(forum.Password)))
+            foreach (ChannelBase forum in ListForums.Where(forum => !string.IsNullOrEmpty(forum.Login) & !string.IsNullOrEmpty(forum.Password)))
             {
-                if (forum.ChanelType == ChanelRt.Typename)
+                if (forum.ChanelType == ChannelRt.Typename)
                 {
                     Sqllite.UpdateSetting(Subscribe.ChanelDb, Sqllite.Rtlogin, forum.Login.Trim());
                     Sqllite.UpdateSetting(Subscribe.ChanelDb, Sqllite.Rtpassword, forum.Password.Trim());
                 }
-                if (forum.ChanelType == ChanelTap.Typename)
+                if (forum.ChanelType == ChannelTap.Typename)
                 {
                     Sqllite.UpdateSetting(Subscribe.ChanelDb, Sqllite.Taplogin, forum.Login.Trim());
                     Sqllite.UpdateSetting(Subscribe.ChanelDb, Sqllite.Tappassword, forum.Password.Trim());

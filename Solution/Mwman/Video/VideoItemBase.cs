@@ -5,7 +5,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Windows;
-using Mwman.Chanell;
+using Mwman.Channel;
 using Mwman.Common;
 
 namespace Mwman.Video
@@ -45,7 +45,7 @@ namespace Mwman.Video
         #endregion
 
         #region Properties
-        public ChanelBase ParentChanel { get; set; }
+        public ChannelBase ParentChanel { get; set; }
         public int Num { get; set; }
 
         public string Title { get; set; }
@@ -53,6 +53,10 @@ namespace Mwman.Video
         public string ClearTitle { get; set; }
 
         public string VideoID { get; set; }
+
+        public string PlaylistID { get; set; }
+
+        public string PlaylistTitle { get; set; }
 
         public string VideoOwner { get; set; }
 
@@ -186,6 +190,8 @@ namespace Mwman.Video
             Duration = (int) record[Sqllite.Duration];
             Description = record[Sqllite.Description].ToString();
             Published = (DateTime) record[Sqllite.Published];
+            PlaylistID = record[Sqllite.PId].ToString();
+            PlaylistTitle = record[Sqllite.PTitle].ToString();
         }
 
         protected VideoItemBase()

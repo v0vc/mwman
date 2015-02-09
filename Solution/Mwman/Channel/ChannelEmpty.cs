@@ -4,11 +4,11 @@ using System.Net;
 using Mwman.Controls;
 using Mwman.Video;
 
-namespace Mwman.Chanell
+namespace Mwman.Channel
 {
-    public class ChanelEmpty: ChanelBase
+    public class ChannelEmpty: ChannelBase
     {
-        public ChanelEmpty()
+        public ChannelEmpty()
         {
             LastColumnHeader = "Download";
             ViewSeedColumnHeader = "Views";
@@ -45,7 +45,7 @@ namespace Mwman.Chanell
             throw new NotImplementedException();
         }
 
-        public override void GetPopularItems(string key, ObservableCollectionEx<VideoItemBase> listPopularVideoItems)
+        public override void GetPopularItems(string key, ObservableCollectionEx<VideoItemBase> listPopularVideoItems, string mode)
         {
             throw new NotImplementedException();
         }

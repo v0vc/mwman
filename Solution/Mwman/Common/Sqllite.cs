@@ -23,6 +23,10 @@ namespace Mwman.Common
 
         public static readonly string Id = "v_id";
 
+        public static readonly string PId = "pl_id";
+
+        public static readonly string PTitle = "ptitle";
+
         public static readonly string Chanelowner = "chanelowner";
 
         public static readonly string Chanelname = "chanelname";
@@ -132,9 +136,11 @@ namespace Mwman.Common
                                                         {11} INT,
                                                         {12} DATETIME,
                                                         {13} TEXT,
-                                                        {14} TEXT)", TableVideos, Id, Chanelowner, Chanelname,
+                                                        {14} TEXT, 
+                                                        {15} TEXT, 
+                                                        {16} TEXT)", TableVideos, Id, Chanelowner, Chanelname,
                     Servername, Ordernum, Isfavorite, Url, Title, Viewcount, Previewcount, Duration, Published,
-                    Description, Cleartitle);
+                    Description, Cleartitle, PId, PTitle);
                 lstcom.Add(zap);
                 var zapdir = string.Format(@"CREATE TABLE {0} ({1} TEXT, 
                                                             {2} TEXT, 
@@ -184,7 +190,7 @@ namespace Mwman.Common
 
         public static void InsertRecord(string dbfile, string id, string chanelowner, string chanelname, string servername, int ordernum, int isfavorite,
             string url, string title, int viewcount, int previewcount, double duration, DateTime published,
-            string description)
+            string description, string pid, string ptitle)
         {
             Task t = Task.Run(() =>
             {
@@ -192,8 +198,8 @@ namespace Mwman.Common
                 chanelowner = chanelowner.Replace("'", "''");
                 var zap =
                     string.Format(
-                        @"INSERT INTO '{0}' ('{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}','{12}','{13}','{14}')
-                                    VALUES (@{1},@{2},@{3},@{4},@{5},@{6},@{7},@{8},@{9},@{10},@{11},@{12},@{13},@{14})",
+                        @"INSERT INTO '{0}' ('{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}','{12}','{13}','{14}','{15}','{16}')
+                                    VALUES (@{1},@{2},@{3},@{4},@{5},@{6},@{7},@{8},@{9},@{10},@{11},@{12},@{13},@{14},@{15},@{16})",
                         TableVideos,
                         Id,
                         Chanelowner,
@@ -208,7 +214,9 @@ namespace Mwman.Common
                         Duration,
                         Published,
                         Description,
-                        Cleartitle);
+                        Cleartitle,
+                        PId,
+                        PTitle);
                 using (
                     var sqlcon =
                         new SQLiteConnection(string.Format("Data Source={0};Version=3;FailIfMissing=True", dbfile))
@@ -230,6 +238,8 @@ namespace Mwman.Common
                     sqlcommand.Parameters.AddWithValue("@" + Published, published);
                     sqlcommand.Parameters.AddWithValue("@" + Description, description);
                     sqlcommand.Parameters.AddWithValue("@" + Cleartitle, VideoItemBase.MakeValidFileName(title));
+                    sqlcommand.Parameters.AddWithValue("@" + PId, pid);
+                    sqlcommand.Parameters.AddWithValue("@" + PTitle, ptitle);
                     sqlcon.Open();
                     sqlcommand.ExecuteNonQuery();
                     sqlcon.Close();
@@ -260,7 +270,34 @@ namespace Mwman.Common
             return res;
         }
 
-        public static Dictionary<string, string> GetDistinctValues(string dbfile, string chanelowner, string chanelname)
+        public static Dictionary<string, string> GetDistinctValues(string dbfile, string pid, string ptitle, string chanelowner)
+        {
+            var res = new Dictionary<string, string>();
+            Task t = Task.Run(() =>
+            {
+                var zap = string.Format("SELECT DISTINCT {0}, {1} FROM {2} WHERE {3}='{4}' ORDER BY {1} ASC", pid, ptitle, TableVideos, Chanelowner, chanelowner);
+                using (
+                    var sqlcon =
+                        new SQLiteConnection(string.Format("Data Source={0};Version=3;FailIfMissing=True", dbfile)))
+                using (var sqlcommand = new SQLiteCommand(zap, sqlcon))
+                {
+                    sqlcon.Open();
+                    using (var sdr = sqlcommand.ExecuteReader())
+                    {
+                        foreach (DbDataRecord record in sdr)
+                        {
+                            if (!res.ContainsKey(record[pid].ToString()))
+                                res.Add(record[pid].ToString(), record[ptitle].ToString());
+                        }
+                    }
+                    sqlcon.Close();
+                }
+            });
+            t.Wait();
+            return res;
+        }
+
+        public static Dictionary<string, string> GetDistinctValues(string dbfile, string chanelowner, string chanelname, string servername, string ordernum)
         {
             var res = new Dictionary<string, string>();
             Task t = Task.Run(() =>
@@ -277,7 +314,7 @@ namespace Mwman.Common
                         foreach (DbDataRecord record in sdr)
                         {
                             if (!res.ContainsKey(record[chanelowner].ToString()))
-                                res.Add(record[chanelowner].ToString(), record[chanelname] + ":" + record[Servername] + ":" + record[Ordernum]);
+                                res.Add(record[chanelowner].ToString(), record[chanelname] + ":" + record[servername] + ":" + record[ordernum]);
                         }
                     }
                     sqlcon.Close();

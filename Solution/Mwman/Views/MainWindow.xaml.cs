@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Mwman.Chanell;
+using Mwman.Channel;
 
 namespace Mwman.Views
 {
@@ -104,6 +104,7 @@ namespace Mwman.Views
                 case "Edit":
                     ViewModelLocator.MvViewModel.Model.MySubscribe.AddChanel(mitem.CommandParameter.ToString());
                     break;
+               
             }
         }
 
@@ -112,7 +113,7 @@ namespace Mwman.Views
             var mitem = sender as MenuItem;
             if (mitem == null) return;
 
-            ChanelBase chanel;
+            ChannelBase chanel;
 
             switch (mitem.CommandParameter.ToString())
             {

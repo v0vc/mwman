@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Windows;
 using System.Xml.Linq;
 using Microsoft.Win32;
-using Mwman.Chanell;
+using Mwman.Channel;
 using Mwman.Common;
 using Mwman.Views;
 
@@ -218,7 +218,7 @@ namespace Mwman.Models
                     var xElement = element.Element("tblVideos");
                     if (xElement != null)
                     {
-                        foreach (KeyValuePair<string, string> pair in Sqllite.GetDistinctValues(Subscribe.ChanelDb, Sqllite.Chanelowner, Sqllite.Chanelname))
+                        foreach (KeyValuePair<string, string> pair in Sqllite.GetDistinctValues(Subscribe.ChanelDb, Sqllite.Chanelowner, Sqllite.Chanelname, Sqllite.Servername, Sqllite.Ordernum))
                         {
                             var sp = pair.Value.Split(':');
                             xElement.Add(new XElement("Chanell", 
@@ -255,13 +255,13 @@ namespace Mwman.Models
                         var ordernum = element.Elements().FirstOrDefault(z => z.Name == Sqllite.Ordernum);
                         if (owner != null & name != null & server != null & ordernum != null)
                         {
-                            ChanelBase chanel = null;
-                            if (server.Value == ChanelYou.Typename)
-                                chanel = new ChanelYou(string.Empty, string.Empty, name.Value, owner.Value, Convert.ToInt32(ordernum.Value), this);
-                            if (server.Value == ChanelRt.Typename)
-                                chanel = new ChanelRt(Subscribe.RtLogin, Subscribe.RtPass, name.Value, owner.Value, Convert.ToInt32(ordernum.Value), this);
-                            if (server.Value == ChanelTap.Typename)
-                                chanel = new ChanelTap(Subscribe.TapLogin, Subscribe.TapPass, name.Value, owner.Value, Convert.ToInt32(ordernum.Value), this);
+                            ChannelBase chanel = null;
+                            if (server.Value == ChannelYou.Typename)
+                                chanel = new ChannelYou(string.Empty, string.Empty, name.Value, owner.Value, Convert.ToInt32(ordernum.Value), this);
+                            if (server.Value == ChannelRt.Typename)
+                                chanel = new ChannelRt(Subscribe.RtLogin, Subscribe.RtPass, name.Value, owner.Value, Convert.ToInt32(ordernum.Value), this);
+                            if (server.Value == ChannelTap.Typename)
+                                chanel = new ChannelTap(Subscribe.TapLogin, Subscribe.TapPass, name.Value, owner.Value, Convert.ToInt32(ordernum.Value), this);
                             if (chanel != null &&
                                 !ViewModelLocator.MvViewModel.Model.MySubscribe.ChanelList.Select(x => x.ChanelOwner)
                                     .Contains(chanel.ChanelOwner))

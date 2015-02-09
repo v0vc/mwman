@@ -18,59 +18,63 @@ using Mwman.Controls;
 using Mwman.Models;
 using Mwman.Video;
 
-namespace Mwman.Chanell
+namespace Mwman.Channel
 {
-    public class ChanelTap : ChanelBase
+    public class ChannelRt :ChannelBase
     {
-        public static string Typename = "Tapochek";
+        public static string Typename = "RuTracker";
 
-        private const string Hostbase = "tapochek.net";
+        private const string Host = "rutracker.org";
 
-        private const string Cookiename = "tapcookie.ck";
+        private const string Cookiename = "rtcookie.ck";
 
         private readonly MainWindowModel _model;
 
-        private readonly BackgroundWorker _bgv = new BackgroundWorker();
-
-        private CookieContainer _tapcookie;
+        private CookieContainer _rtcookie;
 
         private ObservableCollectionEx<VideoItemBase> _listSearchVideoItems;
 
-        public ChanelTap(string login, string pass, string chanelname, string chanelowner, int ordernum, MainWindowModel model) : base(login, pass, chanelname, chanelowner, ordernum, model)
+        private readonly BackgroundWorker _bgv = new BackgroundWorker();
+
+        public ChannelRt(string login, string pass, string chanelname, string chanelowner, int ordernum, MainWindowModel model) : base(login, pass, chanelname, chanelowner, ordernum, model)
         {
             ChanelType = Typename;
             Cname = Cookiename;
-            HostBase = Hostbase;
+            HostBase = Host;
             InitialUrls();
             _model = model;
             LastColumnHeader = "Total DL";
             ViewSeedColumnHeader = "Seeders";
             DurationColumnHeader = "Size MB";
+            TitleColumnHeader = "  Title   ";
             _bgv.DoWork += _bgv_DoWork;
             _bgv.RunWorkerCompleted += _bgv_RunWorkerCompleted;
         }
 
-        public ChanelTap(MainWindowModel model)
+        public ChannelRt(MainWindowModel model)
         {
             ChanelType = Typename;
             Cname = Cookiename;
-            HostBase = Hostbase;
-            InitialUrls(); 
+            HostBase = Host;
+            InitialUrls();
             _model = model;
             LastColumnHeader = "Total DL";
             ViewSeedColumnHeader = "Seeders";
             DurationColumnHeader = "Size MB";
+            TitleColumnHeader = "  Title   ";
+            _bgv.DoWork += _bgv_DoWork;
+            _bgv.RunWorkerCompleted += _bgv_RunWorkerCompleted;
         }
 
         private void InitialUrls()
         {
             HostUrl = string.Format("http://{0}", HostBase);
-            LoginUrl = string.Format("{0}/login.php", HostUrl);
-            UserUrl = string.Format("{0}/tracker.php?rid", HostUrl);
-            SearchUrl = string.Format("{0}/tracker.php?nm", HostUrl);
-            TopicUrl = string.Format("{0}/viewtopic.php?t", HostUrl);
+            LoginUrl = string.Format("http://login.{0}/forum/login.php", HostBase);
+            UserUrl = string.Format("{0}/forum/tracker.php?rid", HostUrl);
+            SearchUrl = string.Format("{0}/forum/tracker.php?nm", HostUrl);
+            TopicUrl = string.Format("{0}/forum/viewtopic.php?t", HostUrl);
             IndexUrl = string.Format("{0}/index.php", HostUrl);
-            Prefix = "tap";
+            Prefix = "rt";
         }
 
         private void _bgv_DoWork(object sender, DoWorkEventArgs e)
@@ -78,7 +82,7 @@ namespace Mwman.Chanell
             var type = e.Argument.ToString();
             e.Result = type;
 
-            _tapcookie = ReadCookiesFromDiskBinary(Cname) ?? GetSession();
+            _rtcookie = ReadCookiesFromDiskBinary(Cname) ?? GetSession();
 
             string zap;
 
@@ -90,7 +94,7 @@ namespace Mwman.Chanell
 
                     zap = string.Format("{0}={1}", UserUrl, ChanelOwner);
 
-                    MakeTapResponse(zap, ListVideoItems, false);
+                    MakeRtResponse(zap, ListVideoItems, false);
 
                     #endregion
 
@@ -105,7 +109,7 @@ namespace Mwman.Chanell
 
                     zap = string.Format("{0}={1}", SearchUrl, Searchkey);
 
-                    MakeTapResponse(zap, _listSearchVideoItems, true);
+                    MakeRtResponse(zap, _listSearchVideoItems, true);
 
                     #endregion
 
@@ -203,6 +207,40 @@ namespace Mwman.Chanell
             }
         }
 
+        public override void GetItemsFromNet()
+        {
+            if (_bgv.IsBusy)
+                return;
+            if (string.IsNullOrEmpty(Login) || string.IsNullOrEmpty(Password))
+            {
+                Subscribe.SetResult("Please, set Login and Password");
+                return;
+            }
+            
+            InitializeTimer();
+
+            if (IsFull)
+            {
+                if (Application.Current.Dispatcher.CheckAccess())
+                    ListVideoItems.Clear();
+                else
+                    Application.Current.Dispatcher.Invoke(() => ListVideoItems.Clear());
+            }
+            _rtcookie = ReadCookiesFromDiskBinary(Cname) ?? GetSession();
+            _bgv.RunWorkerAsync("Get");
+            
+        }
+
+        public override void SearchItems(string key, ObservableCollectionEx<VideoItemBase> listSearchVideoItems)
+        {
+            InitializeTimer();
+            _listSearchVideoItems = listSearchVideoItems;
+            _model.MySubscribe.ResCount = _listSearchVideoItems.Count;
+            Searchkey = key;
+            if (!_bgv.IsBusy)
+                _bgv.RunWorkerAsync("Search");
+        }
+
         public override CookieContainer GetSession()
         {
             if (string.IsNullOrEmpty(Login) || string.IsNullOrEmpty(Password))
@@ -210,13 +248,14 @@ namespace Mwman.Chanell
                 _model.MySubscribe.Result = "Ready";
                 throw new Exception("Please, set Login and Password");
             }
+
             try
             {
                 var cc = new CookieContainer();
                 var req = (HttpWebRequest)WebRequest.Create(LoginUrl);
                 req.CookieContainer = cc;
                 req.Method = WebRequestMethods.Http.Post;
-                req.Host = HostBase;
+                req.Host = "login." + HostBase;
                 req.KeepAlive = true;
                 var postData = string.Format("login_username={0}&login_password={1}&login=%C2%F5%EE%E4", Uri.EscapeDataString(Login), Uri.EscapeDataString(Password));
                 var data = Encoding.ASCII.GetBytes(postData);
@@ -251,40 +290,16 @@ namespace Mwman.Chanell
             return null;
         }
 
-        public override void GetItemsFromNet()
-        {
-            if (_bgv.IsBusy)
-                return;
-            if (string.IsNullOrEmpty(Login) || string.IsNullOrEmpty(Password))
-            {
-                Subscribe.SetResult("Please, set Login and Password");
-                return;
-            }
-
-            InitializeTimer();
-
-            if (IsFull)
-            {
-                if (Application.Current.Dispatcher.CheckAccess())
-                    ListVideoItems.Clear();
-                else
-                    Application.Current.Dispatcher.Invoke(() => ListVideoItems.Clear());
-            }
-            _tapcookie = ReadCookiesFromDiskBinary(Cname) ?? GetSession();
-            _bgv.RunWorkerAsync("Get");
-            
-        }
-
         public override void AutorizeChanel()
         {
-            _tapcookie = GetSession();
+            _rtcookie = GetSession();
         }
 
         public override void DownloadItem(IList list, bool isAudio)
         {
-            _tapcookie = ReadCookiesFromDiskBinary(Cname) ?? GetSession();
+            _rtcookie = ReadCookiesFromDiskBinary(Cname) ?? GetSession();
             
-            foreach (VideoItemBase item in list)
+            foreach (VideoItemRt item in list)
             {
                 DownloadItem(item, false);
             }
@@ -295,21 +310,29 @@ namespace Mwman.Chanell
             ChanelColor = new SolidColorBrush(Color.FromRgb(152, 251, 152));
 
             if (isGetCookie)
-                _tapcookie = ReadCookiesFromDiskBinary(Cname) ?? GetSession();
+                _rtcookie = ReadCookiesFromDiskBinary(Cname) ?? GetSession();
 
             // Construct HTTP request to get the file
             var httpRequest = (HttpWebRequest) WebRequest.Create(item.VideoLink);
-            httpRequest.Method = WebRequestMethods.Http.Get;
+            httpRequest.Method = WebRequestMethods.Http.Post;
 
             httpRequest.Referer = string.Format("{0}={1}", TopicUrl, item.VideoID);
-            httpRequest.CookieContainer = _tapcookie;
+            httpRequest.CookieContainer = _rtcookie;
+
+            // Include post data in the HTTP request
+            const string postData = "dummy=";
+            httpRequest.ContentLength = postData.Length;
+            httpRequest.ContentType = "application/x-www-form-urlencoded";
+
+            // Write the post data to the HTTP request
+            var requestWriter = new StreamWriter(httpRequest.GetRequestStream(), Encoding.ASCII);
+            requestWriter.Write(postData);
+            requestWriter.Close();
 
             var httpResponse = (HttpWebResponse) httpRequest.GetResponse();
             if (httpResponse.ContentType.Contains("torrent"))
             {
                 Stream httpResponseStream = httpResponse.GetResponseStream();
-
-                //string fileName = Path.GetFileName(httpResponse.Headers["filename"]);
 
                 const int bufferSize = 1024;
                 var buffer = new byte[bufferSize];
@@ -320,26 +343,22 @@ namespace Mwman.Chanell
                         string.Format("{0}-{1}({2})", Prefix, item.VideoOwnerName, item.VideoOwner)));
                 if (!ddir.Exists)
                     ddir.Create();
-
-                var tap = item as VideoItemTap;
-                if (tap != null)
+                var rt = item as VideoItemRt;
+                if (rt == null) return;
+                var dpath =
+                    VideoItemBase.AviodTooLongFileName(Path.Combine(ddir.FullName, rt.MakeTorrentFileName(false)));
+                FileStream fileStream = File.Create(dpath);
+                int bytesRead;
+                while (httpResponseStream != null && (bytesRead = httpResponseStream.Read(buffer, 0, bufferSize)) != 0)
                 {
-                    var dpath =
-                        VideoItemBase.AviodTooLongFileName(Path.Combine(ddir.FullName, tap.MakeTorrentFileName(false)));
-                    FileStream fileStream = File.Create(dpath);
-                    int bytesRead;
-                    while (httpResponseStream != null &&
-                           (bytesRead = httpResponseStream.Read(buffer, 0, bufferSize)) != 0)
-                    {
-                        fileStream.Write(buffer, 0, bytesRead);
-                    } // end while
-                    var fn = new FileInfo(dpath);
-                    if (fn.Exists)
-                        tap.FilePath = fn.FullName;
+                    fileStream.Write(buffer, 0, bytesRead);
+                } // end while
+                var fn = new FileInfo(dpath);
+                if (fn.Exists)
+                    rt.FilePath = fn.FullName;
 
-                    tap.IsHasFile = fn.Exists;
-                    tap.FileType = "torrent";
-                }
+                rt.IsHasFile = fn.Exists;
+                rt.FileType = "torrent";
                 _model.MySubscribe.Result = "Download OK: " + item.Title.Trim();
             }
             else
@@ -348,17 +367,7 @@ namespace Mwman.Chanell
             }
         }
 
-        public override void SearchItems(string key, ObservableCollectionEx<VideoItemBase> listSearchVideoItems)
-        {
-            InitializeTimer();
-            _listSearchVideoItems = listSearchVideoItems;
-            _model.MySubscribe.ResCount = _listSearchVideoItems.Count;
-            Searchkey = key;
-            if (!_bgv.IsBusy)
-                _bgv.RunWorkerAsync("Search");
-        }
-
-        public override void GetPopularItems(string key, ObservableCollectionEx<VideoItemBase> listPopularVideoItems)
+        public override void GetPopularItems(string key, ObservableCollectionEx<VideoItemBase> listPopularVideoItems, string mode)
         {
             throw new NotImplementedException();
         }
@@ -373,19 +382,19 @@ namespace Mwman.Chanell
         //    throw new NotImplementedException();
         //}
 
-        private void MakeTapResponse(string zap, ObservableCollection<VideoItemBase> listVideoItems, bool isSearch)
+        private void MakeRtResponse(string zap, ObservableCollection<VideoItemBase> listVideoItems, bool isSearch)
         {
             listVideoItems.CollectionChanged += listVideoItems_CollectionChanged;
             HtmlDocument doc;
-            var results = GetAllLinks(_tapcookie, zap, out doc);
+            var results = GetAllLinks(_rtcookie, zap, out doc);
             if (!results.Any())
             {
-                _tapcookie = GetSession();
-                results = GetAllLinks(_tapcookie, zap, out doc);
+                _rtcookie = GetSession();
+                results = GetAllLinks(_rtcookie, zap, out doc);
             }
             foreach (HtmlNode node in results)
             {
-                var v = new VideoItemTap(node, Prefix)
+                var v = new VideoItemRt(node, Prefix)
                 {
                     Num = listVideoItems.Count + 1, ParentChanel = this
                 };
@@ -416,7 +425,8 @@ namespace Mwman.Chanell
                 for (int i = 0; i < listVideoItems.Count; i++)
                 {
                     var k = i;
-                    listVideoItems[i].Num = k + 1;
+                    int i1 = i;
+                    Application.Current.Dispatcher.Invoke(() => listVideoItems[i1].Num = k + 1);
                 }
                 return;
             }
@@ -425,11 +435,11 @@ namespace Mwman.Chanell
             Thread.Sleep(500);
             foreach (string link in serchlinkss)
             {
-                results = GetAllLinks(_tapcookie, link, out doc);
+                results = GetAllLinks(_rtcookie, link, out doc);
                 foreach (HtmlNode nodes in results)
                 {
-                    var v = new VideoItemTap(nodes, Prefix);
-                    if (!listVideoItems.Contains(v) && !listVideoItems.Select(x => x.Title).Contains(v.Title) && !string.IsNullOrEmpty(v.Title))
+                    var v = new VideoItemRt(nodes, Prefix);
+                    if (!listVideoItems.Contains(v) &&!listVideoItems.Select(x=>x.Title).Contains(v.Title) && !string.IsNullOrEmpty(v.Title))
                     {
                         v.Num = listVideoItems.Count + 1;
                         v.ParentChanel = this;
@@ -448,19 +458,29 @@ namespace Mwman.Chanell
         {
             var hrefTags = new List<string>();
 
-            var block = doc.DocumentNode.Descendants("div").Where(d => d.Attributes.Contains("class") && d.Attributes["class"].Value.Equals("nav")).ToList();
+            var counts = doc.DocumentNode.Descendants("a").Where(d => d.Attributes.Contains("class") && d.Attributes["class"].Value.Equals("pg"));
 
-            if (block.Count==2)
+            foreach (HtmlNode link in counts)
             {
-                var hr = block[1].Descendants("a");
-                foreach (HtmlNode link in hr)
+                HtmlAttribute att = link.Attributes["href"];
+                if (att.Value != null && !hrefTags.Contains(att.Value))
+                    hrefTags.Add(att.Value);
+            }
+
+            var res = new List<string>();
+            foreach (string link in hrefTags)
+            {
+                var raw = string.Format("{0}/forum/{1}", HostUrl, link);
+                var sp = raw.Split(';');
+                if (sp.Length == 2)
                 {
-                    HtmlAttribute att = link.Attributes["href"];
-                    if (att.Value != null && !hrefTags.Contains(att.Value) && att.Value.StartsWith("tracker"))
-                        hrefTags.Add(att.Value);
+                    var raw2 = string.Format("{0}{1}&pid={2}", sp[0].Remove(sp[0].Length - 3), sp[1], pid);
+                    if (!res.Contains(raw2))
+                        res.Add(raw2);
                 }
             }
-            return hrefTags.Select(link => string.Format("{0}/{1}", HostUrl, link)).ToList();
+
+            return res;
         }
 
         private IEnumerable<string> GetAllSearchLinks(HtmlDocument doc)
@@ -484,7 +504,7 @@ namespace Mwman.Chanell
                 }
             }
 
-            return hrefTags.Select(link => string.Format("{0}/{1}", HostUrl, link)).ToList();
+            return hrefTags.Select(link => string.Format("{0}/forum/{1}", HostUrl, link)).ToList();
         }
 
         private static List<HtmlNode> GetAllLinks(CookieContainer cookie, string zap, out HtmlDocument doc)
@@ -497,7 +517,7 @@ namespace Mwman.Chanell
                 .Where(
                     d =>
                         d.Attributes.Contains("class") &&
-                        d.Attributes["class"].Value.Equals("tCenter")).ToList();
+                        d.Attributes["class"].Value.Equals("tCenter hl-tr")).ToList();
         }
 
         private void listVideoItems_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)

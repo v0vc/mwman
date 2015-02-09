@@ -3,14 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Common;
-//using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Media;
@@ -19,9 +17,9 @@ using Mwman.Controls;
 using Mwman.Models;
 using Mwman.Video;
 
-namespace Mwman.Chanell
+namespace Mwman.Channel
 {
-    public abstract class ChanelBase : INotifyPropertyChanged
+    public abstract class ChannelBase : INotifyPropertyChanged
     {
         #region INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
@@ -63,7 +61,13 @@ namespace Mwman.Chanell
 
         private string _durationColumnHeader;
 
+        private string _titleColumnHeader;
+
         private int _newitemcount;
+
+        private Playlist _currentPlaylist;
+
+        private ChannelBase _currentPopularChannel;
 
         #endregion
 
@@ -72,7 +76,7 @@ namespace Mwman.Chanell
         public TimeSpan Synctime { get; set; }
 
         public Timer TimerCommon;
-
+        
         public Brush ChanelColor
         {
             get { return _chanelColor; }
@@ -147,6 +151,17 @@ namespace Mwman.Chanell
             }
         }
 
+        public string TitleColumnHeader
+        {
+            get { return _titleColumnHeader; }
+            set
+            {
+                _titleColumnHeader = value;
+                OnPropertyChanged();
+            }
+
+        }
+
         public int OrderNum { get; set; }
 
         public bool IsReady
@@ -197,6 +212,32 @@ namespace Mwman.Chanell
 
         public ObservableCollectionEx<VideoItemBase> ListSearchVideoItems { get; set; }
 
+        public ObservableCollectionEx<Playlist> ListPlaylists { get; set; }
+
+        public ObservableCollectionEx<ChannelBase> ListPopularChannels { get; set; }
+
+        public Playlist CurrentPlaylist
+        {
+            get { return _currentPlaylist; }
+            set
+            {
+                _currentPlaylist = value;
+                OnPropertyChanged();
+                Filter();
+            }
+        }
+
+        public ChannelBase CurrentPopularChannel
+        {
+            get { return _currentPopularChannel; }
+            set
+            {
+                _currentPopularChannel = value;
+                OnPropertyChanged();
+                GetPopularChannelItems();
+            }
+        }
+
         public IList SelectedListVideoItems
         {
             get { return _selectedListVideoItems; }
@@ -242,7 +283,7 @@ namespace Mwman.Chanell
 
         #region Construction
 
-        protected ChanelBase(string login, string pass, string chanelname, string chanelowner, int ordernum, MainWindowModel model)
+        protected ChannelBase(string login, string pass, string chanelname, string chanelowner, int ordernum, MainWindowModel model)
         {
             Model = model;
             Login = login;
@@ -254,6 +295,8 @@ namespace Mwman.Chanell
             ListVideoItems = new ObservableCollectionEx<VideoItemBase>();
             ListPopularVideoItems = new ObservableCollectionEx<VideoItemBase>();
             ListSearchVideoItems = new ObservableCollectionEx<VideoItemBase>();
+            ListPlaylists = new ObservableCollectionEx<Playlist>();
+            ListPopularChannels = new ObservableCollectionEx<ChannelBase>();
             Bgvdb.DoWork += _bgvdb_DoWork;
             Bgvdb.RunWorkerCompleted += _bgvdb_RunWorkerCompleted;
             var fn = new FileInfo(Subscribe.ChanelDb);
@@ -272,7 +315,7 @@ namespace Mwman.Chanell
                 Model.MySubscribe.ResCount = collection.Count;
         }
 
-        protected ChanelBase()
+        protected ChannelBase()
         {
             ChanelName = "All";
             ChanelOwner = "All";
@@ -297,7 +340,7 @@ namespace Mwman.Chanell
 
         public abstract void SearchItems(string key, ObservableCollectionEx<VideoItemBase> listSearchVideoItems);
 
-        public abstract void GetPopularItems(string key, ObservableCollectionEx<VideoItemBase> listPopularVideoItems);
+        public abstract void GetPopularItems(string key, ObservableCollectionEx<VideoItemBase> listPopularVideoItems, string mode);
 
         public abstract void CancelDownloading();
 
@@ -312,11 +355,11 @@ namespace Mwman.Chanell
             {
                 VideoItemBase v = null;
                 var servname = record[Sqllite.Servername].ToString();
-                if (servname == ChanelYou.Typename)
+                if (servname == ChannelYou.Typename)
                     v = new VideoItemYou(record) { Num = ListVideoItems.Count + 1, ParentChanel = this };
-                if (servname == ChanelRt.Typename)
+                if (servname == ChannelRt.Typename)
                     v = new VideoItemRt(record) { Num = ListVideoItems.Count + 1, ParentChanel = this , Prefix = Prefix};
-                if (servname == ChanelTap.Typename)
+                if (servname == ChannelTap.Typename)
                     v = new VideoItemTap(record) { Num = ListVideoItems.Count + 1, ParentChanel = this, Prefix = Prefix };
                 if (v != null && !ListVideoItems.Contains(v))
                     ListVideoItems.Add(v);
@@ -489,29 +532,107 @@ namespace Mwman.Chanell
 
         private void Filter()
         {
-            if (string.IsNullOrEmpty(TitleFilter))
+            if (CurrentPlaylist == null)
             {
-                if (_filterlist.Any())
+                if (string.IsNullOrEmpty(TitleFilter))
                 {
+                    if (_filterlist.Any())
+                    {
+                        ListVideoItems.Clear();
+                        foreach (VideoItemBase item in _filterlist)
+                        {
+                            if (item.Title.Contains(TitleFilter))
+                                ListVideoItems.Add(item);
+                        }
+                    }
+                }
+                else
+                {
+                    if (!_filterlist.Any())
+                        _filterlist.AddRange(ListVideoItems);
                     ListVideoItems.Clear();
                     foreach (VideoItemBase item in _filterlist)
                     {
-                        if (item.Title.Contains(TitleFilter))
+                        if (item.Title.ToLower().Contains(TitleFilter.ToLower()))
                             ListVideoItems.Add(item);
                     }
                 }
             }
             else
             {
-                if (!_filterlist.Any())
-                    _filterlist.AddRange(ListVideoItems);
-                ListVideoItems.Clear();
-                foreach (VideoItemBase item in _filterlist)
+                if (string.IsNullOrEmpty(TitleFilter))
                 {
-                    if (item.Title.ToLower().Contains(TitleFilter.ToLower()))
-                        ListVideoItems.Add(item);
+                    if (_filterlist.Any())
+                    {
+                        ListVideoItems.Clear();
+
+                        if (CurrentPlaylist.ListID == "ALL" && _filterlist.Count != ListVideoItems.Count)
+                        {
+                            foreach (VideoItemBase item in _filterlist)
+                            {
+                                ListVideoItems.Add(item);
+                            }
+                        }
+                        else
+                        {
+                            foreach (VideoItemBase item in _filterlist)
+                            {
+                                if (item.PlaylistID == CurrentPlaylist.ListID)
+                                    ListVideoItems.Add(item);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (CurrentPlaylist.ListID == "ALL")
+                            return;
+
+                        _filterlist.AddRange(ListVideoItems);
+                        ListVideoItems.Clear();
+                        foreach (VideoItemBase item in _filterlist)
+                        {
+                            if (item.PlaylistID == CurrentPlaylist.ListID)
+                                ListVideoItems.Add(item);
+                        }
+                    }
+
+                }
+                else
+                {
+                    if (!_filterlist.Any())
+                        _filterlist.AddRange(ListVideoItems);
+                    ListVideoItems.Clear();
+
+                    if (CurrentPlaylist.ListID == "ALL")
+                    {
+                        foreach (VideoItemBase item in _filterlist)
+                        {
+                            if (item.Title.ToLower().Contains(TitleFilter.ToLower()))
+                                ListVideoItems.Add(item);
+                        }
+                    }
+                    else
+                    {
+                        foreach (VideoItemBase item in _filterlist)
+                        {
+                            if (item.Title.ToLower().Contains(TitleFilter.ToLower()) &&
+                                item.PlaylistID == CurrentPlaylist.ListID)
+                                ListVideoItems.Add(item);
+                        }
+                    }
                 }
             }
+        }
+
+        private void GetPopularChannelItems()
+        {
+            if (!(this is ChannelYou)) 
+                return;
+            var ch = this as ChannelYou;
+            if (ch == null) 
+                return;
+            ch.IsFull = true;
+            ch.GetPopularItems(Model.SelectedCountry.Value, ListPopularVideoItems, "PopFill");
         }
 
         private void InsertItemToDb(IEnumerable<VideoItemBase> lstItems)
@@ -519,6 +640,9 @@ namespace Mwman.Chanell
             //var clearname = ChanellClearName(ChanelName);
             foreach (VideoItemBase item in lstItems)
             {
+                if (string.IsNullOrEmpty(item.VideoID))
+                    continue;
+
                 if (item is VideoItemYou)
                 {
                     #region Delta
@@ -537,7 +661,7 @@ namespace Mwman.Chanell
 
                     Sqllite.InsertRecord(Subscribe.ChanelDb, item.VideoID, ChanelOwner, ChanelName, ChanelType,
                         OrderNum, 0, item.VideoLink, item.Title, item.ViewCount, item.ViewCount, item.Duration,
-                        item.Published, item.Description);
+                        item.Published, item.Description, item.PlaylistID, item.PlaylistTitle);
 
                     continue;
                 }
@@ -546,7 +670,7 @@ namespace Mwman.Chanell
                     var rt = item as VideoItemRt;
                     Sqllite.InsertRecord(Subscribe.ChanelDb, item.VideoID, ChanelOwner, ChanelName, ChanelType,
                         OrderNum, 0, item.VideoLink, item.Title, item.ViewCount, rt.TotalDl, item.Duration,
-                        item.Published, item.Description);
+                        item.Published, item.Description, item.PlaylistID, item.PlaylistTitle);
                 }
 
                 if (item is VideoItemTap)
@@ -554,7 +678,7 @@ namespace Mwman.Chanell
                     var tap = item as VideoItemTap;
                     Sqllite.InsertRecord(Subscribe.ChanelDb, item.VideoID, ChanelOwner, ChanelName, ChanelType,
                         OrderNum, 0, item.VideoLink, item.Title, item.ViewCount, tap.TotalDl, item.Duration,
-                        item.Published, item.Description);
+                        item.Published, item.Description, item.PlaylistID, item.PlaylistTitle);
                 }
 
             }

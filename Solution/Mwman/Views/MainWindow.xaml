@@ -410,7 +410,12 @@
                                                                 </Style>
                                                             </TextBox.Style>
                                                         </TextBox>
-                                                        <Label Content="Title"></Label>
+                                                        <Label Content="{Binding DataContext.Model.MySubscribe.CurrentChanel.TitleColumnHeader, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"></Label>
+                                                        <ComboBox Width="270" Margin="10,0,0,0" 
+                                                                  ItemsSource="{Binding DataContext.Model.MySubscribe.CurrentChanel.ListPlaylists, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
+                                                                  DisplayMemberPath="Title" 
+                                                                  VerticalContentAlignment="Center"
+                                                                  SelectedItem="{Binding DataContext.Model.MySubscribe.CurrentChanel.CurrentPlaylist, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
                                                     </StackPanel>
                                                 </DataTemplate>
                                             </Setter.Value>
@@ -724,7 +729,14 @@
                                                                 </Style>
                                                             </TextBox.Style>
                                                         </TextBox>
-                                                        <Label Content="Title"></Label>
+                                                        <Label Content="Title "></Label>
+                                                        <ComboBox Width="200" Margin="10,2,0,2" 
+                                                                  ItemsSource="{Binding DataContext.Model.MySubscribe.SelectedForumItem.ListPopularChannels, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
+                                                                  DisplayMemberPath="ChanelName" 
+                                                                  VerticalContentAlignment="Center"
+                                                                  SelectedItem="{Binding DataContext.Model.MySubscribe.SelectedForumItem.CurrentPopularChannel, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
+                                                                  HorizontalAlignment="Center" 
+                                                                  HorizontalContentAlignment="Stretch"/>
                                                     </StackPanel>
                                                 </DataTemplate>
                                             </Setter.Value>

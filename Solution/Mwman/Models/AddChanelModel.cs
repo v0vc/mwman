@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
-using Mwman.Chanell;
+using Mwman.Channel;
 using Mwman.Common;
 using Mwman.Views;
 
@@ -14,7 +14,7 @@ namespace Mwman.Models
 
         private readonly bool _isedit;
 
-        public ObservableCollection<ChanelBase> ServerList { get; set; }
+        public ObservableCollection<ChannelBase> ServerList { get; set; }
 
         public RelayCommand AddChanelCommand { get; set; }
 
@@ -24,9 +24,9 @@ namespace Mwman.Models
 
         public string ChanelOwner { get; set; }
 
-        public ChanelBase SelectedForumItem { get; set; }
+        public ChannelBase SelectedForumItem { get; set; }
 
-        public AddChanelModel(MainWindowModel model, AddChanelView view, bool isedit, ObservableCollection<ChanelBase> serverList)
+        public AddChanelModel(MainWindowModel model, AddChanelView view, bool isedit, ObservableCollection<ChannelBase> serverList)
         {
             _model = model;
             _isedit = isedit;
@@ -58,15 +58,15 @@ namespace Mwman.Models
                 else
                 {
                     var ordernum = _model.MySubscribe.ChanelList.Count;
-                    ChanelBase chanel = null;
+                    ChannelBase chanel = null;
                     if (string.IsNullOrEmpty(ChanelName))
                         ChanelName = ChanelOwner;
-                    if (SelectedForumItem.ChanelType == ChanelYou.Typename)
-                        chanel = new ChanelYou(SelectedForumItem.Login, SelectedForumItem.Password, ChanelName, ChanelOwner, ordernum, _model);
-                    if (SelectedForumItem.ChanelType == ChanelRt.Typename)
-                        chanel = new ChanelRt(SelectedForumItem.Login, SelectedForumItem.Password, ChanelName, ChanelOwner, ordernum, _model);
-                    if (SelectedForumItem.ChanelType == ChanelTap.Typename)
-                        chanel = new ChanelTap(SelectedForumItem.Login, SelectedForumItem.Password, ChanelName, ChanelOwner, ordernum, _model);
+                    if (SelectedForumItem.ChanelType == ChannelYou.Typename)
+                        chanel = new ChannelYou(SelectedForumItem.Login, SelectedForumItem.Password, ChanelName, ChanelOwner, ordernum, _model);
+                    if (SelectedForumItem.ChanelType == ChannelRt.Typename)
+                        chanel = new ChannelRt(SelectedForumItem.Login, SelectedForumItem.Password, ChanelName, ChanelOwner, ordernum, _model);
+                    if (SelectedForumItem.ChanelType == ChannelTap.Typename)
+                        chanel = new ChannelTap(SelectedForumItem.Login, SelectedForumItem.Password, ChanelName, ChanelOwner, ordernum, _model);
                     if (chanel != null)
                     {
                         if (!_model.MySubscribe.ChanelList.Select(z => z.ChanelOwner).Contains(ChanelOwner))

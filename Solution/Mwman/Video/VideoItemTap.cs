@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using HtmlAgilityPack;
-using Mwman.Chanell;
+using Mwman.Channel;
 using Mwman.Common;
 
 namespace Mwman.Video
@@ -25,7 +25,7 @@ namespace Mwman.Video
         {
             Prefix = prefix;
             HostBase = Host;
-            ServerName = ChanelTap.Typename;
+            ServerName = ChannelTap.Typename;
             var counts = node.Descendants("a").Where(d => d.Attributes.Contains("class") && d.Attributes["class"].Value.Equals("genmed"));
             foreach (HtmlNode htmlNode in counts)
             {
