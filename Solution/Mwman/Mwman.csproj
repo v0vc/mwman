@@ -183,7 +183,6 @@
     <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Common\Sqllite.cs" />
     <Compile Include="Common\Subscribe.cs" />
-    <Compile Include="Controls\ObservableCollectionEx.cs" />
     <Compile Include="Models\AddChanelModel.cs" />
     <Compile Include="Models\MainWindowModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />

@@ -34,7 +34,7 @@ namespace Mwman.Channel
 
         private CookieContainer _tapcookie;
 
-        private ObservableCollectionEx<VideoItemBase> _listSearchVideoItems;
+        private ObservableCollection<VideoItemBase> _listSearchVideoItems;
 
         public ChannelTap(string login, string pass, string chanelname, string chanelowner, int ordernum, MainWindowModel model) : base(login, pass, chanelname, chanelowner, ordernum, model)
         {
@@ -350,7 +350,7 @@ namespace Mwman.Channel
             }
         }
 
-        public override void SearchItems(string key, ObservableCollectionEx<VideoItemBase> listSearchVideoItems)
+        public override void SearchItems(string key, ObservableCollection<VideoItemBase> listSearchVideoItems)
         {
             InitializeTimer();
             _listSearchVideoItems = listSearchVideoItems;
@@ -360,7 +360,7 @@ namespace Mwman.Channel
                 _bgv.RunWorkerAsync("Search");
         }
 
-        public override void GetPopularItems(string key, ObservableCollectionEx<VideoItemBase> listPopularVideoItems, string mode)
+        public override void GetPopularItems(string key, ObservableCollection<VideoItemBase> listPopularVideoItems, string mode)
         {
             throw new NotImplementedException();
         }
@@ -369,11 +369,6 @@ namespace Mwman.Channel
         {
             throw new NotImplementedException();
         }
-
-        //public override void DownloadVideoInternal(IList list)
-        //{
-        //    throw new NotImplementedException();
-        //}
 
         private void MakeTapResponse(string zap, ObservableCollection<VideoItemBase> listVideoItems, bool isSearch)
         {
@@ -504,7 +499,7 @@ namespace Mwman.Channel
 
         private void listVideoItems_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            var collection = sender as ObservableCollectionEx<VideoItemBase>;
+            var collection = sender as ObservableCollection<VideoItemBase>;
             if (collection != null)
                 _model.MySubscribe.ResCount = collection.Count;
         }

@@ -31,7 +31,7 @@
                 <MenuItem Header="Exit" Click="Exit_OnClick"></MenuItem>
             </MenuItem>
             <MenuItem Header="Subscribe">
-                <MenuItem Header="Add Chanell" Command="{Binding OpenAddChanelCommand}"></MenuItem>
+                <MenuItem Header="Add Channel" Command="{Binding OpenAddChanelCommand}"></MenuItem>
                 <MenuItem Header="Full Sync" Command="{Binding SyncChanelCommand}" CommandParameter="FullSyncChanelAll"></MenuItem>
                 <MenuItem Header="Save Order" Command="{Binding MoveChanelCommand}" CommandParameter="SaveOrder"></MenuItem>
             </MenuItem>
@@ -264,7 +264,7 @@
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding Model.MySubscribe.IsOnlyFavorites, Mode=TwoWay}" Value="true">
                                                     <Setter Property="Source" Value="../Images/down_24.png"></Setter>
-                                                    <Setter Property="ToolTip" Value="Show All Chanells"></Setter>
+                                                    <Setter Property="ToolTip" Value="Show All Channels"></Setter>
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding Model.MySubscribe.IsOnlyFavorites, Mode=TwoWay}" Value="false">
                                                     <Setter Property="Source" Value="../Images/up_24.png"></Setter>
@@ -672,7 +672,7 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Width="80" CanUserResize="False" MinWidth="80" CanUserSort="False">
+                            <DataGridTemplateColumn Width="80" CanUserResize="True" MinWidth="80" CanUserSort="True">
                                 <DataGridTemplateColumn.HeaderStyle>
                                     <Style TargetType="DataGridColumnHeader">
                                         <Setter Property="HorizontalContentAlignment" Value="Center" />

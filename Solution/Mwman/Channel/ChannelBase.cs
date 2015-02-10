@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data.Common;
 using System.IO;
@@ -206,15 +207,15 @@ namespace Mwman.Channel
             }
         }
 
-        public ObservableCollectionEx<VideoItemBase> ListVideoItems { get; set; }
+        public ObservableCollection<VideoItemBase> ListVideoItems { get; set; }
 
-        public ObservableCollectionEx<VideoItemBase> ListPopularVideoItems { get; set; }
+        public ObservableCollection<VideoItemBase> ListPopularVideoItems { get; set; }
 
-        public ObservableCollectionEx<VideoItemBase> ListSearchVideoItems { get; set; }
+        public ObservableCollection<VideoItemBase> ListSearchVideoItems { get; set; }
 
-        public ObservableCollectionEx<Playlist> ListPlaylists { get; set; }
+        public ObservableCollection<Playlist> ListPlaylists { get; set; }
 
-        public ObservableCollectionEx<ChannelBase> ListPopularChannels { get; set; }
+        public ObservableCollection<ChannelBase> ListPopularChannels { get; set; }
 
         public Playlist CurrentPlaylist
         {
@@ -292,11 +293,11 @@ namespace Mwman.Channel
             ChanelName = chanelname;
             ChanelOwner = chanelowner;
             OrderNum = ordernum;
-            ListVideoItems = new ObservableCollectionEx<VideoItemBase>();
-            ListPopularVideoItems = new ObservableCollectionEx<VideoItemBase>();
-            ListSearchVideoItems = new ObservableCollectionEx<VideoItemBase>();
-            ListPlaylists = new ObservableCollectionEx<Playlist>();
-            ListPopularChannels = new ObservableCollectionEx<ChannelBase>();
+            ListVideoItems = new ObservableCollection<VideoItemBase>();
+            ListPopularVideoItems = new ObservableCollection<VideoItemBase>();
+            ListSearchVideoItems = new ObservableCollection<VideoItemBase>();
+            ListPlaylists = new ObservableCollection<Playlist>();
+            ListPopularChannels = new ObservableCollection<ChannelBase>();
             Bgvdb.DoWork += _bgvdb_DoWork;
             Bgvdb.RunWorkerCompleted += _bgvdb_RunWorkerCompleted;
             var fn = new FileInfo(Subscribe.ChanelDb);
@@ -310,7 +311,7 @@ namespace Mwman.Channel
 
         private void ListVideoItems_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            var collection = sender as ObservableCollectionEx<VideoItemBase>;
+            var collection = sender as ObservableCollection<VideoItemBase>;
             if (collection != null)
                 Model.MySubscribe.ResCount = collection.Count;
         }
@@ -336,11 +337,9 @@ namespace Mwman.Channel
 
         public abstract void DownloadItem(VideoItemBase item, bool isGetCookie);
 
-        //public abstract void DownloadVideoInternal(IList list);
+        public abstract void SearchItems(string key, ObservableCollection<VideoItemBase> listSearchVideoItems);
 
-        public abstract void SearchItems(string key, ObservableCollectionEx<VideoItemBase> listSearchVideoItems);
-
-        public abstract void GetPopularItems(string key, ObservableCollectionEx<VideoItemBase> listPopularVideoItems, string mode);
+        public abstract void GetPopularItems(string key, ObservableCollection<VideoItemBase> listPopularVideoItems, string mode);
 
         public abstract void CancelDownloading();
 

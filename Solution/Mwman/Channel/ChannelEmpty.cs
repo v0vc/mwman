@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.ObjectModel;
 using System.Net;
-using Mwman.Controls;
 using Mwman.Video;
 
 namespace Mwman.Channel
@@ -40,12 +40,12 @@ namespace Mwman.Channel
             throw new NotImplementedException();
         }
 
-        public override void SearchItems(string key, ObservableCollectionEx<VideoItemBase> listSearchVideoItems)
+        public override void SearchItems(string key, ObservableCollection<VideoItemBase> listSearchVideoItems)
         {
             throw new NotImplementedException();
         }
 
-        public override void GetPopularItems(string key, ObservableCollectionEx<VideoItemBase> listPopularVideoItems, string mode)
+        public override void GetPopularItems(string key, ObservableCollection<VideoItemBase> listPopularVideoItems, string mode)
         {
             throw new NotImplementedException();
         }
@@ -54,10 +54,5 @@ namespace Mwman.Channel
         {
             throw new NotImplementedException();
         }
-
-        //public override void DownloadVideoInternal(IList list)
-        //{
-        //    throw new NotImplementedException();
-        //}
     }
 }

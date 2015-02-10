@@ -591,7 +591,7 @@ namespace Mwman.Common
             }
             else
             {
-                MessageBox.Show("Please select Chanell");
+                MessageBox.Show("Please select Channel");
             }
 
             if (ChanelList.Any())
@@ -777,7 +777,7 @@ namespace Mwman.Common
                 _model.SelectedCountry = _model.Countries.First(x => x.Value == culture);
             }
             if (ChanelList.Any())
-                Result = string.Format("Chanells loaded in {0}", Synctime.Duration().ToString(@"mm\:ss"));
+                Result = string.Format("Channels loaded in {0}", Synctime.Duration().ToString(@"mm\:ss"));
             else
                 Result = "Ready";
         }

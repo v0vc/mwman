@@ -29,9 +29,9 @@ namespace Mwman.Channel
 
         private readonly List<VideoItemBase> _selectedListVideoItemsList = new List<VideoItemBase>();
 
-        private ObservableCollectionEx<VideoItemBase> _listSearchVideoItems;
+        private ObservableCollection<VideoItemBase> _listSearchVideoItems;
 
-        private ObservableCollectionEx<VideoItemBase> _listPopularVideoItems;
+        private ObservableCollection<VideoItemBase> _listPopularVideoItems;
 
         private string _searchkey;
 
@@ -40,8 +40,6 @@ namespace Mwman.Channel
         private readonly MainWindowModel _model;
 
         private readonly BackgroundWorker _bgv = new BackgroundWorker();
-
-        //private readonly BackgroundWorker _bgvpl = new BackgroundWorker();
 
         public int MinRes { get; set; }
         public int MaxResults { get; set; }
@@ -59,8 +57,6 @@ namespace Mwman.Channel
             TitleColumnHeader = "Playlist:";
             _bgv.DoWork += _bgv_DoWork;
             _bgv.RunWorkerCompleted += _bgv_RunWorkerCompleted;
-            //_bgvpl.DoWork += _bgvpl_DoWork;
-            //_bgvpl.RunWorkerCompleted += _bgvpl_RunWorkerCompleted;
         }
 
         public ChannelYou(MainWindowModel model)
@@ -74,8 +70,6 @@ namespace Mwman.Channel
             _bgv.WorkerSupportsCancellation = true;
             _bgv.DoWork += _bgv_DoWork;
             _bgv.RunWorkerCompleted += _bgv_RunWorkerCompleted;
-            //_bgvpl.DoWork += _bgvpl_DoWork;
-            //_bgvpl.RunWorkerCompleted += _bgvpl_RunWorkerCompleted;
         }
 
         public ChannelYou(JToken pair)
@@ -123,7 +117,7 @@ namespace Mwman.Channel
                             {
                                 foreach (JToken pair in jsvideo["feed"]["entry"])
                                 {
-                                    var v = new VideoItemYou(pair, false, _cul)
+                                    var v = new VideoItemYou(pair, false)
                                     {
                                         Num = ListVideoItems.Count + 1,
                                         VideoOwner = ChanelOwner,
@@ -165,7 +159,8 @@ namespace Mwman.Channel
                             if (total > ListVideoItems.Count)
                             {
                                 MinRes = MinRes + MaxResults;
-                                continue;
+                                if (MinRes < total)
+                                    continue;
                             }
 
                         }
@@ -209,13 +204,14 @@ namespace Mwman.Channel
                             if (total > ListVideoItems.Count)
                             {
                                 MinRes = MinRes + MaxResults;
-                                continue;
+                                if (MinRes < total)
+                                    continue;
                             }
 
                             break;
                         }
                         MinRes = 1;
-                        foreach (Playlist pl in ListPlaylists)
+                        foreach (Playlist pl in ListPlaylists.Where(x => !string.IsNullOrEmpty(x.ContentLink)))
                         {
                             while (true)
                             {
@@ -248,13 +244,15 @@ namespace Mwman.Channel
                                 if (total > ListVideoItems.Count)
                                 {
                                     MinRes = MinRes + MaxResults;
-                                    continue;
+                                    if (MinRes < total)
+                                        continue;
                                 }
 
                                 break;
                             }
 
                         }
+                        
                     }
 
                     #endregion
@@ -265,7 +263,7 @@ namespace Mwman.Channel
 
                     zap = string.Format("https://gdata.youtube.com/feeds/api/standardfeeds/{0}/most_popular?time=today&v=2&alt=json", _cul);
 
-                    MakeYouResponse(zap, _listPopularVideoItems, _cul + " now");
+                    MakeYouResponse(zap, _listPopularVideoItems);
 
                     FillMostPopularChanels();
 
@@ -275,7 +273,7 @@ namespace Mwman.Channel
 
                     zap = string.Format("https://gdata.youtube.com/feeds/api/videos?q={0}&max-results=50&v=2&alt=json", _searchkey);
 
-                    MakeYouResponse(zap, _listSearchVideoItems, string.Empty);
+                    MakeYouResponse(zap, _listSearchVideoItems);
 
                     break;
 
@@ -302,13 +300,13 @@ namespace Mwman.Channel
                                 foreach (JToken pair in jsvideo["feed"]["entry"])
                                 {
                                     Model.MySubscribe.ResCount = ListPopularVideoItems.Count;
-                                    var v = new VideoItemYou(pair, false, CurrentPopularChannel.ChanelName)
+                                    var v = new VideoItemYou(pair, false)
                                     {
                                         Num = ListPopularVideoItems.Count + 1,
                                         VideoOwner = ChanelOwner,
-                                        ParentChanel = this
+                                        ParentChanel = this,
+                                        Region = CurrentPopularChannel.ChanelName
                                     };
-
                                     if (IsFull)
                                     {
                                         if (ListPopularVideoItems.Contains(v) || string.IsNullOrEmpty(v.Title))
@@ -344,31 +342,13 @@ namespace Mwman.Channel
                             if (total > ListPopularVideoItems.Count)
                             {
                                 MinRes = MinRes + MaxResults;
-                                continue;
+                                if (MinRes < total)
+                                    continue;
                             }
 
                         }
                         break;
                     }
-
-                    //Application.Current.Dispatcher.Invoke(() => ListPopularVideoItems.Clear());
-                    //while (true)
-                    //{
-                    //    zap =
-                    //        string.Format(
-                    //            "https://gdata.youtube.com/feeds/api/users/{0}/uploads?alt=json&start-index={1}&max-results={2}",
-                    //            CurrentPopularChannel.ChanelOwner, MinRes, MaxResults);
-
-                    //    MakeYouResponse(zap, _listPopularVideoItems, CurrentPopularChannel.ChanelName);
-
-                    //    if (total > ListVideoItems.Count)
-                    //    {
-                    //        MinRes = MinRes + MaxResults;
-                    //        continue;
-                    //    }
-
-                    //    break;
-                    //}
 
                     break;
             }
@@ -398,6 +378,8 @@ namespace Mwman.Channel
                 {
                     case "Get":
 
+                        #region Get
+
                         var dir = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
                         if (dir == null) return;
                         int totalrow;
@@ -408,7 +390,7 @@ namespace Mwman.Channel
                             {
                                 if (Application.Current.Dispatcher.CheckAccess())
                                 {
-                                    item.IsHasFile = item.IsFileExist(); 
+                                    item.IsHasFile = item.IsFileExist();
                                 }
                                 else
                                 {
@@ -433,7 +415,8 @@ namespace Mwman.Channel
                                     Application.Current.Dispatcher.Invoke(() =>
                                     {
                                         item1.IsHasFile = item1.IsFileExist();
-                                        item1.IsSynced = Sqllite.IsTableHasRecord(Subscribe.ChanelDb, item1.VideoID, ChanelOwner);
+                                        item1.IsSynced = Sqllite.IsTableHasRecord(Subscribe.ChanelDb, item1.VideoID,
+                                            ChanelOwner);
                                     });
                                 }
                             }
@@ -451,12 +434,14 @@ namespace Mwman.Channel
                         if (!Bgvdb.IsBusy)
                             Bgvdb.RunWorkerAsync(totalrow); //отдельный воркер для записи в базу
 
+                        #endregion
+
                         break;
 
                     case "Popular":
 
                         TimerCommon.Dispose();
-                        Subscribe.SetResult(string.Format("{0} synced in {1}", _model.SelectedCountry.Key,
+                        Subscribe.SetResult(string.Format("\'{0}\' synced in {1}", _model.SelectedCountry.Key,
                             Synctime.Duration().ToString(@"mm\:ss")));
 
                         break;
@@ -464,14 +449,15 @@ namespace Mwman.Channel
                     case "Search":
 
                         TimerCommon.Dispose();
-                        Subscribe.SetResult(string.Format("{0}: \"{1}\" searched in {2}", Typename, _searchkey,
+                        Subscribe.SetResult(string.Format("{0}: \'{1}\' searched in {2}", Typename, _searchkey,
                             Synctime.Duration().ToString(@"mm\:ss")));
 
                         break;
 
                     case "PopFill":
+
                         TimerCommon.Dispose();
-                        Subscribe.SetResult(string.Format("{0}: \"{1}\" get in {2}", Typename, CurrentPopularChannel.ChanelName,
+                        Subscribe.SetResult(string.Format("{0}: \'{1}\' get in {2}", Typename, CurrentPopularChannel.ChanelName,
                             Synctime.Duration().ToString(@"mm\:ss")));
                         break;
                 }
@@ -509,11 +495,17 @@ namespace Mwman.Channel
                     }
 
                 }
+                if (total > ListPopularChannels.Count)
+                {
+                    MinRes = MinRes + MaxResults;
+                    if (MinRes < total)
+                        continue;
+                }
                 break;
             }
         }
 
-        private void MakeYouResponse(string zap, ObservableCollection<VideoItemBase> listVideoItems, string obozn)
+        private void MakeYouResponse(string zap, ObservableCollection<VideoItemBase> listVideoItems)
         {
             listVideoItems.CollectionChanged += listVideoItems_CollectionChanged;
 
@@ -528,11 +520,12 @@ namespace Mwman.Channel
             {
                 foreach (JToken pair in jsvideo["feed"]["entry"])
                 {
-                    var v = new VideoItemYou(pair, true, obozn)
+                    var v = new VideoItemYou(pair, true)
                     {
                         Num = listVideoItems.Count + 1,
-                        ParentChanel = this
+                        ParentChanel = this,
                     };
+                    v.Region = v.VideoOwner;
 
                     if (Application.Current.Dispatcher.CheckAccess())
                         AddItems(v, listVideoItems);
@@ -540,12 +533,14 @@ namespace Mwman.Channel
                         Application.Current.Dispatcher.Invoke(() => AddItems(v, listVideoItems));
                 }
             }
+
+            Model.MySubscribe.ResCount = listVideoItems.Count;
             listVideoItems.CollectionChanged -= listVideoItems_CollectionChanged;
         }
 
         private void listVideoItems_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            var collection = sender as ObservableCollectionEx<VideoItemBase>;
+            var collection = sender as ObservableCollection<VideoItemBase>;
             if (collection != null)
                 _model.MySubscribe.ResCount = collection.Count;
         }
@@ -584,7 +579,7 @@ namespace Mwman.Channel
             throw new NotImplementedException();
         }
 
-        public override void SearchItems(string key, ObservableCollectionEx<VideoItemBase> listSearchVideoItems)
+        public override void SearchItems(string key, ObservableCollection<VideoItemBase> listSearchVideoItems)
         {
             InitializeTimer();
             _listSearchVideoItems = listSearchVideoItems;
@@ -594,7 +589,7 @@ namespace Mwman.Channel
                 _bgv.RunWorkerAsync("Search");
         }
 
-        public override void GetPopularItems(string key, ObservableCollectionEx<VideoItemBase> listPopularVideoItems, string mode)
+        public override void GetPopularItems(string key, ObservableCollection<VideoItemBase> listPopularVideoItems, string mode)
         {
             InitializeTimer();
             _cul = key;

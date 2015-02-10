@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Mwman.Common
+﻿namespace Mwman.Common
 {
-    public class Playlist : INotifyPropertyChanged
+    public class Playlist
     {
         public string Title { get; set; }
 
@@ -21,14 +13,6 @@ namespace Mwman.Common
             Title = title;
             ListID = listid;
             ContentLink = link;
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

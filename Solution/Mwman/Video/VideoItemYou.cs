@@ -27,8 +27,6 @@ namespace Mwman.Video
 
         private readonly BackgroundWorker _bgv;
 
-        //private BackgroundWorker _worker;
-
         private readonly List<string> _destList = new List<string>();
 
         private bool _isAudio;
@@ -45,7 +43,7 @@ namespace Mwman.Video
             PlaylistTitle = pltitle;
         }
 
-        public VideoItemYou(JToken pair, bool isPopular, string region)
+        public VideoItemYou(JToken pair, bool isPopular)
         {
             try
             {
@@ -54,7 +52,7 @@ namespace Mwman.Video
                 ClearTitle = MakeValidFileName(Title);
                 try
                 {
-                    ViewCount = (int)pair["yt$statistics"]["viewCount"]; //sometimes is missed
+                    ViewCount = (int)pair["yt$statistics"]["viewCount"]; //sometimes this missed
                 }
                 catch
                 {
@@ -64,7 +62,6 @@ namespace Mwman.Video
                 Duration = (int) pair["media$group"]["yt$duration"]["seconds"];
                 VideoLink = pair["link"][0]["href"].ToString().Split('&')[0];
                 Published = (DateTime) pair["published"]["$t"];
-                Region = region;
                 var owner = pair["author"][0]["uri"]["$t"].ToString().Split('/');
                 VideoOwner = owner[owner.Length - 1];
                 VideoOwnerName = VideoOwner;

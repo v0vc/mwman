@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Windows;
 using Mwman.Common;
 using Mwman.Video;
@@ -74,12 +75,12 @@ namespace Mwman.Models
                 else
                 {
                     var param = String.Format("-o {0}\\%(title)s.%(ext)s {1} --no-check-certificate -i", Subscribe.DownloadPath, Link);
-                    var proc = Process.Start(Subscribe.YoudlPath, param);
-                    if (proc != null)
+                    ThreadPool.QueueUserWorkItem(delegate
                     {
-                        proc.WaitForExit();
-                        proc.Close();
-                    }
+                        var process = Process.Start(Subscribe.YoudlPath, param);
+                        if (process != null) 
+                            process.Close(); 
+                    });
                 }
             }
             else
