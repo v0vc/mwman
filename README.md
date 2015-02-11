@@ -31,5 +31,7 @@ Download
 
 * [Stable version](https://github.com/v0vc/Mwman/releases)
 
+* [Latest version (.exe only)](https://www.dropbox.com/s/gvovcwxrlvf7kdc/Mwman.exe?dl=0)
+
 [Details](https://github.com/v0vc/Mwman/wiki)
 -----------
