@@ -163,6 +163,8 @@ namespace Mwman.Channel
                                     continue;
                             }
 
+                            MinRes = 1;
+
                         }
                         break;
                     }
@@ -208,9 +210,10 @@ namespace Mwman.Channel
                                     continue;
                             }
 
+                            MinRes = 1;
                             break;
                         }
-                        MinRes = 1;
+
                         foreach (Playlist pl in ListPlaylists.Where(x => !string.IsNullOrEmpty(x.ContentLink)))
                         {
                             while (true)
@@ -247,12 +250,15 @@ namespace Mwman.Channel
                                     if (MinRes < total)
                                         continue;
                                 }
-
+                                MinRes = 1;
                                 break;
                             }
 
                         }
-                        
+
+                        Application.Current.Dispatcher.Invoke(
+                            () => ListPlaylists.Add(new Playlist("ALL", "ALL", string.Empty)));
+
                     }
 
                     #endregion
@@ -345,6 +351,7 @@ namespace Mwman.Channel
                                 if (MinRes < total)
                                     continue;
                             }
+                            MinRes = 1;
 
                         }
                         break;
