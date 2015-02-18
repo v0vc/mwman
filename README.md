@@ -31,9 +31,9 @@ Download
 
 * [Stable version](https://github.com/v0vc/Mwman/releases)
 
-* [Latest x86](https://www.dropbox.com/s/megq611a85al5ct/Mwman.exe?dl=0)
+* [Latest x86](https://dl.dropboxusercontent.com/u/42075250/Mwman_x86/Mwman.exe)
 
-* [Latest x64](https://www.dropbox.com/s/aem0f3cnfe1raq9/Mwman.exe?dl=0)
+* [Latest x64](https://dl.dropboxusercontent.com/u/42075250/Mwman_x64/Mwman.exe)
 
 [Details](https://github.com/v0vc/Mwman/wiki)
 -----------
