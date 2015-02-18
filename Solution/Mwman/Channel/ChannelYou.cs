@@ -169,93 +169,7 @@ namespace Mwman.Channel
 
                     if (IsFull)
                     {
-                        MinRes = 1;
-                        while (true)
-                        {
-                            var wc = new WebClient {Encoding = Encoding.UTF8};
-
-                            zap = string.Format(
-                                "http://gdata.youtube.com/feeds/api/users/{0}/playlists?v=2&alt=json&start-index={1}&max-results={2}",
-                                ChanelOwner, MinRes, MaxResults);
-                            var res = wc.DownloadString(zap);
-                            var jsvideo = (JObject) JsonConvert.DeserializeObject(res);
-                            if (jsvideo == null)
-                                return;
-                            int total;
-                            if (int.TryParse(jsvideo["feed"]["openSearch$totalResults"]["$t"].ToString(), out total))
-                            {
-                                if (total != 0)
-                                {
-                                    foreach (JToken pair in jsvideo["feed"]["entry"])
-                                    {
-                                        var title = pair["title"]["$t"].ToString();
-                                        var id = pair["yt$playlistId"]["$t"].ToString();
-                                        var link = string.Format("{0}&alt=json", pair["content"]["src"]);
-                                        var pl = new Playlist(title, id, link);
-
-                                        if (Application.Current.Dispatcher.CheckAccess())
-                                            ListPlaylists.Add(pl);
-                                        else
-                                            Application.Current.Dispatcher.Invoke(() => ListPlaylists.Add(pl));
-                                    }
-                                }
-                            }
-
-                            if (total > ListVideoItems.Count)
-                            {
-                                MinRes = MinRes + MaxResults;
-                                if (MinRes < total)
-                                    continue;
-                            }
-
-                            MinRes = 1;
-                            break;
-                        }
-
-                        foreach (Playlist pl in ListPlaylists.Where(x => !string.IsNullOrEmpty(x.ContentLink)))
-                        {
-                            while (true)
-                            {
-                                var wc = new WebClient {Encoding = Encoding.UTF8};
-
-                                zap = string.Format("{0}&start-index={1}&max-results={2}", pl.ContentLink, MinRes,
-                                    MaxResults);
-                                var res = wc.DownloadString(zap);
-                                var jsvideo = (JObject) JsonConvert.DeserializeObject(res);
-                                if (jsvideo == null)
-                                    return;
-                                int total;
-                                if (int.TryParse(jsvideo["feed"]["openSearch$totalResults"]["$t"].ToString(), out total))
-                                {
-                                    if (total != 0)
-                                    {
-                                        foreach (JToken pair in jsvideo["feed"]["entry"])
-                                        {
-                                            var vi = new VideoItemYou(pair, pl.ListID, pl.Title);
-
-                                            var item = ListVideoItems.FirstOrDefault(x => x.VideoID == vi.VideoID);
-                                            if (item != null)
-                                            {
-                                                item.PlaylistID = vi.PlaylistID;
-                                                item.PlaylistTitle = vi.PlaylistTitle;
-                                            }
-                                        }
-                                    }
-                                }
-
-                                if (total > ListVideoItems.Count)
-                                {
-                                    MinRes = MinRes + MaxResults;
-                                    if (MinRes < total)
-                                        continue;
-                                }
-                                MinRes = 1;
-                                break;
-                            }
-                        }
-
-                        Application.Current.Dispatcher.Invoke(
-                            () => ListPlaylists.Add(new Playlist("ALL", "ALL", string.Empty)));
+                        UpdatePlayListBgv();
                     }
 
                     #endregion
@@ -365,97 +279,104 @@ namespace Mwman.Channel
 
                 case "Playlist":
 
-                    MinRes = 1;
-
-                    while (true)
-                    {
-                        var wc = new WebClient {Encoding = Encoding.UTF8};
-
-                        zap = string.Format(
-                            "http://gdata.youtube.com/feeds/api/users/{0}/playlists?v=2&alt=json&start-index={1}&max-results={2}",
-                            ChanelOwner, MinRes, MaxResults);
-                        var res = wc.DownloadString(zap);
-                        var jsvideo = (JObject) JsonConvert.DeserializeObject(res);
-                        if (jsvideo == null)
-                            return;
-                        int total;
-                        if (int.TryParse(jsvideo["feed"]["openSearch$totalResults"]["$t"].ToString(), out total))
-                        {
-                            if (total != 0)
-                            {
-                                foreach (JToken pair in jsvideo["feed"]["entry"])
-                                {
-                                    var title = pair["title"]["$t"].ToString();
-                                    var id = pair["yt$playlistId"]["$t"].ToString();
-                                    var link = string.Format("{0}&alt=json", pair["content"]["src"]);
-                                    var pl = new Playlist(title, id, link);
-
-                                    if (Application.Current.Dispatcher.CheckAccess())
-                                        ListPlaylists.Add(pl);
-                                    else
-                                        Application.Current.Dispatcher.Invoke(() => ListPlaylists.Add(pl));
-                                }
-                            }
-                        }
-
-                        if (total > ListVideoItems.Count)
-                        {
-                            MinRes = MinRes + MaxResults;
-                            if (MinRes < total)
-                                continue;
-                        }
-
-                        MinRes = 1;
-                        break;
-                    }
-
-                    foreach (Playlist pl in ListPlaylists.Where(x => !string.IsNullOrEmpty(x.ContentLink)))
-                    {
-                        while (true)
-                        {
-                            var wc = new WebClient {Encoding = Encoding.UTF8};
-
-                            zap = string.Format("{0}&start-index={1}&max-results={2}", pl.ContentLink, MinRes,
-                                MaxResults);
-                            var res = wc.DownloadString(zap);
-                            var jsvideo = (JObject) JsonConvert.DeserializeObject(res);
-                            if (jsvideo == null)
-                                return;
-                            int total;
-                            if (int.TryParse(jsvideo["feed"]["openSearch$totalResults"]["$t"].ToString(), out total))
-                            {
-                                if (total != 0)
-                                {
-                                    foreach (JToken pair in jsvideo["feed"]["entry"])
-                                    {
-                                        var vi = new VideoItemYou(pair, pl.ListID, pl.Title);
-
-                                        var item = ListVideoItems.FirstOrDefault(x => x.VideoID == vi.VideoID);
-                                        if (item != null)
-                                        {
-                                            item.PlaylistID = vi.PlaylistID;
-                                            item.PlaylistTitle = vi.PlaylistTitle;
-                                        }
-                                    }
-                                }
-                            }
-
-                            if (total > ListVideoItems.Count)
-                            {
-                                MinRes = MinRes + MaxResults;
-                                if (MinRes < total)
-                                    continue;
-                            }
-                            MinRes = 1;
-                            break;
-                        }
-                    }
-
-                    Application.Current.Dispatcher.Invoke(
-                        () => ListPlaylists.Add(new Playlist("ALL", "ALL", string.Empty)));
+                    UpdatePlayListBgv();
 
                     break;
             }
+        }
+
+        private void UpdatePlayListBgv()
+        {
+            MinRes = 1;
+            string zap;
+
+            while (true)
+            {
+                var wc = new WebClient { Encoding = Encoding.UTF8 };
+
+                zap = string.Format(
+                    "http://gdata.youtube.com/feeds/api/users/{0}/playlists?v=2&alt=json&start-index={1}&max-results={2}",
+                    ChanelOwner, MinRes, MaxResults);
+                var res = wc.DownloadString(zap);
+                var jsvideo = (JObject)JsonConvert.DeserializeObject(res);
+                if (jsvideo == null)
+                    return;
+                int total;
+                if (int.TryParse(jsvideo["feed"]["openSearch$totalResults"]["$t"].ToString(), out total))
+                {
+                    if (total != 0)
+                    {
+                        foreach (JToken pair in jsvideo["feed"]["entry"])
+                        {
+                            var title = pair["title"]["$t"].ToString();
+                            var id = pair["yt$playlistId"]["$t"].ToString();
+                            var link = string.Format("{0}&alt=json", pair["content"]["src"]);
+                            var pl = new Playlist(title, id, link);
+
+                            if (Application.Current.Dispatcher.CheckAccess())
+                                ListPlaylists.Add(pl);
+                            else
+                                Application.Current.Dispatcher.Invoke(() => ListPlaylists.Add(pl));
+                        }
+                    }
+                }
+
+                if (total > ListVideoItems.Count)
+                {
+                    MinRes = MinRes + MaxResults;
+                    if (MinRes < total)
+                        continue;
+                }
+
+                MinRes = 1;
+                break;
+            }
+
+            foreach (Playlist pl in ListPlaylists.Where(x => !string.IsNullOrEmpty(x.ContentLink)))
+            {
+                while (true)
+                {
+                    var wc = new WebClient { Encoding = Encoding.UTF8 };
+
+                    zap = string.Format("{0}&start-index={1}&max-results={2}", pl.ContentLink, MinRes,
+                        MaxResults);
+                    var res = wc.DownloadString(zap);
+                    var jsvideo = (JObject)JsonConvert.DeserializeObject(res);
+                    if (jsvideo == null)
+                        return;
+                    int total;
+                    if (int.TryParse(jsvideo["feed"]["openSearch$totalResults"]["$t"].ToString(), out total))
+                    {
+                        if (total != 0)
+                        {
+                            foreach (JToken pair in jsvideo["feed"]["entry"])
+                            {
+                                var vi = new VideoItemYou(pair, pl.ListID, pl.Title);
+
+                                var item = ListVideoItems.FirstOrDefault(x => x.VideoID == vi.VideoID);
+                                if (item != null)
+                                {
+                                    item.PlaylistID = vi.PlaylistID;
+                                    item.PlaylistTitle = vi.PlaylistTitle;
+                                }
+                            }
+                        }
+                    }
+
+                    if (total > ListVideoItems.Count)
+                    {
+                        MinRes = MinRes + MaxResults;
+                        if (MinRes < total)
+                            continue;
+                    }
+                    MinRes = 1;
+                    break;
+                }
+            }
+
+            Application.Current.Dispatcher.Invoke(
+                () => ListPlaylists.Add(new Playlist("ALL", "ALL", string.Empty)));
+
         }
 
         private void _bgv_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -574,8 +495,9 @@ namespace Mwman.Channel
                             Sqllite.UpdateValue(Subscribe.ChanelDb, Sqllite.PTitle, item.PlaylistTitle, Sqllite.Id, item.VideoID);
                         }
                         TimerCommon.Dispose();
-                        Subscribe.SetResult(string.Format("{0}: \'{1}\' updated in {2}", Typename, ChanelName,
+                        Subscribe.SetResult(string.Format("{0}: \'{1}\' playlists updated in {2}", Typename, ChanelName,
                             Synctime.Duration().ToString(@"mm\:ss")));
+
                         break;
                 }
             }
