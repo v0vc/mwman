@@ -658,39 +658,38 @@ namespace Mwman.Common
             Result = string.Empty;
             Synctime = new TimeSpan();
 
-            Task.Run(() =>
-            {
-                switch (obj.ToString())
-                {
-                    case "FullSyncChanelAll":
+            Task.Run(() => ChanelSync(obj.ToString()));
 
-                        ChanelSync(ChanelList, true);
+            //switch (obj.ToString())
+            //{
+            //    case "FullSyncChanelAll":
 
-                        break;
+            //        ChanelSync(ChanelList, true);
 
-                    case "SyncChanelAll":
+            //        break;
 
-                        ChanelSync(ChanelListToBind, false);
+            //    case "SyncChanelAll":
 
-                        break;
+            //        ChanelSync(ChanelListToBind, false);
 
-                    case "SyncChanelSelected":
+            //        break;
 
-                        ChanelSync(SelectedListChanels, false);
+            //    case "SyncChanelSelected":
 
-                        break;
+            //        ChanelSync(SelectedListChanels, false);
 
-                    case "SyncAllChanelSelected":
+            //        break;
 
-                        ChanelSync(SelectedListChanels, true);
+            //    case "SyncAllChanelSelected":
 
-                        break;
+            //        ChanelSync(SelectedListChanels, true);
 
-                    case "SyncChanelFavorites":
-                        ChanelSync(ChanelList.Where(x => x.IsFavorite).ToList(), false);
-                        break;
-                }
-            });
+            //        break;
+
+            //    case "SyncChanelFavorites":
+            //        ChanelSync(ChanelList.Where(x => x.IsFavorite).ToList(), false);
+            //        break;
+            //}
         }
 
         private static void RunItem(ChannelBase chanel)
@@ -786,10 +785,76 @@ namespace Mwman.Common
         {
             if (list == null || list.Count <= 0) return;
 
+
+
             foreach (ChannelBase chanel in list)
             {
                 chanel.IsFull = isFull;
                 chanel.GetItemsFromNet();
+            }
+        }
+
+        private void ChanelSync(string synctype)
+        {
+            switch (synctype)
+            {
+                case "FullSyncChanelAll":
+
+                    foreach (ChannelBase chanel in ChanelList)
+                    {
+                        chanel.IsFull = true;
+                        chanel.GetItemsFromNet();
+                    }
+
+                    break;
+
+                case "SyncChanelAll":
+
+                    foreach (ChannelBase chanel in ChanelListToBind)
+                    {
+                        chanel.IsFull = false;
+                        chanel.GetItemsFromNet();
+                    }
+
+                    break;
+
+                case "SyncChanelSelected":
+
+                    foreach (ChannelBase chanel in SelectedListChanels)
+                    {
+                        chanel.IsFull = false;
+                        chanel.GetItemsFromNet();
+                    }
+
+                    break;
+
+                case "SyncAllChanelSelected":
+
+                    foreach (ChannelBase chanel in SelectedListChanels)
+                    {
+                        chanel.IsFull = true;
+                        chanel.GetItemsFromNet();
+                    }
+
+                    break;
+
+                case "SyncChanelFavorites":
+
+                    foreach (ChannelBase chanel in ChanelList.Where(x => x.IsFavorite))
+                    {
+                        chanel.IsFull = false;
+                        chanel.GetItemsFromNet();
+                    }
+                    break;
+
+                case "Playlist":
+
+                    foreach (ChannelYou chanel in SelectedListChanels)
+                    {
+                        chanel.UpdatePlaylist();
+                    }
+
+                    break;
             }
         }
 

@@ -511,12 +511,11 @@ namespace Mwman.Common
             t.Wait();
         }
 
-        public static void UpdateValue(string dbfile, string valuename, string keyfield, string key, object value)
+        public static void UpdateValue(string dbfile, string valuename, object value, string keyfield, object key)
         {
             Task t = Task.Run(() =>
             {
-                var zap = string.Format("UPDATE {0} SET {1}='{2}' WHERE {3}='{4}'", TableVideos, valuename, value,
-                    keyfield, key);
+                var zap = string.Format("UPDATE {0} SET {1}='{2}' WHERE {3}='{4}'", TableVideos, valuename, value, keyfield, key);
                 using (var sqlcon = new SQLiteConnection(string.Format("Data Source={0};Version=3;FailIfMissing=True", dbfile)))
                 using (var sqlcommand = new SQLiteCommand(zap, sqlcon))
                 {

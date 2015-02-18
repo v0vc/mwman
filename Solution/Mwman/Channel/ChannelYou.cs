@@ -101,13 +101,13 @@ namespace Mwman.Channel
 
                     while (true)
                     {
-                        var wc = new WebClient { Encoding = Encoding.UTF8 };
+                        var wc = new WebClient {Encoding = Encoding.UTF8};
                         zap =
                             string.Format(
                                 "https://gdata.youtube.com/feeds/api/users/{0}/uploads?alt=json&start-index={1}&max-results={2}",
                                 ChanelOwner, MinRes, MaxResults);
                         var res = wc.DownloadString(zap);
-                        var jsvideo = (JObject)JsonConvert.DeserializeObject(res);
+                        var jsvideo = (JObject) JsonConvert.DeserializeObject(res);
                         if (jsvideo == null)
                             return;
                         int total;
@@ -132,7 +132,6 @@ namespace Mwman.Channel
                                             ListVideoItems.Add(v);
                                         else
                                             Application.Current.Dispatcher.Invoke(() => ListVideoItems.Add(v));
-
                                     }
                                     else
                                     {
@@ -164,7 +163,6 @@ namespace Mwman.Channel
                             }
 
                             MinRes = 1;
-
                         }
                         break;
                     }
@@ -174,13 +172,13 @@ namespace Mwman.Channel
                         MinRes = 1;
                         while (true)
                         {
-                            var wc = new WebClient { Encoding = Encoding.UTF8 };
+                            var wc = new WebClient {Encoding = Encoding.UTF8};
 
                             zap = string.Format(
                                 "http://gdata.youtube.com/feeds/api/users/{0}/playlists?v=2&alt=json&start-index={1}&max-results={2}",
                                 ChanelOwner, MinRes, MaxResults);
                             var res = wc.DownloadString(zap);
-                            var jsvideo = (JObject)JsonConvert.DeserializeObject(res);
+                            var jsvideo = (JObject) JsonConvert.DeserializeObject(res);
                             if (jsvideo == null)
                                 return;
                             int total;
@@ -218,11 +216,12 @@ namespace Mwman.Channel
                         {
                             while (true)
                             {
-                                var wc = new WebClient { Encoding = Encoding.UTF8 };
+                                var wc = new WebClient {Encoding = Encoding.UTF8};
 
-                                zap = string.Format("{0}&start-index={1}&max-results={2}", pl.ContentLink, MinRes, MaxResults);
+                                zap = string.Format("{0}&start-index={1}&max-results={2}", pl.ContentLink, MinRes,
+                                    MaxResults);
                                 var res = wc.DownloadString(zap);
-                                var jsvideo = (JObject)JsonConvert.DeserializeObject(res);
+                                var jsvideo = (JObject) JsonConvert.DeserializeObject(res);
                                 if (jsvideo == null)
                                     return;
                                 int total;
@@ -253,12 +252,10 @@ namespace Mwman.Channel
                                 MinRes = 1;
                                 break;
                             }
-
                         }
 
                         Application.Current.Dispatcher.Invoke(
                             () => ListPlaylists.Add(new Playlist("ALL", "ALL", string.Empty)));
-
                     }
 
                     #endregion
@@ -267,7 +264,10 @@ namespace Mwman.Channel
 
                 case "Popular":
 
-                    zap = string.Format("https://gdata.youtube.com/feeds/api/standardfeeds/{0}/most_popular?time=today&v=2&alt=json", _cul);
+                    zap =
+                        string.Format(
+                            "https://gdata.youtube.com/feeds/api/standardfeeds/{0}/most_popular?time=today&v=2&alt=json",
+                            _cul);
 
                     MakeYouResponse(zap, _listPopularVideoItems);
 
@@ -277,7 +277,8 @@ namespace Mwman.Channel
 
                 case "Search":
 
-                    zap = string.Format("https://gdata.youtube.com/feeds/api/videos?q={0}&max-results=50&v=2&alt=json", _searchkey);
+                    zap = string.Format("https://gdata.youtube.com/feeds/api/videos?q={0}&max-results=50&v=2&alt=json",
+                        _searchkey);
 
                     MakeYouResponse(zap, _listSearchVideoItems);
 
@@ -285,17 +286,19 @@ namespace Mwman.Channel
 
                 case "PopFill":
 
+                    #region PopFill
+
                     Application.Current.Dispatcher.Invoke(() => ListPopularVideoItems.Clear());
 
                     while (true)
                     {
-                        var wc = new WebClient { Encoding = Encoding.UTF8 };
+                        var wc = new WebClient {Encoding = Encoding.UTF8};
                         zap =
-                             string.Format(
-                                 "https://gdata.youtube.com/feeds/api/users/{0}/uploads?alt=json&start-index={1}&max-results={2}",
-                                 CurrentPopularChannel.ChanelOwner, MinRes, MaxResults);
+                            string.Format(
+                                "https://gdata.youtube.com/feeds/api/users/{0}/uploads?alt=json&start-index={1}&max-results={2}",
+                                CurrentPopularChannel.ChanelOwner, MinRes, MaxResults);
                         var res = wc.DownloadString(zap);
-                        var jsvideo = (JObject)JsonConvert.DeserializeObject(res);
+                        var jsvideo = (JObject) JsonConvert.DeserializeObject(res);
                         if (jsvideo == null)
                             return;
                         int total;
@@ -321,7 +324,6 @@ namespace Mwman.Channel
                                             ListPopularVideoItems.Add(v);
                                         else
                                             Application.Current.Dispatcher.Invoke(() => ListPopularVideoItems.Add(v));
-
                                     }
                                     else
                                     {
@@ -331,7 +333,8 @@ namespace Mwman.Channel
                                         if (Application.Current.Dispatcher.CheckAccess())
                                             ListPopularVideoItems.Insert(0, v);
                                         else
-                                            Application.Current.Dispatcher.Invoke(() => ListPopularVideoItems.Insert(0, v));
+                                            Application.Current.Dispatcher.Invoke(
+                                                () => ListPopularVideoItems.Insert(0, v));
                                     }
                                 }
                             }
@@ -352,10 +355,104 @@ namespace Mwman.Channel
                                     continue;
                             }
                             MinRes = 1;
-
                         }
                         break;
                     }
+
+                    #endregion
+
+                    break;
+
+                case "Playlist":
+
+                    MinRes = 1;
+
+                    while (true)
+                    {
+                        var wc = new WebClient {Encoding = Encoding.UTF8};
+
+                        zap = string.Format(
+                            "http://gdata.youtube.com/feeds/api/users/{0}/playlists?v=2&alt=json&start-index={1}&max-results={2}",
+                            ChanelOwner, MinRes, MaxResults);
+                        var res = wc.DownloadString(zap);
+                        var jsvideo = (JObject) JsonConvert.DeserializeObject(res);
+                        if (jsvideo == null)
+                            return;
+                        int total;
+                        if (int.TryParse(jsvideo["feed"]["openSearch$totalResults"]["$t"].ToString(), out total))
+                        {
+                            if (total != 0)
+                            {
+                                foreach (JToken pair in jsvideo["feed"]["entry"])
+                                {
+                                    var title = pair["title"]["$t"].ToString();
+                                    var id = pair["yt$playlistId"]["$t"].ToString();
+                                    var link = string.Format("{0}&alt=json", pair["content"]["src"]);
+                                    var pl = new Playlist(title, id, link);
+
+                                    if (Application.Current.Dispatcher.CheckAccess())
+                                        ListPlaylists.Add(pl);
+                                    else
+                                        Application.Current.Dispatcher.Invoke(() => ListPlaylists.Add(pl));
+                                }
+                            }
+                        }
+
+                        if (total > ListVideoItems.Count)
+                        {
+                            MinRes = MinRes + MaxResults;
+                            if (MinRes < total)
+                                continue;
+                        }
+
+                        MinRes = 1;
+                        break;
+                    }
+
+                    foreach (Playlist pl in ListPlaylists.Where(x => !string.IsNullOrEmpty(x.ContentLink)))
+                    {
+                        while (true)
+                        {
+                            var wc = new WebClient {Encoding = Encoding.UTF8};
+
+                            zap = string.Format("{0}&start-index={1}&max-results={2}", pl.ContentLink, MinRes,
+                                MaxResults);
+                            var res = wc.DownloadString(zap);
+                            var jsvideo = (JObject) JsonConvert.DeserializeObject(res);
+                            if (jsvideo == null)
+                                return;
+                            int total;
+                            if (int.TryParse(jsvideo["feed"]["openSearch$totalResults"]["$t"].ToString(), out total))
+                            {
+                                if (total != 0)
+                                {
+                                    foreach (JToken pair in jsvideo["feed"]["entry"])
+                                    {
+                                        var vi = new VideoItemYou(pair, pl.ListID, pl.Title);
+
+                                        var item = ListVideoItems.FirstOrDefault(x => x.VideoID == vi.VideoID);
+                                        if (item != null)
+                                        {
+                                            item.PlaylistID = vi.PlaylistID;
+                                            item.PlaylistTitle = vi.PlaylistTitle;
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (total > ListVideoItems.Count)
+                            {
+                                MinRes = MinRes + MaxResults;
+                                if (MinRes < total)
+                                    continue;
+                            }
+                            MinRes = 1;
+                            break;
+                        }
+                    }
+
+                    Application.Current.Dispatcher.Invoke(
+                        () => ListPlaylists.Add(new Playlist("ALL", "ALL", string.Empty)));
 
                     break;
             }
@@ -366,6 +463,7 @@ namespace Mwman.Channel
             MinRes = 1;
             if (e.Error != null)
             {
+                _model.MySubscribe.Result = e.Error.Message;
                 TimerCommon.Dispose();
                 if (e.Error is SQLiteException)
                 {
@@ -465,6 +563,18 @@ namespace Mwman.Channel
 
                         TimerCommon.Dispose();
                         Subscribe.SetResult(string.Format("{0}: \'{1}\' get in {2}", Typename, CurrentPopularChannel.ChanelName,
+                            Synctime.Duration().ToString(@"mm\:ss")));
+                        break;
+
+                    case "Playlist":
+
+                        foreach (VideoItemBase item in ListVideoItems)
+                        {
+                            Sqllite.UpdateValue(Subscribe.ChanelDb, Sqllite.PId, item.PlaylistID, Sqllite.Id, item.VideoID);
+                            Sqllite.UpdateValue(Subscribe.ChanelDb, Sqllite.PTitle, item.PlaylistTitle, Sqllite.Id, item.VideoID);
+                        }
+                        TimerCommon.Dispose();
+                        Subscribe.SetResult(string.Format("{0}: \'{1}\' updated in {2}", Typename, ChanelName,
                             Synctime.Duration().ToString(@"mm\:ss")));
                         break;
                 }
@@ -622,6 +732,19 @@ namespace Mwman.Channel
         public override void AutorizeChanel()
         {
 
+        }
+
+        public void UpdatePlaylist()
+        {
+            if (_bgv.IsBusy)
+                return;
+            Subscribe.SetResult("Working...");
+
+            InitializeTimer();
+
+            Application.Current.Dispatcher.Invoke(() => ListPlaylists.Clear());
+
+            _bgv.RunWorkerAsync("Playlist");
         }
 
         private static void AddItems(VideoItemBase v, ICollection<VideoItemBase> listPopularVideoItems)

@@ -431,7 +431,7 @@ namespace Mwman.Channel
         {
             IsFavorite = !IsFavorite;
             var res = IsFavorite ? 1 : 0;
-            Sqllite.UpdateValue(Subscribe.ChanelDb, Sqllite.Isfavorite, Sqllite.Chanelowner, ChanelOwner, res);
+            Sqllite.UpdateValue(Subscribe.ChanelDb, Sqllite.Isfavorite, res, Sqllite.Chanelowner, ChanelOwner);
         }
 
         public void DeleteFiles()
@@ -499,14 +499,14 @@ namespace Mwman.Channel
                     {
                         foreach (VideoItemBase item in ListVideoItems)
                         {
-                            Sqllite.UpdateValue(Subscribe.ChanelDb, Sqllite.Viewcount, Sqllite.Id, item.VideoID, item.ViewCount);
+                            Sqllite.UpdateValue(Subscribe.ChanelDb, Sqllite.Viewcount, item.ViewCount, Sqllite.Id, item.VideoID);
                         }
                     }
                     else //обновим только у последних 25 элементов
                     {
                         foreach (VideoItemBase item in ListVideoItems.Take(25))
                         {
-                            Sqllite.UpdateValue(Subscribe.ChanelDb, Sqllite.Viewcount, Sqllite.Id, item.VideoID, item.ViewCount);
+                            Sqllite.UpdateValue(Subscribe.ChanelDb, Sqllite.Viewcount, item.ViewCount, Sqllite.Id, item.VideoID);
                         }
                     }
 

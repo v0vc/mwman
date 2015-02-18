@@ -42,6 +42,8 @@ namespace Mwman.Video
 
         private string _fileType = "notset";
 
+        private string _playlistTitle;
+
         #endregion
 
         #region Properties
@@ -56,7 +58,15 @@ namespace Mwman.Video
 
         public string PlaylistID { get; set; }
 
-        public string PlaylistTitle { get; set; }
+        public string PlaylistTitle
+        {
+            get { return _playlistTitle; }
+            set
+            {
+                _playlistTitle = value;
+                OnPropertyChanged();
+            }
+        }
 
         public string VideoOwner { get; set; }
 

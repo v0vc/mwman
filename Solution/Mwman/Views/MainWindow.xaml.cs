@@ -86,12 +86,18 @@ namespace Mwman.Views
             switch (mitem.CommandParameter.ToString())
             {
                 case "SyncChanelSelected":
+                case "SyncAllChanelSelected":
+                case "Playlist":
                     ViewModelLocator.MvViewModel.Model.MySubscribe.SyncChanel(mitem.CommandParameter.ToString());
                     break;
 
-                case "SyncAllChanelSelected":
-                    ViewModelLocator.MvViewModel.Model.MySubscribe.SyncChanel(mitem.CommandParameter.ToString());
-                    break;
+                //case "SyncAllChanelSelected":
+                //    ViewModelLocator.MvViewModel.Model.MySubscribe.SyncChanel(mitem.CommandParameter.ToString());
+                //    break;
+
+                //case "Playlist":
+                //    ViewModelLocator.MvViewModel.Model.MySubscribe.SyncChanel(mitem.CommandParameter.ToString());
+                //    break;
 
                 case "Autorize":
                     ViewModelLocator.MvViewModel.Model.MySubscribe.CurrentChanel.AutorizeChanel();
@@ -174,6 +180,43 @@ namespace Mwman.Views
                     ViewModelLocator.MvViewModel.Model.MySubscribe.AddChanell();
 
                     break;
+
+                #endregion
+
+                #region Copy Title
+
+                case "PopularCopyTitle":
+                case "SearchCopyTitle":
+
+                    chanel = ViewModelLocator.MvViewModel.Model.MySubscribe.SelectedForumItem;
+                    if (chanel != null && chanel.CurrentVideoItem != null)
+                    {
+                        try
+                        {
+                            Clipboard.SetText(chanel.CurrentVideoItem.Title);
+                        }
+                        catch
+                        {
+                        }
+                    }
+
+                    break;
+
+                case "MainCopyTitle":
+
+                    chanel = ViewModelLocator.MvViewModel.Model.MySubscribe.CurrentChanel;
+                    if (chanel != null && chanel.CurrentVideoItem != null)
+                    {
+                        try
+                        {
+                            Clipboard.SetText(chanel.CurrentVideoItem.Title);
+                        }
+                        catch
+                        {
+                        }
+                    }
+
+                    break; 
 
                 #endregion
 

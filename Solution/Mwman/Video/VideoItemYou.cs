@@ -465,13 +465,15 @@ namespace Mwman.Video
                 var match = regex.Match(input);
                 if (match.Success)
                 {
-                    return regex.Replace(input, "$2$3");
+                    return regex.Replace(input, "$2$3") + match.Groups[match.Groups.Count - 1].ToString().Split(' ')[0];
+                    //return regex.Replace(input, "$2$3"); //для обычных файлов
                 }
                 regex = new Regex(@"(\[download\])(.+?)(\.(mp4|m4a|webm|flv|mp3))(.+)?");
                 match = regex.Match(input);
                 if (match.Success)
                 {
-                    return regex.Replace(input, "$2$3");
+                    return regex.Replace(input, "$2$3") + match.Groups[match.Groups.Count - 1].ToString().Split(' ')[0]; //для файлов, у которых в названии есть точка + расширение
+                    //return regex.Replace(input, "$2$3"); //для обычных файлов
                 }
                 return string.Empty;
             }

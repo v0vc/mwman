@@ -81,6 +81,7 @@
                             <ContextMenu x:Key="DataRowContextMenu">
                                 <MenuItem Header="Synchronize" Click="ChanelOnClick" CommandParameter="SyncChanelSelected"/>
                                 <MenuItem Header="Synchronize All" Click="ChanelOnClick" CommandParameter="SyncAllChanelSelected"/>
+                                <MenuItem Header="Update Playlist" Click="ChanelOnClick" CommandParameter="Playlist"/>
                                 <MenuItem Header="Autorize" Click="ChanelOnClick" CommandParameter="Autorize"/>
                                 <MenuItem Header="Remove" Click="ChanelOnClick" CommandParameter="Remove"/>
                                 <MenuItem Header="Edit" Click="ChanelOnClick" CommandParameter="Edit"/>
@@ -317,6 +318,7 @@
                             <ContextMenu x:Key="DataRowContextMenu">
                                 <MenuItem Header="Download Audio" Click="MainOnClick" CommandParameter="MainAudio" />
                                 <MenuItem Header="Cancel Downloading" Click="MainOnClick" CommandParameter="MainCancel" />
+                                <MenuItem Header="Copy Title" Click="MainOnClick" CommandParameter="MainCopyTitle" />
                                 <MenuItem Header="Copy Link" Click="MainOnClick" CommandParameter="MainCopyLink" />
                                 <MenuItem Header="Copy Author" Click="MainOnClick" CommandParameter="MainCopyAutor" />
                                 <MenuItem Header="Delete" Click="MainOnClick" CommandParameter="MainDelete" />
@@ -373,6 +375,20 @@
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock HorizontalAlignment="Center" IsEnabled="False" Text="{Binding Num}" VerticalAlignment="Bottom" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="PL" Width="28" MinWidth="28" SortMemberPath="PlaylistTitle">
+                                <DataGridTemplateColumn.HeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                        <Setter Property="FontSize" Value="12"></Setter>
+                                    </Style>
+                                </DataGridTemplateColumn.HeaderStyle>
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding PlaylistTitle}" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="2,0,0,0">
+                                    </TextBlock>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -613,6 +629,7 @@
                                 <MenuItem Header="Subscribe" Click="MainOnClick" CommandParameter="Subscribe" />
                                 <MenuItem Header="Download Audio" Click="MainOnClick" CommandParameter="PopularAudio" />
                                 <MenuItem Header="Cancel Downloading" Click="MainOnClick" CommandParameter="PopularCancel" />
+                                <MenuItem Header="Copy Title" Click="MainOnClick" CommandParameter="PopularCopyTitle" />
                                 <MenuItem Header="Copy Link" Click="MainOnClick" CommandParameter="PopularCopyLink" />
                                 <MenuItem Header="Copy Author" Click="MainOnClick" CommandParameter="PopularCopyAutor" />
                                 <MenuItem Header="Delete" Click="MainOnClick" CommandParameter="PopularDelete" />
@@ -893,6 +910,7 @@
                                 <MenuItem Header="Subscribe" Click="MainOnClick" CommandParameter="Subscribe" />
                                 <MenuItem Header="Download Audio" Click="MainOnClick" CommandParameter="SearchAudio" />
                                 <MenuItem Header="Cancel Downloading" Click="MainOnClick" CommandParameter="SearchCancel" />
+                                <MenuItem Header="Copy Title" Click="MainOnClick" CommandParameter="SearchCopyTitle" />
                                 <MenuItem Header="Copy Link" Click="MainOnClick" CommandParameter="SearchCopyLink" />
                                 <MenuItem Header="Copy Author" Click="MainOnClick" CommandParameter="SearchCopyAutor" />
                                 <MenuItem Header="Delete" Click="MainOnClick" CommandParameter="SearchDelete" />

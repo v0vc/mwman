@@ -119,6 +119,7 @@ namespace Mwman.Channel
         {
             if (e.Error != null)
             {
+                _model.MySubscribe.Result = e.Error.Message;
                 TimerCommon.Dispose();
                 if (e.Error is SQLiteException)
                 {
