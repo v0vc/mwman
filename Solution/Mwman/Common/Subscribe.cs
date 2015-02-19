@@ -658,38 +658,14 @@ namespace Mwman.Common
             Result = string.Empty;
             Synctime = new TimeSpan();
 
-            Task.Run(() => ChanelSync(obj.ToString()));
+            //ChanelSync(obj.ToString());
 
-            //switch (obj.ToString())
+            //ThreadPool.QueueUserWorkItem(delegate
             //{
-            //    case "FullSyncChanelAll":
+            //    ChanelSync(obj.ToString());
+            //});
 
-            //        ChanelSync(ChanelList, true);
-
-            //        break;
-
-            //    case "SyncChanelAll":
-
-            //        ChanelSync(ChanelListToBind, false);
-
-            //        break;
-
-            //    case "SyncChanelSelected":
-
-            //        ChanelSync(SelectedListChanels, false);
-
-            //        break;
-
-            //    case "SyncAllChanelSelected":
-
-            //        ChanelSync(SelectedListChanels, true);
-
-            //        break;
-
-            //    case "SyncChanelFavorites":
-            //        ChanelSync(ChanelList.Where(x => x.IsFavorite).ToList(), false);
-            //        break;
-            //}
+            Task.Run(() => ChanelSync(obj.ToString()));
         }
 
         private static void RunItem(ChannelBase chanel)
@@ -779,19 +755,6 @@ namespace Mwman.Common
                 Result = string.Format("Channels loaded in {0}", Synctime.Duration().ToString(@"mm\:ss"));
             else
                 Result = "Ready";
-        }
-
-        private static void ChanelSync(ICollection list, bool isFull)
-        {
-            if (list == null || list.Count <= 0) return;
-
-
-
-            foreach (ChannelBase chanel in list)
-            {
-                chanel.IsFull = isFull;
-                chanel.GetItemsFromNet();
-            }
         }
 
         private void ChanelSync(string synctype)
@@ -981,33 +944,6 @@ namespace Mwman.Common
         }
 
         #endregion
-
-        //public static void CheckFfmpegPath()
-        //{
-        //    if (string.IsNullOrEmpty(FfmpegPath))
-        //        IsPathContainFfmpeg = false;
-        //    else
-        //    {
-        //        var fn = new FileInfo(FfmpegPath);
-        //        if (fn.Exists && fn.DirectoryName != null)
-        //        {
-        //            var winpath = Environment.GetEnvironmentVariable("Path", EnvironmentVariableTarget.Machine);
-        //            if (winpath != null && winpath.Contains(fn.DirectoryName))
-        //                IsPathContainFfmpeg = true;
-        //            else
-        //                IsPathContainFfmpeg = false;
-        //        }
-        //        else
-        //            IsPathContainFfmpeg = false;
-        //    }
-        //}
-
-        //public void ShowShutter(bool isShow)
-        //{
-        //    //this.Send(911); //show shutter
-        //    //this.Send(910); //hide shutter
-        //    this.Send(isShow ? 911 : 910);
-        //}
 
     }
 }

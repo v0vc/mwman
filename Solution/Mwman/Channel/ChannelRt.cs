@@ -344,6 +344,7 @@ namespace Mwman.Channel
                         string.Format("{0}-{1}({2})", Prefix, item.VideoOwnerName, item.VideoOwner)));
                 if (!ddir.Exists)
                     ddir.Create();
+                ddir.LastWriteTime = DateTime.Now;
                 var rt = item as VideoItemRt;
                 if (rt == null) return;
                 var dpath =

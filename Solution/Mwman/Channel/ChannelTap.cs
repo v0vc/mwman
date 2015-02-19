@@ -324,6 +324,8 @@ namespace Mwman.Channel
                 if (!ddir.Exists)
                     ddir.Create();
 
+                ddir.LastWriteTime = DateTime.Now;
+
                 var tap = item as VideoItemTap;
                 if (tap != null)
                 {

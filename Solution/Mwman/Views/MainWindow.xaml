@@ -318,8 +318,8 @@
                             <ContextMenu x:Key="DataRowContextMenu">
                                 <MenuItem Header="Download Audio" Click="MainOnClick" CommandParameter="MainAudio" />
                                 <MenuItem Header="Cancel Downloading" Click="MainOnClick" CommandParameter="MainCancel" />
-                                <MenuItem Header="Copy Title" Click="MainOnClick" CommandParameter="MainCopyTitle" />
                                 <MenuItem Header="Copy Link" Click="MainOnClick" CommandParameter="MainCopyLink" />
+                                <MenuItem Header="Copy Title" Click="MainOnClick" CommandParameter="MainCopyTitle" />
                                 <MenuItem Header="Copy Author" Click="MainOnClick" CommandParameter="MainCopyAutor" />
                                 <MenuItem Header="Delete" Click="MainOnClick" CommandParameter="MainDelete" />
                             </ContextMenu>
@@ -629,8 +629,8 @@
                                 <MenuItem Header="Subscribe" Click="MainOnClick" CommandParameter="Subscribe" />
                                 <MenuItem Header="Download Audio" Click="MainOnClick" CommandParameter="PopularAudio" />
                                 <MenuItem Header="Cancel Downloading" Click="MainOnClick" CommandParameter="PopularCancel" />
-                                <MenuItem Header="Copy Title" Click="MainOnClick" CommandParameter="PopularCopyTitle" />
                                 <MenuItem Header="Copy Link" Click="MainOnClick" CommandParameter="PopularCopyLink" />
+                                <MenuItem Header="Copy Title" Click="MainOnClick" CommandParameter="PopularCopyTitle" />
                                 <MenuItem Header="Copy Author" Click="MainOnClick" CommandParameter="PopularCopyAutor" />
                                 <MenuItem Header="Delete" Click="MainOnClick" CommandParameter="PopularDelete" />
                             </ContextMenu>
@@ -910,8 +910,8 @@
                                 <MenuItem Header="Subscribe" Click="MainOnClick" CommandParameter="Subscribe" />
                                 <MenuItem Header="Download Audio" Click="MainOnClick" CommandParameter="SearchAudio" />
                                 <MenuItem Header="Cancel Downloading" Click="MainOnClick" CommandParameter="SearchCancel" />
-                                <MenuItem Header="Copy Title" Click="MainOnClick" CommandParameter="SearchCopyTitle" />
                                 <MenuItem Header="Copy Link" Click="MainOnClick" CommandParameter="SearchCopyLink" />
+                                <MenuItem Header="Copy Title" Click="MainOnClick" CommandParameter="SearchCopyTitle" />
                                 <MenuItem Header="Copy Author" Click="MainOnClick" CommandParameter="SearchCopyAutor" />
                                 <MenuItem Header="Delete" Click="MainOnClick" CommandParameter="SearchDelete" />
                             </ContextMenu>

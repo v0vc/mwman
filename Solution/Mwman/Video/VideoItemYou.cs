@@ -78,7 +78,7 @@ namespace Mwman.Video
                     VideoID = spraw[spraw.Length - 1];
                     Description = VideoOwner;
                 }
-                _bgv = new BackgroundWorker();
+                _bgv = new BackgroundWorker {WorkerSupportsCancellation = true};
                 _bgv.DoWork += _bgv_DoWork;
                 _bgv.RunWorkerCompleted += _bgv_RunWorkerCompleted;
             }
@@ -94,7 +94,7 @@ namespace Mwman.Video
             SavePath = !string.IsNullOrEmpty(VideoOwner) ? Path.Combine(Subscribe.DownloadPath, VideoOwner) : Subscribe.DownloadPath;
             MinProgress = 0;
             MaxProgress = 100;
-            _bgv = new BackgroundWorker();
+            _bgv = new BackgroundWorker { WorkerSupportsCancellation = true };
             _bgv.DoWork += _bgv_DoWork;
             _bgv.RunWorkerCompleted += _bgv_RunWorkerCompleted;
         }
@@ -105,7 +105,7 @@ namespace Mwman.Video
             SavePath = !string.IsNullOrEmpty(VideoOwner) ? Path.Combine(Subscribe.DownloadPath, VideoOwner) : Subscribe.DownloadPath;
             MinProgress = 0;
             MaxProgress = 100;
-            _bgv = new BackgroundWorker();
+            _bgv = new BackgroundWorker { WorkerSupportsCancellation = true };
             _bgv.DoWork += _bgv_DoWork;
             _bgv.RunWorkerCompleted += _bgv_RunWorkerCompleted;
         }
@@ -114,12 +114,22 @@ namespace Mwman.Video
         {
             _isAudio = (bool) e.Argument;
 
-            DownloadFileBgv();
+            DownloadFileBgv(e);
         }
 
         private void _bgv_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            if (e.Error == null)
+            if (e.Error != null)
+            {
+                Subscribe.SetResult("Error: " + e.Error.Message);
+                
+            }
+
+            if (e.Cancelled)
+            {
+                Subscribe.SetResult("Cancelled..");
+            }
+            else
             {
                 if (!string.IsNullOrEmpty(FilePath))
                 {
@@ -127,10 +137,6 @@ namespace Mwman.Video
                     Log(res);
                     Subscribe.SetResult(res);
                 }
-            }
-            else
-            {
-                Subscribe.SetResult("Error: " + e.Error.Message);
             }
 
             if (Activate != null)
@@ -254,7 +260,11 @@ namespace Mwman.Video
 
         public void CancelDownloading()
         {
-            throw new NotImplementedException();
+            if (_bgv.IsBusy)
+            {
+                IsDownLoading = false;
+                _bgv.CancelAsync();
+            }
         }
 
         public async void DownloadInternal()
@@ -301,53 +311,6 @@ namespace Mwman.Video
             }
         }
 
-        //void _worker_RunWorkerCompleted(object sender, EventArgs e)
-        //{
-        //    MessageBox.Show("Filished!");
-        //    //FilePath = vd.SavePath;
-        //    //Subscribe.SetResult(string.Format("\"{0}\" completed!", vd.Video.Title));
-        //    //IsHasFile = IsFileExist();
-        //    //throw new NotImplementedException();
-        //}
-
-        //void downloader_DownloadFinished(object sender, EventArgs e)
-        //{
-        //    _worker_RunWorkerCompleted(_worker, e);
-        //}
-
-        //void downloader_DownloadProgressChanged(object sender, ProgressEventArgs e)
-        //{
-        //    _worker.ReportProgress((int) e.ProgressPercentage);
-        //}
-
-        //void bgv_DoWork(object sender, DoWorkEventArgs e)
-        //{
-        //    if (e.Argument == null)
-        //        return;
-        //    var vd = e.Argument as VideoDownloader;
-        //    if (vd != null) 
-        //        vd.Execute();
-        //}
-
-        //void bgv_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        //{
-        //    Application.Current.Dispatcher.BeginInvoke((Action)(() =>
-        //    {
-        //        PercentDownloaded = e.ProgressPercentage;
-        //    }));
-        //}
-
-        //private void DoWork(object o)
-        //{
-        //    var downloader = o as VideoDownloader;
-        //    if (downloader != null) 
-        //        downloader.Execute();
-
-        //    //Pauses current thread. but since this thead isn't our main UI thread
-        //    //it will not affect our UI experience.
-        //    //Thread.Sleep(3000);
-        //}
-
         private void downloader_DownloadFinished(object sender)
         {
             var vd = sender as VideoDownloader;
@@ -370,7 +333,7 @@ namespace Mwman.Video
             }));
         } 
 
-        private void DownloadFileBgv()
+        private void DownloadFileBgv(DoWorkEventArgs doWorkEventArgs)
         {
             var dir = new DirectoryInfo(SavePath);
             if (!dir.Exists)
@@ -399,7 +362,7 @@ namespace Mwman.Video
             var process = Process.Start(startInfo);
             if (process != null)
             {
-                process.OutputDataReceived += (sender, e) => SetLogAndPercentage(e.Data);
+                process.OutputDataReceived += (sender, e) => SetLogAndPercentage(e.Data, doWorkEventArgs, process);
                 process.Start();
                 process.BeginOutputReadLine();
                 process.WaitForExit();
@@ -407,8 +370,27 @@ namespace Mwman.Video
             }
         }
 
-        private void SetLogAndPercentage(string data)
+        private void SetLogAndPercentage(string data, DoWorkEventArgs doWorkEventArgs, Process process)
         {
+            if (_bgv.CancellationPending)
+            {
+                doWorkEventArgs.Cancel = true;
+                _bgv.Dispose();
+
+                try
+                {
+                    process.Kill();
+                }
+                catch{}
+
+                if (process != null)
+                {
+                    process.Close();
+                    process.Dispose();
+                }
+                return;
+            }
+
             if (data == null)
             {
                 processDownload_Exited();
@@ -546,8 +528,19 @@ namespace Mwman.Video
             var vfolder = fnvid.DirectoryName;
 
             var tempname = Path.Combine(vfolder, "." + fnvid.Name);
-            var param = String.Format("-i \"{0}\" -i \"{1}\" -vcodec copy -acodec copy \"{2}\" -y", fnvid.FullName,
-                fnaud.FullName, tempname);
+
+            string param;
+
+            if (fnvid.Extension == ".webm")
+            {
+                param = String.Format("-i \"{0}\" -i \"{1}\" -vcodec copy -acodec libvorbis \"{2}\" -y", fnvid.FullName,
+                    fnaud.FullName, tempname);
+            }
+            else
+            {
+                param = String.Format("-i \"{0}\" -i \"{1}\" -vcodec copy -acodec copy \"{2}\" -y", fnvid.FullName,
+                    fnaud.FullName, tempname);
+            }
 
             var startInfo = new ProcessStartInfo(Subscribe.FfmpegPath, param)
             {
@@ -600,11 +593,10 @@ namespace Mwman.Video
                     fnvid.Delete();
                     fnaud.Delete();
                     FilePath = fnn.FullName;
-                    
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         IsHasFile = true;
-                        FileType = "video";    
+                        FileType = "video";
                     });
                 }
                 catch (Exception ex)
