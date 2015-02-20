@@ -47,6 +47,7 @@ namespace Mwman.Channel
             ViewSeedColumnHeader = "Seeders";
             DurationColumnHeader = "Size MB";
             TitleColumnHeader = "  Title   ";
+            PlForumColumn = "F";
             _bgv.DoWork += _bgv_DoWork;
             _bgv.RunWorkerCompleted += _bgv_RunWorkerCompleted;
         }
@@ -62,6 +63,7 @@ namespace Mwman.Channel
             ViewSeedColumnHeader = "Seeders";
             DurationColumnHeader = "Size MB";
             TitleColumnHeader = "  Title   ";
+            PlForumColumn = "F";
             _bgv.DoWork += _bgv_DoWork;
             _bgv.RunWorkerCompleted += _bgv_RunWorkerCompleted;
         }
@@ -112,6 +114,12 @@ namespace Mwman.Channel
                     MakeRtResponse(zap, _listSearchVideoItems, true);
 
                     #endregion
+
+                    break;
+
+                case "Playlist":
+
+
 
                     break;
             }
@@ -379,6 +387,19 @@ namespace Mwman.Channel
             throw new NotImplementedException();
         }
 
+        public override void UpdatePlaylist()
+        {
+            if (_bgv.IsBusy)
+                return;
+            Subscribe.SetResult("Working...");
+
+            InitializeTimer();
+
+            Application.Current.Dispatcher.Invoke(() => ListPlaylists.Clear());
+
+            _bgv.RunWorkerAsync("Playlist");
+        }
+
         private void MakeRtResponse(string zap, ObservableCollection<VideoItemBase> listVideoItems, bool isSearch)
         {
             listVideoItems.CollectionChanged += listVideoItems_CollectionChanged;
@@ -389,12 +410,19 @@ namespace Mwman.Channel
                 _rtcookie = GetSession();
                 results = GetAllLinks(_rtcookie, zap, out doc);
             }
+
             foreach (HtmlNode node in results)
             {
                 var v = new VideoItemRt(node, Prefix)
                 {
                     Num = listVideoItems.Count + 1, ParentChanel = this
                 };
+
+                var pl = new Playlist(v.PlaylistTitle, v.PlaylistID, v.PlaylistID);
+                if (!ListPlaylists.Contains(pl))
+                {
+                    Application.Current.Dispatcher.Invoke(() => ListPlaylists.Add(pl));
+                }
 
                 if (IsFull)
                 {
@@ -436,6 +464,11 @@ namespace Mwman.Channel
                 foreach (HtmlNode nodes in results)
                 {
                     var v = new VideoItemRt(nodes, Prefix);
+                    var pl = new Playlist(v.PlaylistTitle, v.PlaylistID, v.PlaylistID);
+                    if (!ListPlaylists.Contains(pl))
+                    {
+                        Application.Current.Dispatcher.Invoke(() => ListPlaylists.Add(pl));
+                    }
                     if (!listVideoItems.Contains(v) &&!listVideoItems.Select(x=>x.Title).Contains(v.Title) && !string.IsNullOrEmpty(v.Title))
                     {
                         v.Num = listVideoItems.Count + 1;

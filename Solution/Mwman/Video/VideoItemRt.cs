@@ -92,6 +92,20 @@ namespace Mwman.Video
                 VideoOwnerName = htmlNode.InnerText;
                 break;
             }
+
+            var forum = node.Descendants("a").Where(d => d.Attributes.Contains("class") && d.Attributes["class"].Value.Equals("gen f"));
+            foreach (HtmlNode htmlNode in forum)
+            {
+                PlaylistTitle = htmlNode.InnerText;
+                break;
+            }
+
+            var topic = node.Descendants("a").Where(d => d.Attributes.Contains("class") && d.Attributes["class"].Value.Equals("med tLink hl-tags bold"));
+            foreach (HtmlNode htmlNode in topic)
+            {
+                PlaylistID = string.Format("http://{0}/forum{1}", Host, htmlNode.Attributes["href"].Value.TrimStart('.'));
+                break;
+            }
         }
 
         public override void RunFile(object runtype)
@@ -111,7 +125,16 @@ namespace Mwman.Video
                     break;
 
                 case "Online":
-                    ParentChanel.DownloadItem(this, true);
+                    try
+                    {
+                        Process.Start(PlaylistID);
+                        ParentChanel.DownloadItem(this, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
+                    
                     break;
             }
         }

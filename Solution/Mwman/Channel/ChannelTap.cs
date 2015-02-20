@@ -47,6 +47,7 @@ namespace Mwman.Channel
             ViewSeedColumnHeader = "Seeders";
             DurationColumnHeader = "Size MB";
             TitleColumnHeader = "  Title   ";
+            PlForumColumn = "F";
             _bgv.DoWork += _bgv_DoWork;
             _bgv.RunWorkerCompleted += _bgv_RunWorkerCompleted;
         }
@@ -62,6 +63,7 @@ namespace Mwman.Channel
             ViewSeedColumnHeader = "Seeders";
             DurationColumnHeader = "Size MB";
             TitleColumnHeader = "  Title   ";
+            PlForumColumn = "F";
         }
 
         private void InitialUrls()
@@ -369,6 +371,11 @@ namespace Mwman.Channel
         }
 
         public override void CancelDownloading()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void UpdatePlaylist()
         {
             throw new NotImplementedException();
         }

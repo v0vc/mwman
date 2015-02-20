@@ -54,5 +54,10 @@ namespace Mwman.Channel
         {
             throw new NotImplementedException();
         }
+
+        public override void UpdatePlaylist()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -378,7 +378,12 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="PL" Width="28" MinWidth="28" SortMemberPath="PlaylistTitle">
+                            <DataGridTemplateColumn Width="28" MinWidth="28" SortMemberPath="PlaylistTitle">
+                                <DataGridTemplateColumn.HeaderTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding DataContext.Model.MySubscribe.CurrentChanel.PlForumColumn, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.HeaderTemplate>
                                 <DataGridTemplateColumn.HeaderStyle>
                                     <Style TargetType="DataGridColumnHeader">
                                         <Setter Property="HorizontalContentAlignment" Value="Center" />

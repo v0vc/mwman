@@ -658,6 +658,7 @@ namespace Mwman.Common
             Result = string.Empty;
             Synctime = new TimeSpan();
 
+             
             //ChanelSync(obj.ToString());
 
             //ThreadPool.QueueUserWorkItem(delegate
@@ -708,24 +709,21 @@ namespace Mwman.Common
                 if (sp[1] == ChannelYou.Typename)
                 {
                     chanel = new ChannelYou(string.Empty, string.Empty, sp[0], pair.Key, Convert.ToInt32(sp[2]), _model);
-                    var pls = Sqllite.GetDistinctValues(ChanelDb, Sqllite.PId, Sqllite.PTitle, pair.Key);
-                    foreach (KeyValuePair<string, string> plraw in pls)
-                    {
-                        var pl = new Playlist(plraw.Value, plraw.Key, string.Empty);
-                        chanel.ListPlaylists.Add(pl);
-                    }
-                    chanel.ListPlaylists.Add(new Playlist("ALL", "ALL", string.Empty));
+                    FillPlaylistFromDb(chanel, pair);
                 }
                 if (sp[1] == ChannelRt.Typename)
+                {
                     chanel = new ChannelRt(RtLogin, RtPass, sp[0], pair.Key, Convert.ToInt32(sp[2]), _model);
+                    FillPlaylistFromDb(chanel, pair);
+                }
                 if (sp[1] == ChannelTap.Typename)
+                {
                     chanel = new ChannelTap(TapLogin, TapPass, sp[0], pair.Key, Convert.ToInt32(sp[2]), _model);
+                    FillPlaylistFromDb(chanel, pair);
+                }
 
                 ChanelList.Add(chanel);
             }
-
-            
-            
 
             foreach (ChannelBase chanel in ChanelList)
             {
@@ -736,6 +734,21 @@ namespace Mwman.Common
             {
                 CurrentChanel = ChanelList[0];
             }
+        }
+
+        private static void FillPlaylistFromDb(ChannelBase chanel, KeyValuePair<string, string> pair)
+        {
+            var pls = Sqllite.GetDistinctValues(ChanelDb, Sqllite.PId, Sqllite.PTitle, pair.Key);
+            foreach (KeyValuePair<string, string> plraw in pls)
+            {
+                var pl = new Playlist(plraw.Value, plraw.Key, string.Empty);
+                if (!chanel.ListPlaylists.Select(x=>x.Title).Contains(pl.Title))
+                {
+                    chanel.ListPlaylists.Add(pl);
+                }
+            }
+            chanel.ListPlaylists.Add(new Playlist("ALL", "ALL", string.Empty));
+            
         }
 
         private void _bgv_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -812,7 +825,7 @@ namespace Mwman.Common
 
                 case "Playlist":
 
-                    foreach (ChannelYou chanel in SelectedListChanels)
+                    foreach (ChannelBase chanel in SelectedListChanels)
                     {
                         chanel.UpdatePlaylist();
                     }

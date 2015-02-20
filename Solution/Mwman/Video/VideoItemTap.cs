@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Web;
+using System.Windows;
 using HtmlAgilityPack;
 using Mwman.Channel;
 using Mwman.Common;
@@ -81,11 +83,51 @@ namespace Mwman.Video
                 VideoOwnerName = htmlNode.InnerText;
                 break;
             }
+
+            var forum = node.Descendants("a").Where(d => d.Attributes.Contains("class") && d.Attributes["class"].Value.Equals("gen"));
+            foreach (HtmlNode htmlNode in forum)
+            {
+                PlaylistTitle = htmlNode.InnerText;
+                break;
+            }
+
+            var topic = node.Descendants("a").Where(d => d.Attributes.Contains("class") && d.Attributes["class"].Value.Equals("genmed"));
+            foreach (HtmlNode htmlNode in topic)
+            {
+                PlaylistID = string.Format("http://{0}/forum{1}", Host, htmlNode.Attributes["href"].Value.TrimStart('.'));
+                break;
+            }
         }
 
         public override void RunFile(object runtype)
         {
-            return;
+            switch (runtype.ToString())
+            {
+                case "Local":
+                    var fn = new FileInfo(FilePath);
+                    if (fn.Exists)
+                    {
+                        Process.Start(fn.FullName);
+                    }
+                    else
+                    {
+                        MessageBox.Show("File not exist", "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    break;
+
+                case "Online":
+                    try
+                    {
+                        Process.Start(PlaylistID);
+                        ParentChanel.DownloadItem(this, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
+
+                    break;
+            }
         }
 
         public override bool IsFileExist()

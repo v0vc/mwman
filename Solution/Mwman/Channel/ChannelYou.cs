@@ -55,6 +55,7 @@ namespace Mwman.Channel
             ViewSeedColumnHeader = "Views";
             DurationColumnHeader = "Duration";
             TitleColumnHeader = "Playlist:";
+            PlForumColumn = "PL";
             _bgv.DoWork += _bgv_DoWork;
             _bgv.RunWorkerCompleted += _bgv_RunWorkerCompleted;
         }
@@ -67,6 +68,7 @@ namespace Mwman.Channel
             ViewSeedColumnHeader = "Views";
             DurationColumnHeader = "Duration";
             TitleColumnHeader = "Playlist:";
+            PlForumColumn = "PL";
             _bgv.WorkerSupportsCancellation = true;
             _bgv.DoWork += _bgv_DoWork;
             _bgv.RunWorkerCompleted += _bgv_RunWorkerCompleted;
@@ -80,6 +82,7 @@ namespace Mwman.Channel
             LastColumnHeader = "Download";
             ViewSeedColumnHeader = "Views";
             DurationColumnHeader = "Duration";
+            PlForumColumn = "PL";
             ChanelName = pair["title"]["$t"].ToString();
             var owner = pair["author"][0]["uri"]["$t"].ToString().Split('/');
             ChanelOwner = owner[owner.Length - 1];
@@ -656,7 +659,7 @@ namespace Mwman.Channel
 
         }
 
-        public void UpdatePlaylist()
+        public override void UpdatePlaylist()
         {
             if (_bgv.IsBusy)
                 return;

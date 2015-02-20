@@ -64,6 +64,8 @@ namespace Mwman.Channel
 
         private string _titleColumnHeader;
 
+        private string _plForumColumn;
+
         private int _newitemcount;
 
         private Playlist _currentPlaylist;
@@ -77,7 +79,7 @@ namespace Mwman.Channel
         public TimeSpan Synctime { get; set; }
 
         public Timer TimerCommon;
-        
+
         public Brush ChanelColor
         {
             get { return _chanelColor; }
@@ -160,7 +162,16 @@ namespace Mwman.Channel
                 _titleColumnHeader = value;
                 OnPropertyChanged();
             }
+        }
 
+        public string PlForumColumn
+        {
+            get { return _plForumColumn; }
+            set
+            {
+                _plForumColumn = value;
+                OnPropertyChanged();
+            }
         }
 
         public int OrderNum { get; set; }
@@ -342,6 +353,8 @@ namespace Mwman.Channel
         public abstract void GetPopularItems(string key, ObservableCollection<VideoItemBase> listPopularVideoItems, string mode);
 
         public abstract void CancelDownloading();
+
+        public abstract void UpdatePlaylist();
 
         #endregion
 
@@ -576,8 +589,16 @@ namespace Mwman.Channel
                         {
                             foreach (VideoItemBase item in _filterlist)
                             {
-                                if (item.PlaylistID == CurrentPlaylist.ListID)
-                                    ListVideoItems.Add(item);
+                                if (item is VideoItemYou)
+                                {
+                                    if (item.PlaylistID == CurrentPlaylist.ListID)
+                                        ListVideoItems.Add(item);
+                                }
+                                else
+                                {
+                                    if (item.PlaylistTitle == CurrentPlaylist.Title)
+                                        ListVideoItems.Add(item);
+                                }
                             }
                         }
                     }
@@ -590,8 +611,16 @@ namespace Mwman.Channel
                         ListVideoItems.Clear();
                         foreach (VideoItemBase item in _filterlist)
                         {
-                            if (item.PlaylistID == CurrentPlaylist.ListID)
-                                ListVideoItems.Add(item);
+                            if (item is VideoItemYou)
+                            {
+                                if (item.PlaylistID == CurrentPlaylist.ListID)
+                                    ListVideoItems.Add(item);
+                            }
+                            else
+                            {
+                                if (item.PlaylistTitle == CurrentPlaylist.Title)
+                                    ListVideoItems.Add(item);
+                            }
                         }
                     }
 
