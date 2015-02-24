@@ -57,6 +57,10 @@ namespace Mwman.Common
 
         #region Columns tblSettings
 
+        public static readonly string Youlogin = "youlogin";
+
+        public static readonly string Youpassword = "youpassword";
+
         public static readonly string Rtlogin = "rtlogin";
 
         public static readonly string Rtpassword = "rtpassword";
@@ -64,6 +68,22 @@ namespace Mwman.Common
         public static readonly string Taplogin = "taplogin";
 
         public static readonly string Tappassword = "tappassword";
+
+        public static readonly string Nnmlogin = "nnmlogin";
+
+        public static readonly string Nnmpassword = "nnmpassword";
+
+        public static readonly string Plablogin = "plablogin";
+
+        public static readonly string Plabpassword = "plabpassword";
+
+        public static readonly string Vimeologin = "vimeologin";
+
+        public static readonly string Vimeopassword = "vimeopassword";
+
+        public static readonly string Kzlogin = "kzlogin";
+
+        public static readonly string Kzpassword = "kzpassword";
 
         public static readonly string Savepath = "savepath";
 
@@ -154,27 +174,43 @@ namespace Mwman.Common
                                                             {10} TEXT,
                                                             {11} TEXT,
                                                             {12} TEXT,
-                                                            {13} TEXT)",
+                                                            {13} TEXT,
+                                                            {14} TEXT,
+                                                            {15} TEXT,
+                                                            {16} TEXT,
+                                                            {17} TEXT,
+                                                            {18} TEXT,
+                                                            {19} TEXT,
+                                                            {20} TEXT,
+                                                            {21} TEXT,
+                                                            {22} TEXT,
+                                                            {23} TEXT
+                                                            )",
                     TableSettings, Savepath, Pathtompc, Synconstart, Pathtoyoudl, Pathtoffmpeg, Isonlyfavor, Ispopular,
-                    Asyncdl, Culture, Rtlogin, Rtpassword, Taplogin, Tappassword);
+                    Asyncdl, Culture, Rtlogin, Rtpassword, Taplogin, Tappassword, Youlogin, Youpassword, Nnmlogin,
+                    Nnmpassword, Plablogin, Plabpassword, Vimeologin, Vimeopassword, Kzlogin, Kzpassword);
                 lstcom.Add(zapdir);
                 string insdir;
                 if (fnyoudl.Exists & fnffmpeg.Exists)
                 {
                     insdir = string.Format(@"INSERT INTO '{0}' ('{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}') 
                                                 VALUES ('{9}', '0', '0', '0', '1', '{10}', '{11}', 'RU')",
-                                                TableSettings, Savepath, Synconstart, Isonlyfavor, Ispopular, Asyncdl, Pathtoyoudl, Pathtoffmpeg, Culture,
-                                                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), fnyoudl.FullName, fnffmpeg.FullName);
+                        TableSettings, Savepath, Synconstart, Isonlyfavor, Ispopular, Asyncdl, Pathtoyoudl, Pathtoffmpeg,
+                        Culture,
+                        Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), fnyoudl.FullName,
+                        fnffmpeg.FullName);
                 }
                 else
                 {
                     insdir = string.Format(@"INSERT INTO '{0}' ('{1}', '{2}', '{3}', '{4}', '{5}', '{6}') 
                                                 VALUES ('{7}', '0', '0', '0', '1', 'RU')",
-                                                TableSettings, Savepath, Synconstart, Isonlyfavor, Ispopular, Asyncdl, Culture,
-                                                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
+                        TableSettings, Savepath, Synconstart, Isonlyfavor, Ispopular, Asyncdl, Culture,
+                        Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
                 }
                 lstcom.Add(insdir);
-                using (var sqlcon = new SQLiteConnection(string.Format("Data Source={0};Version=3;FailIfMissing=True", dbfile)))
+                using (
+                    var sqlcon =
+                        new SQLiteConnection(string.Format("Data Source={0};Version=3;FailIfMissing=True", dbfile)))
                     foreach (string com in lstcom)
                     {
                         using (var sqlcommand = new SQLiteCommand(com, sqlcon))

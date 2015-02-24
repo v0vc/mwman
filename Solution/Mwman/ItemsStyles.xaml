@@ -184,4 +184,24 @@
         </Style.Triggers>
     </Style>
 
+    <Style x:Key="ChanellHeaderStyle" TargetType="{x:Type DataGridColumnHeader}">
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="12" />
+    </Style>
+    
+    <Style x:Key="ChanellButtonStyle" TargetType="{x:Type Button}">
+        <Setter Property="Width" Value="43" />
+        <Setter Property="Height" Value="26" />
+        <Setter Property="Margin" Value="3,0,0,0" />
+        <Setter Property="Background" Value="#CCDAFF" />
+    </Style>
+    
+    <Style x:Key="VideoItemInfoStyle" TargetType="{x:Type DataGridColumnHeader}">
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Height" Value="34" />
+        <!--<Setter Property="MinWidth" Value="28" />-->
+        <!--<Setter Property="Width" Value="28" />-->
+    </Style>
+    
 </ResourceDictionary>

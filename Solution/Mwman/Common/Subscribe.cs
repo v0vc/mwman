@@ -43,6 +43,10 @@ namespace Mwman.Common
 
         public static string TapPass;
 
+        public static string YouLogin;
+
+        public static string YouPass;
+
         #endregion
 
         #region Settings
@@ -616,6 +620,7 @@ namespace Mwman.Common
         public void GetPopularVideos(string culture)
         {
             SelectedForumItem.ListPopularVideoItems.Clear();
+            SelectedForumItem.ListPopularChannels.Clear();
             if (SelectedForumItem is ChannelYou)
             {
                 (SelectedForumItem as ChannelYou).GetPopularItems(culture, SelectedForumItem.ListPopularVideoItems, "Popular");
@@ -825,7 +830,7 @@ namespace Mwman.Common
 
                 case "Playlist":
 
-                    foreach (ChannelBase chanel in SelectedListChanels)
+                    foreach (ChannelYou chanel in SelectedListChanels)
                     {
                         chanel.UpdatePlaylist();
                     }

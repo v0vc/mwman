@@ -271,9 +271,15 @@ namespace Mwman.Channel
             if (IsFull)
             {
                 if (Application.Current.Dispatcher.CheckAccess())
+                {
                     ListVideoItems.Clear();
+                    ListPlaylists.Clear();
+                }
                 else
+                {
                     Application.Current.Dispatcher.Invoke(() => ListVideoItems.Clear());
+                    Application.Current.Dispatcher.Invoke(() => ListPlaylists.Clear());
+                }
             }
             _tapcookie = ReadCookiesFromDiskBinary(Cname) ?? GetSession();
             _bgv.RunWorkerAsync("Get");
@@ -397,6 +403,12 @@ namespace Mwman.Channel
                     Num = listVideoItems.Count + 1, ParentChanel = this
                 };
 
+                var pl = new Playlist(v.PlaylistTitle, v.PlaylistID, v.PlaylistID);
+                if (!ListPlaylists.Select(x => x.Title).Contains(pl.Title))
+                {
+                    Application.Current.Dispatcher.Invoke(() => ListPlaylists.Add(pl));
+                }
+
                 if (IsFull)
                 {
                     if (listVideoItems.Contains(v) || string.IsNullOrEmpty(v.Title))
@@ -436,6 +448,11 @@ namespace Mwman.Channel
                 foreach (HtmlNode nodes in results)
                 {
                     var v = new VideoItemTap(nodes, Prefix);
+                    var pl = new Playlist(v.PlaylistTitle, v.PlaylistID, v.PlaylistID);
+                    if (!ListPlaylists.Select(x => x.Title).Contains(pl.Title))
+                    {
+                        Application.Current.Dispatcher.Invoke(() => ListPlaylists.Add(pl));
+                    }
                     if (!listVideoItems.Contains(v) && !listVideoItems.Select(x => x.Title).Contains(v.Title) && !string.IsNullOrEmpty(v.Title))
                     {
                         v.Num = listVideoItems.Count + 1;

@@ -24,7 +24,7 @@
             <MenuItem Header="File">
                 <MenuItem Header="Backup" Command="{Binding BackupRestoreCommand}" CommandParameter="backup"></MenuItem>
                 <MenuItem Header="Restore">
-                    <MenuItem Header="Chanels" Command="{Binding BackupRestoreCommand}" CommandParameter="restorechanells"></MenuItem>
+                    <MenuItem Header="Chanells" Command="{Binding BackupRestoreCommand}" CommandParameter="restorechanells"></MenuItem>
                     <MenuItem Header="Settings" Command="{Binding BackupRestoreCommand}" CommandParameter="restoresettings"></MenuItem>
                 </MenuItem>
                 <Separator />
@@ -65,6 +65,7 @@
                                          SelectedItem="{Binding Model.MySubscribe.CurrentChanel}"
                                          x:Name="DataGridChanels"
                                          GotFocus="DataGridChanels_OnGotFocus"
+                                         ColumnHeaderStyle="{StaticResource ChanellHeaderStyle}"
                                          Sorting="DataGrid_OnSorting" Margin="0,2,0,25" Grid.RowSpan="2">
                         <DataGrid.CellStyle>
                             <Style TargetType="{x:Type DataGridCell}">
@@ -89,12 +90,6 @@
                         </DataGrid.Resources>
                         <DataGrid.Columns>
                             <DataGridTemplateColumn Width="26" Header="T" CanUserResize="False" SortMemberPath="ChanelType">
-                                <DataGridTemplateColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                        <Setter Property="FontSize" Value="12"></Setter>
-                                    </Style>
-                                </DataGridTemplateColumn.HeaderStyle>
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Image Margin="3" ClipToBounds="True" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -118,12 +113,6 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
                             <DataGridTemplateColumn Width="26" Header="S" CanUserResize="False" SortMemberPath="IsReady">
-                                <DataGridTemplateColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                        <Setter Property="FontSize" Value="12"></Setter>
-                                    </Style>
-                                </DataGridTemplateColumn.HeaderStyle>
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <CheckBox IsChecked="{Binding IsReady, Mode=TwoWay}" HorizontalAlignment="Center" IsEnabled="False" Style="{StaticResource CircleCheckbox}" />
@@ -131,12 +120,6 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
                             <DataGridTemplateColumn Width="*" Header="Name" SortMemberPath="ChanelName">
-                                <DataGridTemplateColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                        <Setter Property="FontSize" Value="12"></Setter>
-                                    </Style>
-                                </DataGridTemplateColumn.HeaderStyle>
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding ChanelName}" VerticalAlignment="Center" FontSize="18" Margin="3,0,0,0">
@@ -148,12 +131,6 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
                             <DataGridTemplateColumn Width="26" Header="C" CanUserResize="True" SortMemberPath="NewItemCount">
-                                <DataGridTemplateColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                        <Setter Property="FontSize" Value="12"></Setter>
-                                    </Style>
-                                </DataGridTemplateColumn.HeaderStyle>
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding NewItemCount}" VerticalAlignment="Center" FontSize="18" HorizontalAlignment="Center" />
@@ -161,12 +138,6 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
                             <DataGridTemplateColumn Width="26" Header="F" CanUserResize="False" SortMemberPath="IsFavorite">
-                                <DataGridTemplateColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                        <Setter Property="FontSize" Value="12"></Setter>
-                                    </Style>
-                                </DataGridTemplateColumn.HeaderStyle>
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Image Margin="4" MouseUp="Favour_OnMouseUp">
@@ -234,31 +205,26 @@
                     </Border>
                     <Border BorderBrush="Gainsboro" BorderThickness="1" Grid.Row="2" Margin="0,3,0,0">
                         <StackPanel Orientation="Horizontal">
-                            <Button Width="43" Height="26" Margin="2,0,0,0" ToolTip="Synchronize"
-                                    Background="#CCDAFF"
+                            <Button Style="{StaticResource ChanellButtonStyle}" Margin="2,0,0,0" ToolTip="Synchronize"
                                     Command="{Binding SyncChanelCommand}"
                                     CommandParameter="SyncChanelAll">
                                 <Image Source="../Images/refresh_24.png" Margin="0,1,0,0" />
                             </Button>
-                            <Button Width="43" Height="26" Margin="3,0,0,0" ToolTip="Synchronize Favorites"
-                                    Background="#CCDAFF"
+                            <Button Style="{StaticResource ChanellButtonStyle}" ToolTip="Synchronize Favorites"
                                     Command="{Binding SyncChanelCommand}"
                                     CommandParameter="SyncChanelFavorites">
                                 <Image Source="../Images/redo_24.png" Margin="0,3,0,0" />
                             </Button>
-                            <Button Width="43" Height="26" Margin="3,0,0,0" ToolTip="Add"
-                                    Background="#CCDAFF"
+                            <Button Style="{StaticResource ChanellButtonStyle}" ToolTip="Add"
                                     Command="{Binding OpenAddChanelCommand}">
                                 <Image Source="../Images/add_24.png" Margin="0,2,0,0" />
                             </Button>
-                            <Button Width="43" Height="26" Margin="3,0,0,0" ToolTip="Remove"
-                                    Background="#CCDAFF"
+                            <Button Style="{StaticResource ChanellButtonStyle}" ToolTip="Remove"
                                     Command="{Binding RemoveChanelCommand}">
                                 <Image Source="../Images/remove_24.png" Margin="0,2,0,0" />
                             </Button>
-                            <Button Width="43" Height="26" Margin="3,0,0,0"
-                                    Click="ButtonShowHideFavor_OnClick"
-                                    Background="#CCDAFF">
+                            <Button Style="{StaticResource ChanellButtonStyle}"
+                                    Click="ButtonShowHideFavor_OnClick">
                                 <Image>
                                     <Image.Style>
                                         <Style TargetType="Image">
@@ -276,13 +242,11 @@
                                     </Image.Style>
                                 </Image>
                             </Button>
-                            <Button Width="25" Height="26" Margin="3,0,0,0" ToolTip="Move Up"
-                                    Background="#CCDAFF"
+                            <Button Style="{StaticResource ChanellButtonStyle}"  Width="25" ToolTip="Move Up"
                                     Command="{Binding MoveChanelCommand}" CommandParameter="Up">
                                 <Image Source="../Images/moveup_24.png" Margin="0,2,0,0" />
                             </Button>
-                            <Button Width="25" Height="26" Margin="3,0,0,0" ToolTip="Move Down"
-                                    Background="#CCDAFF"
+                            <Button Style="{StaticResource ChanellButtonStyle}" Width="25" ToolTip="Move Down"
                                     Command="{Binding MoveChanelCommand}" CommandParameter="Down">
                                 <Image Source="../Images/movedown_24.png" Margin="0,2,0,0" />
                             </Button>
@@ -306,8 +270,8 @@
                             HeadersVisibility="Column"
                             RowHeaderWidth="0"
                             RowHeight="27"
-                            ColumnHeaderHeight="34"
                             VerticalScrollBarVisibility="Visible"
+                            ColumnHeaderStyle="{StaticResource VideoItemInfoStyle}"
                             Sorting="DataGrid_OnSorting">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="MouseDoubleClick">
@@ -352,26 +316,14 @@
                             </Style>
                         </DataGrid.RowStyle>
                         <DataGrid.Columns>
-                            <DataGridTemplateColumn Header="S" Width="28" CanUserResize="False" MinWidth="28">
-                                <DataGridTemplateColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                        <Setter Property="FontSize" Value="12"></Setter>
-                                    </Style>
-                                </DataGridTemplateColumn.HeaderStyle>
+                            <DataGridTemplateColumn Width="28" MinWidth="28" Header="S" CanUserResize="False">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <CheckBox IsChecked="{Binding IsSynced, Mode=TwoWay}" HorizontalAlignment="Center" IsEnabled="False" Style="{StaticResource CircleCheckbox}" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="N" Width="28" MinWidth="28" SortMemberPath="Num">
-                                <DataGridTemplateColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                        <Setter Property="FontSize" Value="12"></Setter>
-                                    </Style>
-                                </DataGridTemplateColumn.HeaderStyle>
+                            <DataGridTemplateColumn Width="28" MinWidth="28" Header="N" SortMemberPath="Num">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock HorizontalAlignment="Center" IsEnabled="False" Text="{Binding Num}" VerticalAlignment="Bottom" />
@@ -384,12 +336,6 @@
                                         <TextBlock Text="{Binding DataContext.Model.MySubscribe.CurrentChanel.PlForumColumn, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.HeaderTemplate>
-                                <DataGridTemplateColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                        <Setter Property="FontSize" Value="12"></Setter>
-                                    </Style>
-                                </DataGridTemplateColumn.HeaderStyle>
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding PlaylistTitle}" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="2,0,0,0">
@@ -432,7 +378,7 @@
                                                             </TextBox.Style>
                                                         </TextBox>
                                                         <Label Content="{Binding DataContext.Model.MySubscribe.CurrentChanel.TitleColumnHeader, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"></Label>
-                                                        <ComboBox Width="270" Margin="10,0,0,0" 
+                                                        <ComboBox Width="260" Margin="10,0,0,0" 
                                                                   ItemsSource="{Binding DataContext.Model.MySubscribe.CurrentChanel.ListPlaylists, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
                                                                   DisplayMemberPath="Title" 
                                                                   VerticalContentAlignment="Center"
@@ -453,18 +399,12 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn SortMemberPath="ViewCount" Width="Auto" MinWidth="55">
+                            <DataGridTemplateColumn Width="Auto" MinWidth="55" SortMemberPath="ViewCount">
                                 <DataGridTemplateColumn.HeaderTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding DataContext.Model.MySubscribe.CurrentChanel.ViewSeedColumnHeader, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.HeaderTemplate>
-                                <DataGridTemplateColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                        <Setter Property="FontSize" Value="12"></Setter>
-                                    </Style>
-                                </DataGridTemplateColumn.HeaderStyle>
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding ViewCount}" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="2,0,2,0">
@@ -475,44 +415,26 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="Published" SortMemberPath="Published" Width="78" CanUserResize="False" MinWidth="65">
-                                <DataGridTemplateColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                        <Setter Property="FontSize" Value="12"></Setter>
-                                    </Style>
-                                </DataGridTemplateColumn.HeaderStyle>
+                            <DataGridTemplateColumn Width="78" MinWidth="65" Header="Published" SortMemberPath="Published"  CanUserResize="False">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding Published, StringFormat={}{0:dd.MM.yyyy}}" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="2,0,2,0" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn SortMemberPath="Duration" Width="56" CanUserResize="False" MinWidth="56">
+                            <DataGridTemplateColumn Width="56" MinWidth="56" SortMemberPath="Duration" CanUserResize="False">
                                 <DataGridTemplateColumn.HeaderTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding DataContext.Model.MySubscribe.CurrentChanel.DurationColumnHeader, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.HeaderTemplate>
-                                <DataGridTemplateColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                        <Setter Property="FontSize" Value="12"></Setter>
-                                    </Style>
-                                </DataGridTemplateColumn.HeaderStyle>
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding Duration}" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="2,0,2,0" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="File" SortMemberPath="IsHasFile" Width="28" CanUserResize="False" MinWidth="28">
-                                <DataGridTemplateColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                        <Setter Property="FontSize" Value="12"></Setter>
-                                    </Style>
-                                </DataGridTemplateColumn.HeaderStyle>
+                            <DataGridTemplateColumn Width="28" MinWidth="28" Header="File" SortMemberPath="IsHasFile"  CanUserResize="False">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Button x:Name="Button" BorderThickness="0" Background="Transparent">
@@ -554,18 +476,12 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Width="65" CanUserResize="False" MinWidth="65" SortMemberPath="TotalDl">
+                            <DataGridTemplateColumn Width="65" MinWidth="65" CanUserResize="False" SortMemberPath="TotalDl">
                                 <DataGridTemplateColumn.HeaderTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding DataContext.Model.MySubscribe.CurrentChanel.LastColumnHeader, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.HeaderTemplate>
-                                <DataGridTemplateColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                        <Setter Property="FontSize" Value="12"></Setter>
-                                    </Style>
-                                </DataGridTemplateColumn.HeaderStyle>
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Button x:Name="Button"
@@ -621,7 +537,7 @@
                             HeadersVisibility="Column"
                             RowHeaderWidth="0"
                             RowHeight="27"
-                            ColumnHeaderHeight="34"
+                            ColumnHeaderStyle="{StaticResource VideoItemInfoStyle}"
                             VerticalScrollBarVisibility="Visible"
                             Sorting="DataGrid_OnSorting">
                         <i:Interaction.Triggers>
@@ -668,33 +584,21 @@
                             </Style>
                         </DataGrid.RowStyle>
                         <DataGrid.Columns>
-                            <DataGridTemplateColumn Width="28" Header="S" CanUserResize="False" MinWidth="28">
-                                <DataGridTemplateColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                        <Setter Property="FontSize" Value="12"></Setter>
-                                    </Style>
-                                </DataGridTemplateColumn.HeaderStyle>
+                            <DataGridTemplateColumn Width="28" MinWidth="28" Header="S" CanUserResize="False">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <CheckBox IsChecked="{Binding IsSynced, Mode=TwoWay}" HorizontalAlignment="Center" IsEnabled="False" Style="{StaticResource CircleCheckbox}" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="N" Width="28" MinWidth="28" SortMemberPath="Num">
-                                <DataGridTemplateColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                        <Setter Property="FontSize" Value="12"></Setter>
-                                    </Style>
-                                </DataGridTemplateColumn.HeaderStyle>
+                            <DataGridTemplateColumn Width="28" MinWidth="28" Header="N" SortMemberPath="Num">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock HorizontalAlignment="Center" IsEnabled="False" Text="{Binding Num}" VerticalAlignment="Bottom" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Width="80" CanUserResize="True" MinWidth="80" CanUserSort="True">
+                            <DataGridTemplateColumn Width="80" MinWidth="80" CanUserResize="True"  CanUserSort="True">
                                 <DataGridTemplateColumn.HeaderStyle>
                                     <Style TargetType="DataGridColumnHeader">
                                         <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -775,13 +679,7 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="Views" SortMemberPath="ViewCount" Width="Auto" MinWidth="55">
-                                <DataGridTemplateColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                        <Setter Property="FontSize" Value="12"></Setter>
-                                    </Style>
-                                </DataGridTemplateColumn.HeaderStyle>
+                            <DataGridTemplateColumn Width="Auto" MinWidth="55" Header="Views" SortMemberPath="ViewCount">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding ViewCount}" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="2,0,2,0">
@@ -792,39 +690,21 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="Published" SortMemberPath="Published" Width="78" CanUserResize="False" MinWidth="78">
-                                <DataGridTemplateColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                        <Setter Property="FontSize" Value="12"></Setter>
-                                    </Style>
-                                </DataGridTemplateColumn.HeaderStyle>
+                            <DataGridTemplateColumn Width="78" MinWidth="78" Header="Published" SortMemberPath="Published"  CanUserResize="False">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding Published, StringFormat={}{0:dd.MM.yyyy}}" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="2,0,2,0" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="Duration" SortMemberPath="Duration" Width="56" CanUserResize="False" MinWidth="56">
-                                <DataGridTemplateColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                        <Setter Property="FontSize" Value="12"></Setter>
-                                    </Style>
-                                </DataGridTemplateColumn.HeaderStyle>
+                            <DataGridTemplateColumn Width="56" MinWidth="56" Header="Duration" SortMemberPath="Duration"  CanUserResize="False">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding Duration}" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="2,0,2,0" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="File" SortMemberPath="IsHasFile" Width="28" CanUserResize="False" MinWidth="28">
-                                <DataGridTemplateColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                        <Setter Property="FontSize" Value="12"></Setter>
-                                    </Style>
-                                </DataGridTemplateColumn.HeaderStyle>
+                            <DataGridTemplateColumn Width="28" MinWidth="28" Header="File" SortMemberPath="IsHasFile" CanUserResize="False">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Button x:Name="Button" BorderThickness="0" Background="Transparent">
@@ -858,13 +738,7 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="Download" SortMemberPath="IsHasFile" Width="65" CanUserResize="False" MinWidth="65">
-                                <DataGridTemplateColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                        <Setter Property="FontSize" Value="12"></Setter>
-                                    </Style>
-                                </DataGridTemplateColumn.HeaderStyle>
+                            <DataGridTemplateColumn Width="65" MinWidth="65" Header="Download" SortMemberPath="IsHasFile" CanUserResize="False">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Button x:Name="Button" Command="{Binding Path=DataContext.DownloadCommand,  RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
@@ -902,7 +776,7 @@
                             HeadersVisibility="Column"
                             RowHeaderWidth="0"
                             RowHeight="27"
-                            ColumnHeaderHeight="34"
+                            ColumnHeaderStyle="{StaticResource VideoItemInfoStyle}"
                             VerticalScrollBarVisibility="Visible"
                             Sorting="DataGrid_OnSorting">
                         <i:Interaction.Triggers>
@@ -949,26 +823,14 @@
                             </Style>
                         </DataGrid.RowStyle>
                         <DataGrid.Columns>
-                            <DataGridTemplateColumn Width="28" Header="S" CanUserResize="False" MinWidth="28">
-                                <DataGridTemplateColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                        <Setter Property="FontSize" Value="12"></Setter>
-                                    </Style>
-                                </DataGridTemplateColumn.HeaderStyle>
+                            <DataGridTemplateColumn Width="28" MinWidth="28" Header="S" CanUserResize="False">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <CheckBox IsChecked="{Binding IsSynced, Mode=TwoWay}" HorizontalAlignment="Center" IsEnabled="False" Style="{StaticResource CircleCheckbox}" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="N" Width="28" MinWidth="28" SortMemberPath="Num">
-                                <DataGridTemplateColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                        <Setter Property="FontSize" Value="12"></Setter>
-                                    </Style>
-                                </DataGridTemplateColumn.HeaderStyle>
+                            <DataGridTemplateColumn Width="28" MinWidth="28" Header="N" SortMemberPath="Num">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock HorizontalAlignment="Center" IsEnabled="False" Text="{Binding Num}" VerticalAlignment="Bottom" />
@@ -1031,18 +893,12 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn SortMemberPath="ViewCount" Width="Auto" MinWidth="55">
+                            <DataGridTemplateColumn Width="Auto" MinWidth="55" SortMemberPath="ViewCount">
                                 <DataGridTemplateColumn.HeaderTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding DataContext.Model.MySubscribe.SelectedForumItem.ViewSeedColumnHeader, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.HeaderTemplate>
-                                <DataGridTemplateColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                        <Setter Property="FontSize" Value="12"></Setter>
-                                    </Style>
-                                </DataGridTemplateColumn.HeaderStyle>
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding ViewCount}" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="2,0,2,0">
@@ -1053,44 +909,26 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="Published" SortMemberPath="Published" Width="78" CanUserResize="False" MinWidth="78">
-                                <DataGridTemplateColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                        <Setter Property="FontSize" Value="12"></Setter>
-                                    </Style>
-                                </DataGridTemplateColumn.HeaderStyle>
+                            <DataGridTemplateColumn Width="78" MinWidth="78" Header="Published" SortMemberPath="Published" CanUserResize="False">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding Published, StringFormat={}{0:dd.MM.yyyy}}" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="2,0,2,0" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn SortMemberPath="Duration" Width="56" CanUserResize="False" MinWidth="56">
+                            <DataGridTemplateColumn Width="56" MinWidth="56" SortMemberPath="Duration" CanUserResize="False">
                                 <DataGridTemplateColumn.HeaderTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding DataContext.Model.MySubscribe.SelectedForumItem.DurationColumnHeader, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.HeaderTemplate>
-                                <DataGridTemplateColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                        <Setter Property="FontSize" Value="12"></Setter>
-                                    </Style>
-                                </DataGridTemplateColumn.HeaderStyle>
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding Duration}" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="2,0,2,0" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="File" SortMemberPath="IsHasFile" Width="28" CanUserResize="False" MinWidth="28">
-                                <DataGridTemplateColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                        <Setter Property="FontSize" Value="12"></Setter>
-                                    </Style>
-                                </DataGridTemplateColumn.HeaderStyle>
+                            <DataGridTemplateColumn Width="28" MinWidth="28" Header="File" SortMemberPath="IsHasFile" CanUserResize="False">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Button x:Name="Button" BorderThickness="0" Background="Transparent">
@@ -1132,18 +970,12 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Width="65" CanUserResize="False" MinWidth="65" SortMemberPath="TotalDl">
+                            <DataGridTemplateColumn Width="65" MinWidth="65" CanUserResize="False" SortMemberPath="TotalDl">
                                 <DataGridTemplateColumn.HeaderTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding DataContext.Model.MySubscribe.SelectedForumItem.LastColumnHeader, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" />
                                     </DataTemplate>
                                 </DataGridTemplateColumn.HeaderTemplate>
-                                <DataGridTemplateColumn.HeaderStyle>
-                                    <Style TargetType="DataGridColumnHeader">
-                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                        <Setter Property="FontSize" Value="12"></Setter>
-                                    </Style>
-                                </DataGridTemplateColumn.HeaderStyle>
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Button x:Name="Button"

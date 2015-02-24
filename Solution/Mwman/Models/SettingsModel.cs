@@ -228,7 +228,7 @@ namespace Mwman.Models
             Countries = countries;
             SelectedCountry = Countries.First(x => x.Value == culture);
             ListForums = new ObservableCollection<ChannelBase>();
-            foreach (ChannelBase forum in forums.Where(forum => forum.ChanelType != ChannelYou.Typename))
+            foreach (ChannelBase forum in forums)
             {
                 ListForums.Add(forum);
             }
@@ -336,15 +336,30 @@ namespace Mwman.Models
 
             foreach (ChannelBase forum in ListForums.Where(forum => !string.IsNullOrEmpty(forum.Login) & !string.IsNullOrEmpty(forum.Password)))
             {
-                if (forum.ChanelType == ChannelRt.Typename)
+                var login = forum.Login.Trim();
+                var pass = forum.Password.Trim();
+                if (forum is ChannelRt)
                 {
-                    Sqllite.UpdateSetting(Subscribe.ChanelDb, Sqllite.Rtlogin, forum.Login.Trim());
-                    Sqllite.UpdateSetting(Subscribe.ChanelDb, Sqllite.Rtpassword, forum.Password.Trim());
+                    Sqllite.UpdateSetting(Subscribe.ChanelDb, Sqllite.Rtlogin, login);
+                    Sqllite.UpdateSetting(Subscribe.ChanelDb, Sqllite.Rtpassword, pass);
+                    Subscribe.RtLogin = login;
+                    Subscribe.RtPass = pass;
+                    continue;
                 }
-                if (forum.ChanelType == ChannelTap.Typename)
+                if (forum is ChannelTap)
                 {
-                    Sqllite.UpdateSetting(Subscribe.ChanelDb, Sqllite.Taplogin, forum.Login.Trim());
-                    Sqllite.UpdateSetting(Subscribe.ChanelDb, Sqllite.Tappassword, forum.Password.Trim());
+                    Sqllite.UpdateSetting(Subscribe.ChanelDb, Sqllite.Taplogin, login);
+                    Sqllite.UpdateSetting(Subscribe.ChanelDb, Sqllite.Tappassword, pass);
+                    Subscribe.TapLogin = login;
+                    Subscribe.TapPass = pass;
+                    continue;
+                }
+                if (forum is ChannelYou)
+                {
+                    Sqllite.UpdateSetting(Subscribe.ChanelDb, Sqllite.Youlogin, login);
+                    Sqllite.UpdateSetting(Subscribe.ChanelDb, Sqllite.Youpassword, pass);
+                    Subscribe.YouLogin = login;
+                    Subscribe.YouPass = pass;
                 }
             }
 

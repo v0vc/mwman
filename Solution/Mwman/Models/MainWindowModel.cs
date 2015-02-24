@@ -209,7 +209,17 @@ namespace Mwman.Models
                     new XElement(Sqllite.Rtlogin, Sqllite.GetSettingsValue(Subscribe.ChanelDb, Sqllite.Rtlogin)),
                     new XElement(Sqllite.Rtpassword, Sqllite.GetSettingsValue(Subscribe.ChanelDb, Sqllite.Rtpassword)),
                     new XElement(Sqllite.Taplogin, Sqllite.GetSettingsValue(Subscribe.ChanelDb, Sqllite.Taplogin)),
-                    new XElement(Sqllite.Tappassword, Sqllite.GetSettingsValue(Subscribe.ChanelDb, Sqllite.Tappassword))
+                    new XElement(Sqllite.Tappassword, Sqllite.GetSettingsValue(Subscribe.ChanelDb, Sqllite.Tappassword)),
+                    new XElement(Sqllite.Youlogin, Sqllite.GetSettingsValue(Subscribe.ChanelDb, Sqllite.Youlogin)),
+                    new XElement(Sqllite.Youpassword, Sqllite.GetSettingsValue(Subscribe.ChanelDb, Sqllite.Youpassword)),
+                    new XElement(Sqllite.Nnmlogin, Sqllite.GetSettingsValue(Subscribe.ChanelDb, Sqllite.Nnmlogin)),
+                    new XElement(Sqllite.Nnmpassword, Sqllite.GetSettingsValue(Subscribe.ChanelDb, Sqllite.Nnmpassword)),
+                    new XElement(Sqllite.Plablogin, Sqllite.GetSettingsValue(Subscribe.ChanelDb, Sqllite.Plablogin)),
+                    new XElement(Sqllite.Plabpassword, Sqllite.GetSettingsValue(Subscribe.ChanelDb, Sqllite.Plabpassword)),
+                    new XElement(Sqllite.Vimeologin, Sqllite.GetSettingsValue(Subscribe.ChanelDb, Sqllite.Vimeologin)),
+                    new XElement(Sqllite.Vimeopassword, Sqllite.GetSettingsValue(Subscribe.ChanelDb, Sqllite.Vimeopassword)),
+                    new XElement(Sqllite.Kzlogin, Sqllite.GetSettingsValue(Subscribe.ChanelDb, Sqllite.Kzlogin)),
+                    new XElement(Sqllite.Kzpassword, Sqllite.GetSettingsValue(Subscribe.ChanelDb, Sqllite.Kzpassword))
                     ), new XElement("tblVideos")));
 
                 var element = doc.Element("tables");

@@ -118,9 +118,6 @@ namespace Mwman.Channel
                     break;
 
                 case "Playlist":
-
-
-
                     break;
             }
         }
@@ -231,9 +228,15 @@ namespace Mwman.Channel
             if (IsFull)
             {
                 if (Application.Current.Dispatcher.CheckAccess())
+                {
                     ListVideoItems.Clear();
+                    ListPlaylists.Clear();
+                }
                 else
+                {
                     Application.Current.Dispatcher.Invoke(() => ListVideoItems.Clear());
+                    Application.Current.Dispatcher.Invoke(() => ListPlaylists.Clear());
+                }
             }
             _rtcookie = ReadCookiesFromDiskBinary(Cname) ?? GetSession();
             _bgv.RunWorkerAsync("Get");
@@ -389,15 +392,7 @@ namespace Mwman.Channel
 
         public override void UpdatePlaylist()
         {
-            if (_bgv.IsBusy)
-                return;
-            Subscribe.SetResult("Working...");
-
-            InitializeTimer();
-
-            Application.Current.Dispatcher.Invoke(() => ListPlaylists.Clear());
-
-            _bgv.RunWorkerAsync("Playlist");
+            throw new NotImplementedException();
         }
 
         private void MakeRtResponse(string zap, ObservableCollection<VideoItemBase> listVideoItems, bool isSearch)
@@ -419,7 +414,7 @@ namespace Mwman.Channel
                 };
 
                 var pl = new Playlist(v.PlaylistTitle, v.PlaylistID, v.PlaylistID);
-                if (!ListPlaylists.Contains(pl))
+                if (!ListPlaylists.Select(x=>x.Title).Contains(pl.Title))
                 {
                     Application.Current.Dispatcher.Invoke(() => ListPlaylists.Add(pl));
                 }
@@ -465,7 +460,7 @@ namespace Mwman.Channel
                 {
                     var v = new VideoItemRt(nodes, Prefix);
                     var pl = new Playlist(v.PlaylistTitle, v.PlaylistID, v.PlaylistID);
-                    if (!ListPlaylists.Contains(pl))
+                    if (!ListPlaylists.Select(x => x.Title).Contains(pl.Title))
                     {
                         Application.Current.Dispatcher.Invoke(() => ListPlaylists.Add(pl));
                     }
