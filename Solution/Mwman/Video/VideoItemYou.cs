@@ -338,18 +338,34 @@ namespace Mwman.Video
             var dir = new DirectoryInfo(SavePath);
             if (!dir.Exists)
                 dir.Create();
-            //"--restrict-filenames"
             string param;
-            if (_isAudio)
-                param =
-                    String.Format(
-                        "-f bestaudio -o {0}\\%(title)s.%(ext)s {1} --no-check-certificate --console-title",
-                        SavePath, VideoLink);
+            if (!string.IsNullOrEmpty(Subscribe.YouLogin) & !string.IsNullOrEmpty(Subscribe.YouPass))
+            {
+                if (_isAudio)
+                    param =
+                        String.Format(
+                            "-f bestaudio -o {0}\\%(title)s.%(ext)s {1} --username {2} --password {3} --no-check-certificate --console-title",
+                            SavePath, VideoLink, Subscribe.YouLogin, Subscribe.YouPass);
+                else
+                    param =
+                        String.Format(
+                            "-f bestvideo,bestaudio -o {0}\\%(title)s.%(ext)s {1} --username {2} --password {3} --no-check-certificate --console-title --restrict-filenames",
+                            SavePath, VideoLink, Subscribe.YouLogin, Subscribe.YouPass);
+            }
             else
-                param =
-                    String.Format(
-                        "-f bestvideo,bestaudio -o {0}\\%(title)s.%(ext)s {1} --no-check-certificate --console-title --restrict-filenames",
-                        SavePath, VideoLink);
+            {
+                if (_isAudio)
+                    param =
+                        String.Format(
+                            "-f bestaudio -o {0}\\%(title)s.%(ext)s {1} --no-check-certificate --console-title",
+                            SavePath, VideoLink);
+                else
+                    param =
+                        String.Format(
+                            "-f bestvideo,bestaudio -o {0}\\%(title)s.%(ext)s {1} --no-check-certificate --console-title --restrict-filenames",
+                            SavePath, VideoLink);    
+            }
+            
 
             var startInfo = new ProcessStartInfo(Subscribe.YoudlPath, param)
             {

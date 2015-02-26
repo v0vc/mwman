@@ -254,6 +254,8 @@ namespace Mwman.Common
             if (fn.Exists)
             {
                 Result = "Working...";
+                YouLogin = Sqllite.GetSettingsValue(fn.FullName, Sqllite.Youlogin);
+                YouPass = Sqllite.GetSettingsValue(fn.FullName, Sqllite.Youpassword);
                 RtLogin = Sqllite.GetSettingsValue(fn.FullName, Sqllite.Rtlogin);
                 RtPass = Sqllite.GetSettingsValue(fn.FullName, Sqllite.Rtpassword);
                 TapLogin = Sqllite.GetSettingsValue(fn.FullName, Sqllite.Taplogin);
@@ -268,7 +270,7 @@ namespace Mwman.Common
                 FfmpegPath = Sqllite.GetSettingsValue(ChanelDb, Sqllite.Pathtoffmpeg);
                 ServerList = new ObservableCollection<ChannelBase>
                 {
-                    new ChannelYou(string.Empty, string.Empty, string.Empty, string.Empty, 0, _model),
+                    new ChannelYou(YouLogin, YouPass, string.Empty, string.Empty, 0, _model),
                     new ChannelRt(RtLogin, RtPass, string.Empty, string.Empty, 0, _model),
                     new ChannelTap(TapLogin, TapPass, string.Empty, string.Empty, 0, _model),
                     new ChannelEmpty()

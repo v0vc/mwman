@@ -24,7 +24,7 @@
             <MenuItem Header="File">
                 <MenuItem Header="Backup" Command="{Binding BackupRestoreCommand}" CommandParameter="backup"></MenuItem>
                 <MenuItem Header="Restore">
-                    <MenuItem Header="Chanells" Command="{Binding BackupRestoreCommand}" CommandParameter="restorechanells"></MenuItem>
+                    <MenuItem Header="Channels" Command="{Binding BackupRestoreCommand}" CommandParameter="restorechanells"></MenuItem>
                     <MenuItem Header="Settings" Command="{Binding BackupRestoreCommand}" CommandParameter="restoresettings"></MenuItem>
                 </MenuItem>
                 <Separator />

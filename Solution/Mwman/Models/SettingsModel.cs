@@ -334,7 +334,7 @@ namespace Mwman.Models
                 }
             }
 
-            foreach (ChannelBase forum in ListForums.Where(forum => !string.IsNullOrEmpty(forum.Login) & !string.IsNullOrEmpty(forum.Password)))
+            foreach (ChannelBase forum in ListForums)
             {
                 var login = forum.Login.Trim();
                 var pass = forum.Password.Trim();

@@ -104,6 +104,12 @@ namespace Mwman.Channel
 
                     while (true)
                     {
+                        if (_bgv.CancellationPending)
+                        {
+                            e.Cancel = true;
+                            return;
+                        }
+
                         var wc = new WebClient {Encoding = Encoding.UTF8};
                         zap =
                             string.Format(
@@ -172,7 +178,7 @@ namespace Mwman.Channel
 
                     if (IsFull)
                     {
-                        UpdatePlayListBgv();
+                        UpdatePlayListBgv(e);
                     }
 
                     #endregion
@@ -186,9 +192,9 @@ namespace Mwman.Channel
                             "https://gdata.youtube.com/feeds/api/standardfeeds/{0}/most_popular?time=today&v=2&alt=json",
                             _cul);
 
-                    MakeYouResponse(zap, _listPopularVideoItems);
+                    MakeYouResponse(zap, _listPopularVideoItems, e);
 
-                    FillMostPopularChanels();
+                    FillMostPopularChanels(e);
 
                     break;
 
@@ -197,7 +203,7 @@ namespace Mwman.Channel
                     zap = string.Format("https://gdata.youtube.com/feeds/api/videos?q={0}&max-results=50&v=2&alt=json",
                         _searchkey);
 
-                    MakeYouResponse(zap, _listSearchVideoItems);
+                    MakeYouResponse(zap, _listSearchVideoItems, e);
 
                     break;
 
@@ -209,6 +215,11 @@ namespace Mwman.Channel
 
                     while (true)
                     {
+                        if (_bgv.CancellationPending)
+                        {
+                            e.Cancel = true;
+                            return;
+                        }
                         var wc = new WebClient {Encoding = Encoding.UTF8};
                         zap =
                             string.Format(
@@ -282,7 +293,7 @@ namespace Mwman.Channel
 
                 case "Playlist":
 
-                    UpdatePlayListBgv();
+                    UpdatePlayListBgv(e);
 
                     break;
             }
@@ -291,6 +302,11 @@ namespace Mwman.Channel
         private void _bgv_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             MinRes = 1;
+            if (e.Cancelled)
+            {
+                _model.MySubscribe.Result = "Canceled";
+                ListPopularVideoItems.Clear();
+            }
             if (e.Error != null)
             {
                 _model.MySubscribe.Result = e.Error.Message;
@@ -412,13 +428,19 @@ namespace Mwman.Channel
             }
         }
 
-        private void UpdatePlayListBgv()
+        private void UpdatePlayListBgv(DoWorkEventArgs doWorkEventArgs)
         {
             MinRes = 1;
             string zap;
 
             while (true)
             {
+                if (_bgv.CancellationPending)
+                {
+                    doWorkEventArgs.Cancel = true;
+                    return;
+                }
+
                 var wc = new WebClient { Encoding = Encoding.UTF8 };
 
                 zap = string.Format(
@@ -463,6 +485,12 @@ namespace Mwman.Channel
             {
                 while (true)
                 {
+                    if (_bgv.CancellationPending)
+                    {
+                        doWorkEventArgs.Cancel = true;
+                        return;
+                    }
+
                     var wc = new WebClient { Encoding = Encoding.UTF8 };
 
                     zap = string.Format("{0}&start-index={1}&max-results={2}", pl.ContentLink, MinRes,
@@ -506,11 +534,17 @@ namespace Mwman.Channel
 
         }
 
-        private void FillMostPopularChanels()
+        private void FillMostPopularChanels(DoWorkEventArgs doWorkEventArgs)
         {
             MinRes = 1;
             while (true)
             {
+                if (_bgv.CancellationPending)
+                {
+                    doWorkEventArgs.Cancel = true;
+                    return;
+                }
+
                 var wc = new WebClient { Encoding = Encoding.UTF8 };
                 var zap =
                     string.Format(
@@ -547,7 +581,7 @@ namespace Mwman.Channel
             }
         }
 
-        private void MakeYouResponse(string zap, ObservableCollection<VideoItemBase> listVideoItems)
+        private void MakeYouResponse(string zap, ObservableCollection<VideoItemBase> listVideoItems, DoWorkEventArgs doWorkEventArgs)
         {
             listVideoItems.CollectionChanged += listVideoItems_CollectionChanged;
 
@@ -562,6 +596,12 @@ namespace Mwman.Channel
             {
                 foreach (JToken pair in jsvideo["feed"]["entry"])
                 {
+                    if (_bgv.CancellationPending)
+                    {
+                        doWorkEventArgs.Cancel = true;
+                        return;
+                    }
+
                     var v = new VideoItemYou(pair, true)
                     {
                         Num = listVideoItems.Count + 1,
@@ -590,7 +630,11 @@ namespace Mwman.Channel
         public override void GetItemsFromNet()
         {
             if (_bgv.IsBusy)
+            {
+                _bgv.CancelAsync();
                 return;
+            }
+
             Subscribe.SetResult("Working...");
 
             InitializeTimer();
@@ -633,12 +677,17 @@ namespace Mwman.Channel
 
         public override void GetPopularItems(string key, ObservableCollection<VideoItemBase> listPopularVideoItems, string mode)
         {
+            if (_bgv.IsBusy)
+            {
+                _bgv.CancelAsync();
+                return;
+            }
+
             InitializeTimer();
             _cul = key;
             _listPopularVideoItems = listPopularVideoItems;
             _model.MySubscribe.ResCount = _listPopularVideoItems.Count;
-            if (!_bgv.IsBusy)
-                _bgv.RunWorkerAsync(mode);
+            _bgv.RunWorkerAsync(mode);
         }
 
         public override void CancelDownloading()
